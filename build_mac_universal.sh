@@ -8,6 +8,8 @@ try () {
     "$@" || exit -1
 }
 
+DIR=`dirname $0`
+
 export RENPY_FRAMEWORK="/Developer/SDKs/MacOSX10.4u.sdk"
 export MACOSX_DEPLOYMENT_TARGET=10.4
 export CFLAGS="-isysroot $RENPY_FRAMEWORK -mmacosx-version-min=10.4"
@@ -24,8 +26,8 @@ export CXXLD="g++ $arch"
 
 mkdir -p newbuild.i386
 try cd newbuild.i386
-try /Volumes/shared/ab/renpy-deps/build_python.sh
-try /Volumes/shared/ab/renpy-deps/build.sh
+try "$DIR/build_python.sh"
+try "$DIR/build.sh"
 cd ..
 
 # Build the ppc version.
@@ -44,6 +46,6 @@ echo '#!/bin/sh' > install/bin/arch
 echo 'echo ppc' > install/bin/arch
 chmod a+x install/bin/arch
 
-try /Volumes/shared/ab/renpy-deps/build_python.sh
-try /Volumes/shared/ab/renpy-deps/build.sh
+try "$DIR/build_python.sh"
+try "$DIR/build.sh"
 cd ..
