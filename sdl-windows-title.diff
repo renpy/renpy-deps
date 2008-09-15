@@ -1,0 +1,28 @@
+--- src/video/wincommon/SDL_syswm.c.old	2007-12-27 20:28:42.000000000 -0500
++++ src/video/wincommon/SDL_syswm.c	2007-12-27 20:37:36.000000000 -0500
+@@ -234,9 +234,11 @@
+ 	SetWindowText(SDL_Window, lpszW);
+ 	SDL_free(lpszW);
+ #else
+-	char *lpsz = SDL_iconv_utf8_latin1((char *)title);
+-	SetWindowText(SDL_Window, lpsz);
+-	SDL_free(lpsz);
++	LPWSTR *lpszW = SDL_iconv_utf8_ucs2((char *)title);
++        char buf[1024];
++        WideCharToMultiByte(CP_ACP, 0, lpszW, -1, buf, 1024, NULL, NULL);
++        SetWindowText(SDL_Window, buf);
++	SDL_free(lpszW);
+ #endif
+ }
+ 
+--- src/stdlib/SDL_iconv.c.old	2007-12-27 20:24:45.000000000 -0500
++++ src/stdlib/SDL_iconv.c	2007-12-27 20:26:54.000000000 -0500
+@@ -326,7 +326,7 @@
+ 						*/
+ 						ch = UNKNOWN_UNICODE;
+ 					} else {
+-						if ( (p[0] & 0xCE) == 0xC0 ) {
++						if ( p[0] == 0xC0 ) {
+ 							overlong = SDL_TRUE;
+ 						}
+ 						ch = (Uint32)(p[0] & 0x1F);

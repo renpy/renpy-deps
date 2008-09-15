@@ -1,0 +1,14 @@
+;; Object decoders/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "decoders/"
+  :tables (list 
+   (semanticdb-table "smpeg.c"
+    :major-mode 'c-mode
+    :tags 'nil
+    :file "smpeg.c"
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre3"
+  :semanticdb-version "2.0pre3"
+  )

@@ -1,0 +1,37 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## no_freetype_internals.dpatch by Samuel Mimram <smimram@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: Don't rely on freetype internals.
+## DP: See http://www.freetype.org/freetype2/freetype-2.2.0.html.
+
+@DPATCH@
+diff -urNad sdl-ttf2.0-2.0.8~/SDL_ttf.c sdl-ttf2.0-2.0.8/SDL_ttf.c
+--- sdl-ttf2.0-2.0.8~/SDL_ttf.c	2006-05-01 09:26:17.000000000 +0000
++++ sdl-ttf2.0-2.0.8/SDL_ttf.c	2006-06-12 23:24:07.000000000 +0000
+@@ -43,16 +43,6 @@
+ #include FT_FREETYPE_H
+ #include FT_OUTLINE_H
+ #include FT_TRUETYPE_IDS_H
+-/*
+-#include <freetype/freetype.h>
+-#include <freetype/ftoutln.h>
+-#include <freetype/ttnameid.h>
+-*/
+-#include <freetype/internal/ftobjs.h>
+-
+-#ifndef FT_OPEN_STREAM
+-#define FT_OPEN_STREAM ft_open_stream
+-#endif
+ 
+ #include "SDL.h"
+ #include "SDL_endian.h"
+@@ -278,7 +268,7 @@
+ 	}
+ 	memset(stream, 0, sizeof(*stream));
+ 
+-	stream->memory = library->memory;
++	stream->memory = NULL;  /* set by FT_Open_Face */
+ 	stream->read = RWread;
+ 	stream->descriptor.pointer = src;
+ 	stream->pos = (unsigned long)position;

@@ -1,0 +1,101 @@
+diff -u SDL_mixer-1.2.6.dist/music.c SDL_mixer-1.2.6/music.c
+--- SDL_mixer-1.2.6.dist/music.c	2004-12-16 00:20:14.000000000 -0500
++++ SDL_mixer-1.2.6/music.c	2005-05-06 21:01:34.000000000 -0400
+@@ -23,6 +23,7 @@
+ /* $Id: music.c,v 1.58 2004/11/15 23:34:56 slouken Exp $ */
+ 
+ #include <stdlib.h>
++#include <stdio.h>
+ #include <string.h>
+ #include <ctype.h>
+ #include "SDL_endian.h"
+@@ -130,6 +131,7 @@
+ 	int fade_step;
+ 	int fade_steps;
+ 	int error;
++    
+ };
+ #ifdef MID_MUSIC
+ #ifdef USE_TIMIDITY_MIDI
+@@ -208,6 +210,7 @@
+ 				if ( music_finished_hook ) {
+ 					music_finished_hook();
+ 				}
++
+ 				return;
+ 			}
+ 		}
+@@ -323,6 +326,7 @@
+ 				break;
+ 		}
+ 	}
++
+ }
+ 
+ /* Initialize the music players with a certain desired audio format */
+@@ -491,7 +495,7 @@
+ 		return(NULL);
+ 	}
+ 	music->error = 0;
+-
++        
+ #ifdef CMD_MUSIC
+ 	if ( music_cmd ) {
+ 		music->type = MUS_CMD;
+@@ -608,7 +612,8 @@
+ /* Free a music chunk previously loaded */
+ void Mix_FreeMusic(Mix_Music *music)
+ {
+-	if ( music ) {
++
++    if ( music ) {
+ 		/* Stop the music if it's currently playing */
+ 		SDL_LockAudio();
+ 		if ( music == music_playing ) {
+@@ -643,7 +648,15 @@
+ 			case MUS_MID:
+ #ifdef USE_NATIVE_MIDI
+   				if ( native_midi_ok ) {
+-					native_midi_freesong(music->data.nativemidi);
++
++                                    // Tom
++                                    SDL_LockAudio();
++
++                                    native_midi_freesong(music->data.nativemidi);
++
++                                    //Tom
++                                    SDL_UnlockAudio();
++                                    
+ 				} MIDI_ELSE
+ #endif
+ #ifdef USE_TIMIDITY_MIDI
+@@ -667,7 +680,8 @@
+ 				/* Unknown music type?? */
+ 				break;
+ 		}
+-		free(music);
++
++                free(music);
+ 	}
+ }
+ 
+@@ -780,6 +794,7 @@
+ {
+ 	int retval;
+ 
++        
+ 	/* Don't play null pointers :-) */
+ 	if ( music == NULL ) {
+ 		Mix_SetError("music parameter was NULL");
+@@ -1307,6 +1322,11 @@
+ 	Mix_Music *music;
+ 	int start;
+ 
++        // TOM: Do nothing.
++        printf("LOADMUS_RW\n");
++        
++        return NULL;
++        
+ 	/* Figure out what kind of file this is */
+ 	start = SDL_RWtell(rw);
+ 	if (SDL_RWread(rw,magic,1,4)!=4) {
