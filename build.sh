@@ -311,7 +311,7 @@ if [ \! -e built.pygame ]; then
    try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
    try cd "$BUILD/pygame-1.8.1release"
 
-   # try cp "$SOURCE/movie.c" src/
+   try cp "$SOURCE/movie.c" src/
    try cp "$SOURCE/rwobject.c" src/
    # try cp "$SOURCE/sysfont.py" lib/
    try cp "$SOURCE/pygame-setup.py" setup.py
