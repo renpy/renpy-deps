@@ -61,7 +61,7 @@ def setIcon(app):
 
 def install():
     app = NSApplication.sharedApplication()
-    setIcon(app)
+    # setIcon(app)
     appDelegate = PyGameAppDelegate.alloc().init()
     app.setDelegate_(appDelegate)
     appDelegate.retain()

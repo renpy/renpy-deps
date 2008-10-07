@@ -5,7 +5,7 @@ PWD=`pwd`
 BUILD=$PWD/build
 INSTALL=$PWD/install
 export PATH="$INSTALL/bin:$PATH"
-export LD_LIBRARY_PATH="$INSTALL/lib"
+export LD_LIBRARY_PATH="$INSTALL/lib:/usr/local/lib"
 export DYLIB_LIBRARY_PATH="$INSTALL/lib"
 export DYLD_FRAMEWORK_PATH="$INSTALL/frameworks"
 
@@ -23,11 +23,6 @@ SOURCE=`python $SOURCE/norm_source.py "x$PWD" "x$SOURCE"`
 
 CP='cp -pR'
 
-export CC=${CC:=gcc}
-export CXX=${CXX:=g++}
-export LD=${LD:=gcc}
-export CXXLD=${CXXLD:=g++}
-
 echo
 echo Source: $SOURCE
 echo Build: $BUILD
@@ -37,9 +32,10 @@ echo
 mkdir -p $BUILD
 mkdir -p $INSTALL
 
-export CFLAGS="$CFLAGS -O3 -fPIC -I$INSTALL/include"
-export CXXFLAGS="$CXXFLAGS -O3 -fPIC -I$INSTALL/include"
-export LDFLAGS="$LDFLAGS -O3 -fPIC -L$INSTALL/lib"
+export CFLAGS="$CFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-fPIC -O3 -L$INSTALL/lib $LDFLAGS"
+
 
 if [ "x$MSYSTEM" != "x" ]; then
   export CFLAGS="$CFLAGS -fno-strict-aliasing"
@@ -75,6 +71,15 @@ libtool() {
 
 cd $BUILD
 
+cat <<EOF > ../env.sh
+export PATH="$PATH"
+export RENPY_DEPS_INSTALL="$INSTALL"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
+export DYLIB_LIBRARY_PATH="$DYLIB_LIBRARY_PATH"
+export DYLD_FRAMEWORK_PATH="$DYLD_FRAMEWORK_PATH"
+export PYTHONPATH="$INSTALL/python"
+EOF
+
 if [ \! -e built.sdl ]; then
 
    try tar xzf "$SOURCE/SDL-1.2.11.tar.gz"
@@ -92,22 +97,27 @@ if [ \! -e built.sdl ]; then
        try cat configure.new > configure
    fi
 
-   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy
-   # libtool
+   try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy
+   
    try make
    try make install
    cd "$BUILD"
    touch built.sdl
 fi
 
-if [ \! -e built.smpeg ]; then
+if [ "x$NOSMPEG" = "x" -a \! -e built.smpeg ]; then
    try $CP "$SOURCE/smpeg" "$BUILD"
    try cd "$BUILD/smpeg"
    try sh ./configure --prefix="$INSTALL" --disable-opengl-player --disable-gtk-player --disable-gtktest --enable-mmx
    # libtool
-   cp ../SDL-1.2.9/libtool .
+   # cp ../SDL-1.2.11/libtool .
 
-   try make CXXLD="$CXXLD -no-undefined"
+   if [ $MAC = no ] ; then
+       try make CXXLD="${CXXLD:-g++} -no-undefined"
+   else
+       try make CXXLD="${CXXLD:-g++}"
+   fi
+
    try make install
    cd "$BUILD"
 
@@ -141,8 +151,8 @@ fi
 # fi
 
 if [ \! -e built.freetype ]; then
-   try tar xvzf "$SOURCE/freetype-2.3.4.tar.gz"
-   try cd "$BUILD/freetype-2.3.4"
+   try tar xjf "$SOURCE/freetype-2.3.7.tar.bz2"
+   try cd "$BUILD/freetype-2.3.7"
 
    try cp "$SOURCE/ftmodules.cfg" ./modules.cfg
 
@@ -150,7 +160,7 @@ if [ \! -e built.freetype ]; then
 
    try make modules
    try make
-   try make install
+   try make install prefix="$INSTALL"
    cd "$BUILD"
    touch built.freetype
 fi
@@ -298,22 +308,36 @@ if [ \! -e built.pygame ]; then
    SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
    SMPEG=`smpeg-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
 
-   try tar xvzf "$SOURCE/pygame-1.7.1release.tar.gz"
-   try cd "$BUILD/pygame-1.7.1release"
+   try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
+   try cd "$BUILD/pygame-1.8.1release"
 
-   try cp "$SOURCE/movie.c" src/
+   # try cp "$SOURCE/movie.c" src/
    try cp "$SOURCE/rwobject.c" src/
-   try cp "$SOURCE/sysfont.py" lib/
-
-   try sed -e "s|@SDL@|$SDL|g" -e "s|@SMPEG@|$SMPEG|g" "$SOURCE/Setup" > Setup
-   try touch config_msys.py
-
+   # try cp "$SOURCE/sysfont.py" lib/
    try cp "$SOURCE/pygame-setup.py" setup.py
-   try cp "$SOURCE/alphablit.c" src/alphablit.c
-   try cp "$SOURCE/display.c" src/display.c
+   # try cp "$SOURCE/alphablit.c" src/alphablit.c
+   # try cp "$SOURCE/display.c" src/display.c
    try cp "$SOURCE/macosx.py" lib/macosx.py
+   # try cp "$SOURCE/config"*.py .
+
+   if [ "x$NOSMPEG" = "x" ] ; then
+       try sed -e "s|@SDL@|$SDL|g" -e "s|@SMPEG@|$SMPEG|g" -e "s|@INSTALL@|$INSTALL|g"  "$SOURCE/Setup" > Setup
+   else
+       try sed -e "s|@SDL@|$SDL|g" -e "s|@SMPEG@|$SMPEG|g" "$SOURCE/Setup.nosmpeg" > Setup
+   fi
+
+
+   #   export SDL_CONFIG="$INSTALL/bin/sdl-config"
+   # export SMPEG_CONFIG="$INSTALL/bin/smpeg-config"
+
+   # try python config.py --auto
+   # try touch config_msys.py
+
+   # try rm mingw32*.py
 
    if [ "x$MSYSTEM" != "x" ]; then
+       # try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
+       echo $CFLAGS
        try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
        try cp "$INSTALL/bin/"*.dll "$INSTALL/python/pygame"
        try strip "$INSTALL/python/pygame/"*.dll
@@ -351,17 +375,6 @@ fi
 #    touch built.ffmpeg
 # fi
 
-
-# That's it, but export settings for Ren'Py Module.
-
-cat <<EOF > ../env.sh
-export PATH="$PATH"
-export RENPY_DEPS_INSTALL="$INSTALL"
-export LD_LIBRARY_PATH="$INSTALL/lib"
-export DYLIB_LIBRARY_PATH="$INSTALL/lib"
-export DYLD_FRAMEWORK_PATH="$DYLD_FRAMEWORK_PATH"
-export PYTHONPATH="$INSTALL/python"
-EOF
 
 # if [ "x$MSYSTEM" != "x" ]; then
 #     echo

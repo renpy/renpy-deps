@@ -37,9 +37,8 @@ if not hasattr(sys, 'version_info') or sys.version_info < (2,3):
 
 #get us to the correct directory
 import os, sys
-# path = os.path.split(os.path.abspath(sys.argv[0]))[0]
-# os.chdir(path)
-
+path = os.path.split(os.path.abspath(sys.argv[0]))[0]
+os.chdir(path)
 #os.environ["CFLAGS"] = "-W -Wall -Wpointer-arith -Wcast-qual -Winline " + \
 #                       "-Wcast-align -Wconversion -Wstrict-prototypes " + \
 #                       "-Wmissing-prototypes -Wmissing-declarations " + \
@@ -122,108 +121,104 @@ for f in glob.glob(os.path.join('lib', '*')):
 # Required. This will be filled if doing a Windows build.
 cmdclass = {}
 
-# a separate method for finding dlls with mingw.
+#try to find DLLs and copy them too  (only on windows)
+if sys.platform == 'win32':
 
-# TOM: This is the only way I've been able to get things working on win32.
-import config
-if config.is_msys_mingw():
+    from distutils.command.build_ext import build_ext
+    # mingw32distutils is optional. But we need the mingw32 compiler(s).
+    try:
+        # Allow the choice between Win32 GUI and console DLLs.
+        import mingw32distutils
+    except ImportError:
+        mingw32_compilers = ['ming32']
+    else:
+        mingw32_compilers = mingw32distutils.compilers
+    if sys.version_info < (2, 4):
+        try:
+            # !!! This part looks very outdated. distutils_mods does not
+            # even show up on a Google search. It can probably go at some
+            # point. It is not needed for Python 2.4 and higher.
+            import config
+            # a separate method for finding dlls with mingw.
+            if config.is_msys_mingw():
 
-    # fix up the paths for msys compiling.
-    import distutils_mods
-    distutils.cygwinccompiler.Mingw32 = distutils_mods.mingcomp
-
-    # #try to find DLLs and copy them too  (only on windows)
-# if sys.platform == 'win32':
-
-#     from distutils.command.build_ext import build_ext
-#     # mingw32distutils is optional. But we need the mingw32 compiler(s).
-#     try:
-#         # Allow the choice between Win32 GUI and console DLLs.
-#         import mingw32distutils
-#     except ImportError:
-#         mingw32_compilers = ['ming32']
-#     else:
-#         mingw32_compilers = mingw32distutils.compilers
-#     if sys.version_info < (2, 4):
-#         try:
-#             # !!! This part looks very outdated. distutils_mods does not
-#             # even show up on a Google search. It can probably go at some
-#             # point. It is not needed for Python 2.4 and higher.
-#         except ImportError:
-#             pass
+                # fix up the paths for msys compiling.
+                import distutils_mods
+                distutils.cygwinccompiler.Mingw32 = distutils_mods.mingcomp
+        except ImportError:
+            pass
         
-#     #add dependency DLLs to the project
-# #     import dll
+    #add dependency DLLs to the project
+    import dll
 
-# #     the_dlls = {}
-# #     required_dlls = {}
-# #     for e in extensions:
-# #         if e.name.startswith('COPYLIB_'):
-# #             the_dlls[e.libraries[0]] = e.library_dirs[0]
-# #         else:
-# #             required_dlls.update(dll.dependencies(e.libraries))
+    the_dlls = {}
+    required_dlls = {}
+    for e in extensions:
+        if e.name.startswith('COPYLIB_'):
+            the_dlls[e.libraries[0]] = e.library_dirs[0]
+        else:
+            required_dlls.update(dll.dependencies(e.libraries))
+    for lib in required_dlls:
+        #next DLL; a distutils bug requires the paths to have Windows separators
+        f = the_dlls[lib].replace('/', os.sep)
+        if f == '_':
+            print "WARNING, DLL for %s library not found." % lib
+        else:
+            data_files.append(f)
 
-# #     for lib in required_dlls:
-# #         #next DLL; a distutils bug requires the paths to have Windows separators
-# #         f = the_dlls[lib].replace('/', os.sep)
-# #         if f == '_':
-# #             print "WARNING, DLL for %s library not found." % lib
-# #         else:
-# #             data_files.append(f)
+    class WinBuildExt(build_ext):
+        """This build_ext sets necessary environment variables for MinGW"""
 
-#     class WinBuildExt(build_ext):
-#         """This build_ext sets necessary environment variables for MinGW"""
-
-#         # __sdl_lib_dir is possible location of msvcrt replacement import
-#         # libraries, if they exist. Pygame module base only links to SDL so
-#         # should have the SDL library directory as its only -L option.
-#         for e in extensions:
-#             if e.name == 'base':
-#                 __sdl_lib_dir = e.library_dirs[0].replace('/', os.sep)
-#                 break
+        # __sdl_lib_dir is possible location of msvcrt replacement import
+        # libraries, if they exist. Pygame module base only links to SDL so
+        # should have the SDL library directory as its only -L option.
+        for e in extensions:
+            if e.name == 'base':
+                __sdl_lib_dir = e.library_dirs[0].replace('/', os.sep)
+                break
         
-#         def run(self):
-#             """Extended to set MINGW_ROOT_DIRECTORY, PATH and LIBRARY_PATH"""
+        def run(self):
+            """Extended to set MINGW_ROOT_DIRECTORY, PATH and LIBRARY_PATH"""
             
-#             if self.compiler in mingw32_compilers:
-#                 # Add MinGW environment variables.
-#                 if 'MINGW_ROOT_DIRECTORY' not in os.environ:
-#                     # Use MinGW setup conifiguration file if present.
-#                     import mingwcfg
-#                     try:
-#                         mingw_root = mingwcfg.read()
-#                     except IOError:
-#                         raise RuntimeError(
-#                             "mingw32: required environment variable"
-#                             " MINGW_ROOT_DIRECTORY not set")
-#                     os.environ['MINGW_ROOT_DIRECTORY'] = mingw_root
-#                     path = os.environ['PATH']
-#                     os.environ['PATH'] = ';'.join([os.path.join(mingw_root, 'bin'),
-#                                                    path])
-# #                 if sys.version_info >= (2, 6):
-# #                     # The Visual Studio 2008 C library is msvcr90.dll.
-# #                     c_runtime_path = os.path.join(self.__sdl_lib_dir, 'msvcr90')
-# #                 elif sys.version_info >= (2, 4):
-# #                     # The Visual Studio 2003 C library is msvcr71.dll.
-# #                     c_runtime_path = os.path.join(self.__sdl_lib_dir, 'msvcr71')
-# #                 else:
-# #                     # The Visual Studio 6.0 C library is msvcrt.dll,
-# #                     # the MinGW default.
-# #                     c_runtime_path = ''
-# #                 if c_runtime_path and os.path.isdir(c_runtime_path):
-# #                     # Override the default msvcrt.dll linkage.
-# #                     os.environ['LIBRARY_PATH'] = c_runtime_path
-# #                 elif not (c_runtime_path or
-# #                           glob.glob(os.path.join(self.__sdl_lib_dir,
-# #                                                  'msvcr*'))):
-# #                     pass
-# #                 else:
-# #                     raise RuntimeError("The dependencies are linked to"
-# #                                        " the wrong C runtime for"
-# #                                        " Python %i.%i" %
-# #                                        sys.version_info[:2])
-#             build_ext.run(self)
-#     cmdclass['build_ext'] = WinBuildExt
+            if self.compiler in mingw32_compilers:
+                # Add MinGW environment variables.
+                if 'MINGW_ROOT_DIRECTORY' not in os.environ:
+                    # Use MinGW setup conifiguration file if present.
+                    import mingwcfg
+                    try:
+                        mingw_root = mingwcfg.read()
+                    except IOError:
+                        raise RuntimeError(
+                            "mingw32: required environment variable"
+                            " MINGW_ROOT_DIRECTORY not set")
+                    os.environ['MINGW_ROOT_DIRECTORY'] = mingw_root
+                    path = os.environ['PATH']
+                    os.environ['PATH'] = ';'.join([os.path.join(mingw_root, 'bin'),
+                                                   path])
+                if sys.version_info >= (2, 6):
+                    # The Visual Studio 2008 C library is msvcr90.dll.
+                    c_runtime_path = os.path.join(self.__sdl_lib_dir, 'msvcr90')
+                elif sys.version_info >= (2, 4):
+                    # The Visual Studio 2003 C library is msvcr71.dll.
+                    c_runtime_path = os.path.join(self.__sdl_lib_dir, 'msvcr71')
+                else:
+                    # The Visual Studio 6.0 C library is msvcrt.dll,
+                    # the MinGW default.
+                    c_runtime_path = ''
+                if c_runtime_path and os.path.isdir(c_runtime_path):
+                    # Override the default msvcrt.dll linkage.
+                    os.environ['LIBRARY_PATH'] = c_runtime_path
+                elif not (c_runtime_path or
+                          glob.glob(os.path.join(self.__sdl_lib_dir,
+                                                 'msvcr*'))):
+                    pass
+                else:
+                    raise RuntimeError("The dependencies are linked to"
+                                       " the wrong C runtime for"
+                                       " Python %i.%i" %
+                                       sys.version_info[:2])
+            build_ext.run(self)
+    cmdclass['build_ext'] = WinBuildExt
 
 
 
