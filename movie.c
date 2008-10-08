@@ -67,7 +67,7 @@ static PyObject* movie_play(PyObject* self, PyObject* args)
 	SMPEG_loop(movie, loops);
 	SMPEG_play(movie);
         Py_END_ALLOW_THREADS
-	RETURN_NONE
+	Py_RETURN_NONE;
 }
 
 
@@ -88,7 +88,7 @@ static PyObject* movie_stop(PyObject* self, PyObject* args)
         Py_BEGIN_ALLOW_THREADS
 	SMPEG_stop(movie);
         Py_END_ALLOW_THREADS
-	RETURN_NONE
+	Py_RETURN_NONE;
 }
 
 
@@ -108,7 +108,7 @@ static PyObject* movie_pause(PyObject* self, PyObject* args)
         Py_BEGIN_ALLOW_THREADS
 	SMPEG_pause(movie);
         Py_END_ALLOW_THREADS
-	RETURN_NONE
+	Py_RETURN_NONE;
 }
 
 
@@ -128,7 +128,7 @@ static PyObject* movie_rewind(PyObject* self, PyObject* args)
         Py_BEGIN_ALLOW_THREADS
 	SMPEG_rewind(movie);
         Py_END_ALLOW_THREADS
-	RETURN_NONE
+	Py_RETURN_NONE;
 }
 
     /*DOC*/ static char doc_movie_skip[] =
@@ -149,7 +149,7 @@ static PyObject* movie_skip(PyObject* self, PyObject* args)
         Py_BEGIN_ALLOW_THREADS
 	SMPEG_skip(movie, seconds);
         Py_END_ALLOW_THREADS
-	RETURN_NONE
+	Py_RETURN_NONE;
 }
 
 
@@ -176,7 +176,7 @@ static PyObject* movie_set_volume(PyObject* self, PyObject* args)
 	SMPEG_setvolume(movie, volume);
         Py_END_ALLOW_THREADS
 
-	RETURN_NONE
+	Py_RETURN_NONE;
 }
 
 
@@ -260,7 +260,7 @@ static PyObject* movie_set_display(PyObject* self, PyObject* args)
 		       return RAISE(PyExc_TypeError, "destination must be a Surface");
 	}
 
-	RETURN_NONE;
+	Py_RETURN_NONE;;
 }
 
 
