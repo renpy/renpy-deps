@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+
+<!-- This is a mode catalog. Edit modes must be listed here, -->
+<!-- otherwise they will not be available to jEdit. -->
+
+<!DOCTYPE MODES SYSTEM "catalog.dtd">
+
+<MODES>
+
+<!-- Now that BeanShell 2.0 supports class declarations, its syntax is
+     almost identical to Java. -->
+<MODE NAME="beanshell"		FILE="java.xml"
+				FILE_NAME_GLOB="*.bsh" />
+
+<!-- We let c++ color the .h files -->
+<MODE NAME="c"			FILE="c.xml"
+				FILE_NAME_GLOB="*.c" />
+
+<MODE NAME="c++"		FILE="cplusplus.xml"
+				FILE_NAME_GLOB="*.{cc,cpp,h,hh,hpp,cxx}" />
+
+<MODE NAME="css"		FILE="css.xml"
+				FILE_NAME_GLOB="*.css" />
+
+<MODE NAME="html"		FILE="html.xml"
+				FILE_NAME_GLOB="*.{html,htm,hta}" />
+
+<MODE NAME="java"               FILE="java.xml"
+                                FILE_NAME_GLOB="*.java" />
+
+<MODE NAME="javascript"		FILE="javascript.xml"
+				FILE_NAME_GLOB="{*.js,Buildsub}" />
+
+<MODE NAME="makefile"		FILE="makefile.xml"
+				FILE_NAME_GLOB="*makefile" />
+
+<MODE NAME="nsis2"		FILE="nsis2.xml"
+				FILE_NAME_GLOB="*.{nsi,nsh}" />
+
+<MODE NAME="properties"		FILE="props.xml"
+				FILE_NAME_GLOB="*{properties,props}" />
+
+<MODE NAME="pyrex"		FILE="pyrex.xml"
+				FILE_NAME_GLOB="*.{pyx}" />
+
+<MODE NAME="python"		FILE="python.xml"
+				FILE_NAME_GLOB="*.{py,pyw,sc}"
+				FIRST_LINE_GLOB="#!*/*python*" />
+
+<MODE NAME="renpy"		FILE="renpy.xml"
+				FILE_NAME_GLOB="*.{rpy,rpym}" />
+
+<MODE NAME="shellscript"	FILE="shellscript.xml"
+				FILE_NAME_GLOB="*.{csh,sh,bash}"
+				FIRST_LINE_GLOB="#!/*sh*" />
+
+<MODE NAME="svn-commit"         FILE="svn-commit.xml"
+				FILE_NAME_GLOB="svn-commit*.tmp" />
+
+<MODE NAME="text"		FILE="text.xml"
+				FILE_NAME_GLOB="*.txt" />
+
+<!-- Great. AElfred doesn't support entities in attribute values,
+     but all other XML parsers complain if < appears. -->
+<MODE NAME="xml"		FILE="xml.xml"
+				FILE_NAME_GLOB="*.{xml,xhtml,xsd,qrc,ui}"
+				FIRST_LINE_GLOB="&lt;\?xml*" />
+
+</MODES>
