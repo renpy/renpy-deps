@@ -1,26 +1,30 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv) {
-    char **args = new char *[argc + 3];
+    char jar[4096];
+    char **args = new char *[argc + 2];
 
     args[0] = (char *) "javaw.exe";
-    args[1] = (char *) "-jar";
+    args[1] = (char *) "org.gjt.sp.jedit.jEdit";
+
+    strncpy(jar, "CLASSPATH=", 4096);
+    strncat(jar, argv[0], 4096);
     
-    char *a2 = strdup(argv[0]);
-    int a2len = strlen(a2);
+    int jarlen = strlen(jar);
                 
-    a2[a2len - 3] = 'j';
-    a2[a2len - 2] = 'a';
-    a2[a2len - 1] = 'r';
+    jar[jarlen - 3] = 'j';
+    jar[jarlen - 2] = 'a';
+    jar[jarlen - 1] = 'r';
 
-    args[2] = a2;
-
+    putenv(jar);
+        
     for (int i = 1; i < argc; i++) {
-        args[i + 2] = argv[i];
+        args[i + 1] = argv[i];
     }
-    args[argc + 2] = NULL;
+    args[argc + 1] = NULL;
 
     execvp("javaw.exe", args);
 }
