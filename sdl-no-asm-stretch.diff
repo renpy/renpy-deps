@@ -1,0 +1,11 @@
+--- src/video/SDL_stretch.old	2009-02-28 19:15:32.000000000 +0000
++++ src/video/SDL_stretch.c	2009-02-28 19:16:10.000000000 +0000
+@@ -38,7 +38,7 @@
+ #if ((defined(_MFC_VER) && defined(_M_IX86)/* && !defined(_WIN32_WCE) still needed? */) || \
+      defined(__WATCOMC__) || \
+      (defined(__GNUC__) && defined(__i386__))) && SDL_ASSEMBLY_ROUTINES
+-#define USE_ASM_STRETCH
++#undef USE_ASM_STRETCH
+ #endif
+ 
+ #ifdef USE_ASM_STRETCH

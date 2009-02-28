@@ -1,0 +1,11 @@
+selectedLines = textArea.getSelectedLines();
+for(i = 0; i < selectedLines.length; ++i)
+{
+    offsetBOL = textArea.getLineStartOffset(selectedLines[i]);
+    textArea.setCaretPosition(offsetBOL);
+    textArea.goToStartOfWhiteSpace(false);
+    textArea.goToEndOfWhiteSpace(true);
+    text = textArea.getSelectedText();
+    if(text == null) text = "";
+    textArea.setSelectedText("# " + text);
+}        

@@ -32,9 +32,13 @@ echo
 mkdir -p $BUILD
 mkdir -p $INSTALL
 
-export CFLAGS="$CFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
-export CXXFLAGS="$CXXFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
-export LDFLAGS="-fPIC -O3 -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -ggdb -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -ggdb -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-fPIC -ggdb -L$INSTALL/lib $LDFLAGS"
+
+# export CFLAGS="$CFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-fPIC -O3 -L$INSTALL/lib $LDFLAGS"
 
 
 if [ "x$MSYSTEM" != "x" ]; then
@@ -82,14 +86,15 @@ EOF
 
 if [ \! -e built.sdl ]; then
 
+   try mkdir -p "$INSTALL/include/asm"
+   try touch "$INSTALL/include/asm/page.h"
+
    try tar xzf "$SOURCE/SDL-1.2.11.tar.gz"
    try cd "$BUILD/SDL-1.2.11"
 
    try patch -p0 < $SOURCE/sdl-windows-title.diff
-
-  # for i in $SOURCE/sdl-patches/*.diff; do
-   #    try patch -p1 < $i
-   # done
+   try patch -p0 < $SOURCE/sdl-staticgray.diff
+   try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
 
    if [ "x$NOALTIVEC" != "x" ]; then
        echo Disabling altivec support...
@@ -97,7 +102,7 @@ if [ \! -e built.sdl ]; then
        try cat configure.new > configure
    fi
 
-   try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy
+   try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy --disable-video-fbcon
    
    try make
    try make install
@@ -108,9 +113,18 @@ fi
 if [ "x$NOSMPEG" = "x" -a \! -e built.smpeg ]; then
    try $CP "$SOURCE/smpeg" "$BUILD"
    try cd "$BUILD/smpeg"
+   
+   # try aclocal
+   # try autoconf
+   # try automake --foreign
+   
    try sh ./configure --prefix="$INSTALL" --disable-opengl-player --disable-gtk-player --disable-gtktest --enable-mmx
+
+
    # libtool
    # cp ../SDL-1.2.11/libtool .
+
+
 
    if [ $MAC = no ] ; then
        try make CXXLD="${CXXLD:-g++} -no-undefined"
@@ -222,8 +236,8 @@ if [ \! -e built.ogg ]; then
 fi
 
 if [ \! -e built.vorbis ]; then
-   try tar xvzf "$SOURCE/libvorbis-1.1.2.tar.gz"
-   try cd "$BUILD/libvorbis-1.1.2"
+   try tar xvzf "$SOURCE/libvorbis-1.2.0.tar.gz"
+   try cd "$BUILD/libvorbis-1.2.0"
    try ./configure --prefix="$INSTALL" --with-ogg-libraries="$INSTALL/lib" --with-ogg-includes="$INSTALL/include" --disable-shared
    try make
    try make install
@@ -231,16 +245,16 @@ if [ \! -e built.vorbis ]; then
    touch built.vorbis
 fi
 
-if [ \! -e built.speex ]; then
-   try tar xvzf "$SOURCE/speex-1.0.5.tar.gz"
-   try cd "$BUILD/speex-1.0.5"
-   try ./configure --prefix="$INSTALL" --with-ogg-libraries="$INSTALL/lib" --with-ogg-includes="$INSTALL/include" --disable-shared
-   try patch -p0 < "$SOURCE/speex.patch"
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.speex
-fi
+# if [ \! -e built.speex ]; then
+#    try tar xvzf "$SOURCE/speex-1.0.5.tar.gz"
+#    try cd "$BUILD/speex-1.0.5"
+#    try ./configure --prefix="$INSTALL" --with-ogg-libraries="$INSTALL/lib" --with-ogg-includes="$INSTALL/include" --disable-shared
+#    try patch -p0 < "$SOURCE/speex.patch"
+#    try make
+#    try make install
+#    cd "$BUILD"
+#    touch built.speex
+# fi
 
 if [ \! -e built.sdl_mixer ]; then
    try tar xvzf "$SOURCE/SDL_mixer-1.2.6.tar.gz"
@@ -278,20 +292,25 @@ if [ \! -e built.modplug ]; then
 fi
 
 if [ \! -e built.sdl_sound ]; then
-   try $CP "$SOURCE/SDL_sound-1.0.1" . 
-   try cd "$BUILD/SDL_sound-1.0.1"
+   try $CP "$SOURCE/SDL_sound" . 
+   try cd "$BUILD/SDL_sound"
 
-# cp "$SOURCE/SDL_sound.configure" ./configure
-
-   export CPPFLAGS="-DSDLSOUND_MINGW_FIX -I$INSTALL/include -I$INSTALL/include/libmodplug" 
+   export CPPFLAGS="-I$INSTALL/include -I$INSTALL/include/libmodplug" 
    export LDFLAGS="$LDFLAGS -L$INSTALL/lib"
 
-   MIDI=`python "$SOURCE/midi_flag.py"`
+   # MIDI=`python "$SOURCE/midi_flag.py"`
 
-   try ./configure --prefix="$INSTALL" --disable-mikmod --disable-smpeg --enable-mpglib $MIDI --disable-flac  --disable-shared
+   try touch * 
+   try touch */*
+   try touch */*/*
 
-   # try make clean SED=sed
-   try make SED=sed
+   try ./configure --prefix="$INSTALL" --disable-mikmod --disable-smpeg --enable-mpg123 --disable-midi --disable-flac --disable-shared --enable-vorbis --disable-dependency-tracking
+
+   try touch Makefile
+   try touch */Makefile
+   try touch */*/Makefile
+   
+   try make SED=sed 
    try make install
 
    unset CPPFLAGS

@@ -1,3 +1,8 @@
+buffertabs.location=top
+buffertabs.enable=true
+view.showBufferSwitcher=false
+autoReloadDialog=false
+view.fontsize=14
 fallbackEncodings=UTF-8
 firstTime=false
 restore=false

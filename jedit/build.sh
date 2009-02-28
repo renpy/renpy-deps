@@ -22,8 +22,10 @@ for i in $MODES; do
     cp jedit/modes/$i.xml $I/modes/
 done
 
+cp *.bsh $I/macros
 cp renpy.xml $I/modes/
 cp catalog $I/modes/
 cp renpy.props $I/properties
 cp WhiteSpace.jar $I/jars
+cp BufferTabs.jar $I/jars
 cp jedit.exe $I
