@@ -103,7 +103,7 @@ if [ \! -e built.sdl ]; then
    fi
 
    try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy --disable-video-fbcon
-   
+
    try make
    try make install
    cd "$BUILD"
@@ -291,26 +291,23 @@ if [ \! -e built.modplug ]; then
    touch built.modplug
 fi
 
-if [ \! -e built.sdl_sound ]; then
-   try $CP "$SOURCE/SDL_sound" . 
-   try cd "$BUILD/SDL_sound"
 
-   export CPPFLAGS="-I$INSTALL/include -I$INSTALL/include/libmodplug" 
+
+if [ \! -e built.sdl_sound ]; then
+   try $CP -p "$SOURCE/SDL_sound-1.0.1" . 
+   try cd "$BUILD/SDL_sound-1.0.1"
+
+# cp "$SOURCE/SDL_sound.configure" ./configure
+
+   export CPPFLAGS="-DSDLSOUND_MINGW_FIX -I$INSTALL/include -I$INSTALL/include/libmodplug" 
    export LDFLAGS="$LDFLAGS -L$INSTALL/lib"
 
-   # MIDI=`python "$SOURCE/midi_flag.py"`
+   MIDI=`python "$SOURCE/midi_flag.py"`
 
-   try touch * 
-   try touch */*
-   try touch */*/*
+   try ./configure --prefix="$INSTALL" --disable-mikmod --disable-smpeg --enable-mpglib $MIDI --disable-flac --disable-shared
 
-   try ./configure --prefix="$INSTALL" --disable-mikmod --disable-smpeg --enable-mpg123 --disable-midi --disable-flac --disable-shared --enable-vorbis --disable-dependency-tracking
-
-   try touch Makefile
-   try touch */Makefile
-   try touch */*/Makefile
-   
-   try make SED=sed 
+   # try make clean SED=sed
+   try make SED=sed
    try make install
 
    unset CPPFLAGS
@@ -319,6 +316,7 @@ if [ \! -e built.sdl_sound ]; then
    cd "$BUILD"
    touch built.sdl_sound
 fi
+
 
 # unset MACOSX_DEPLOYMENT_TARGET
 

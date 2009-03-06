@@ -1,0 +1,25 @@
+;; Object SDL_sound-1.0.1/
+;; SEMANTICDB Tags save file
+(semanticdb-project-database-file "SDL_sound-1.0.1/"
+  :tables (list 
+   (semanticdb-table "SDL_sound.c"
+    :major-mode 'c-mode
+    :tags 'nil
+    :file "SDL_sound.c"
+    )
+   (semanticdb-table "extra_rwops.c"
+    :major-mode 'c-mode
+    :tags 'nil
+    :file "extra_rwops.c"
+    )
+   (semanticdb-table "Makefile.am"
+    :major-mode 'makefile-automake-mode
+    :tags '(("lib_LTLIBRARIES" variable (:default-value ("libSDL_sound.la")) nil [1 35]) ("SUBDIRS" variable (:default-value ("decoders" "." "playsound")) nil [36 67]) ("libSDL_soundincludedir" variable (:default-value ("$(includedir)/SDL")) nil [68 111]) ("libSDL_soundinclude_HEADERS" variable (:default-value ("SDL_sound.h")) nil [111 156]) ("libSDL_sound_la_SOURCES" variable (:default-value ("SDL_sound.c" "SDL_sound_internal.h" "alt_audio_convert.c" "alt_audio_convert.h" "audio_convert.c" "extra_rwops.c" "extra_rwops.h")) nil [157 335]) ("TIMIDITY_LIB" variable (:default-value ("decoders/timidity/libtimidity.la")) nil [352 400]) ("TIMIDITY_LIB" variable nil nil [405 420]) ("MPGLIB_LIB" variable (:default-value ("decoders/mpglib/libmpglib.la")) nil [441 483]) ("MPGLIB_LIB" variable nil nil [488 501]) ("libSDL_sound_la_LDFLAGS" variable (:default-value ("-release" "$(LT_RELEASE)" "-version-info" "$(LT_CURRENT):$(LT_REVISION):$(LT_AGE)")) nil [508 618]) ("libSDL_sound_la_LIBADD" variable (:default-value ("decoders/libdecoders.la" "$(TIMIDITY_LIB)" "$(MPGLIB_LIB)")) nil [618 703]) ("EXTRA_DIST" variable (:default-value ("CREDITS" "COPYING" "CHANGELOG" "CWProject.sit" "PBProjects.tar.gz" "borland.zip" "Doxyfile" "VisualC")) nil [704 831]) ("dist-hook" function nil nil [832 1147]))
+    :file "Makefile.am"
+    :pointmax 1147
+    )
+   )
+  :file "semantic.cache"
+  :semantic-tag-version "2.0pre3"
+  :semanticdb-version "2.0pre3"
+  )
