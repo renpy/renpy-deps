@@ -23,6 +23,7 @@ export CC="gcc $arch"
 export LD="gcc $arch"
 export CXX="g++ $arch"
 export CXXLD="g++ $arch"
+export FFMPEGFLAGS=""
 
 mkdir -p newbuild.i386
 try cd newbuild.i386
@@ -37,6 +38,7 @@ export CC="gcc $arch"
 export LD="gcc $arch"
 export CXX="g++ $arch"
 export CXXLD="g++ $arch"
+export FFMPEGFLAGS="--arch=ppc"
 
 mkdir -p newbuild.ppc
 try cd newbuild.ppc
@@ -45,6 +47,8 @@ mkdir -p install/bin
 echo '#!/bin/sh' > install/bin/arch
 echo 'echo ppc' > install/bin/arch
 chmod a+x install/bin/arch
+
+echo "Archflag:" $ARCHFLAG
 
 try "$DIR/build_python.sh"
 try "$DIR/build.sh"

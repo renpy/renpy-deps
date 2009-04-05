@@ -54,10 +54,13 @@ else
     MAC=no
 fi
 
+# try cp "$SOURCE/gcc_version.c" "$BUILD"
+# try gcc -c "$BUILD/gcc_version.c"
+
 if [ \! -e built.zlib ]; then
    try tar xvzf "$SOURCE/zlib-1.2.3.tar.gz"
    try cd "$BUILD/zlib-1.2.3"
-   try ./configure --prefix="$INSTALL"
+   try ./configure --prefix="$INSTALL" --shared
    try make 
    try make install
    cd "$BUILD"
@@ -79,6 +82,8 @@ if [ \! -e built.python ]; then
 
     try tar xzf "$SOURCE/Python-2.5.1.tgz" 
     try cd "$BUILD/Python-2.5.1"
+
+    try patch -p0 < "$SOURCE/python-long-double.diff"
 
     if [ $MAC = "yes" ]; then
         try ./configure --prefix="$INSTALL" --enable-framework="$DYLD_FRAMEWORK_PATH"

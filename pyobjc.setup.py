@@ -96,7 +96,7 @@ if gs_root is None:
         "-DMACOSX",
         "-DAPPLE_RUNTIME",
         "-no-cpp-precomp",
-        "-Wno-long-double",
+        # "-Wno-long-double",
         "-g",
         #"-O0",
 

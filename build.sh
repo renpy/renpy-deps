@@ -32,13 +32,13 @@ echo
 mkdir -p $BUILD
 mkdir -p $INSTALL
 
-export CFLAGS="$CFLAGS -ggdb -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
-export CXXFLAGS="$CXXFLAGS -ggdb -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
-export LDFLAGS="-fPIC -ggdb -L$INSTALL/lib $LDFLAGS"
+# export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-fPIC -ggdb -L$INSTALL/lib $LDFLAGS"
 
-# export CFLAGS="$CFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -O3 -fPIC -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-fPIC -O3 -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 
 if [ "x$MSYSTEM" != "x" ]; then
@@ -81,8 +81,12 @@ export RENPY_DEPS_INSTALL="$INSTALL"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 export DYLIB_LIBRARY_PATH="$DYLIB_LIBRARY_PATH"
 export DYLD_FRAMEWORK_PATH="$DYLD_FRAMEWORK_PATH"
+export FFMPEG_BUILD_PATH="$BUILD/ffmpeg-0.5"
 export PYTHONPATH="$INSTALL/python"
 EOF
+
+# try cp "$SOURCE/gcc_version.c" "$BUILD"
+# try gcc -c "$BUILD/gcc_version.c"
 
 if [ \! -e built.sdl ]; then
 
@@ -110,34 +114,36 @@ if [ \! -e built.sdl ]; then
    touch built.sdl
 fi
 
-if [ "x$NOSMPEG" = "x" -a \! -e built.smpeg ]; then
-   try $CP "$SOURCE/smpeg" "$BUILD"
-   try cd "$BUILD/smpeg"
+# if [ "x$NOSMPEG" = "x" -a \! -e built.smpeg ]; then
+#    try $CP "$SOURCE/smpeg" "$BUILD"
+#    try cd "$BUILD/smpeg"
    
-   # try aclocal
-   # try autoconf
-   # try automake --foreign
+#    # try aclocal
+#    # try autoconf
+#    # try automake --foreign
    
-   try sh ./configure --prefix="$INSTALL" --disable-opengl-player --disable-gtk-player --disable-gtktest --enable-mmx
+#    try sh ./configure --prefix="$INSTALL" --disable-opengl-player --disable-gtk-player --disable-gtktest --enable-mmx
 
 
-   # libtool
-   # cp ../SDL-1.2.11/libtool .
+#    # libtool
+#    # cp ../SDL-1.2.11/libtool .
 
 
 
-   if [ $MAC = no ] ; then
-       try make CXXLD="${CXXLD:-g++} -no-undefined"
-   else
-       try make CXXLD="${CXXLD:-g++}"
-   fi
+#    if [ $MAC = no ] ; then
+#        try make CXXLD="${CXXLD:-g++} -no-undefined"
+#    else
+#        try make CXXLD="${CXXLD:-g++}"
+#    fi
 
-   try make install
-   cd "$BUILD"
+#    try make install
+#    cd "$BUILD"
 
-   touch built.smpeg
-fi
+#    touch built.smpeg
+# fi
 
+# This will be built shared on Linux and Mac by build_python, and 
+# static on windows here.
 if [ \! -e built.zlib ]; then
    try tar xvzf "$SOURCE/zlib-1.2.3.tar.gz"
    try cd "$BUILD/zlib-1.2.3"
@@ -225,25 +231,25 @@ if [ \! -e built.sdl_image ]; then
    touch built.sdl_image
 fi
 
-if [ \! -e built.ogg ]; then
-   try tar xvzf "$SOURCE/libogg-1.1.3.tar.gz"
-   try cd "$BUILD/libogg-1.1.3"
-   try ./configure --prefix="$INSTALL" --disable-shared
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.ogg
-fi
+# if [ \! -e built.ogg ]; then
+#    try tar xvzf "$SOURCE/libogg-1.1.3.tar.gz"
+#    try cd "$BUILD/libogg-1.1.3"
+#    try ./configure --prefix="$INSTALL" --disable-shared
+#    try make
+#    try make install
+#    cd "$BUILD"
+#    touch built.ogg
+# fi
 
-if [ \! -e built.vorbis ]; then
-   try tar xvzf "$SOURCE/libvorbis-1.2.0.tar.gz"
-   try cd "$BUILD/libvorbis-1.2.0"
-   try ./configure --prefix="$INSTALL" --with-ogg-libraries="$INSTALL/lib" --with-ogg-includes="$INSTALL/include" --disable-shared
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.vorbis
-fi
+# if [ \! -e built.vorbis ]; then
+#    try tar xvzf "$SOURCE/libvorbis-1.2.0.tar.gz"
+#    try cd "$BUILD/libvorbis-1.2.0"
+#    try ./configure --prefix="$INSTALL" --with-ogg-libraries="$INSTALL/lib" --with-ogg-includes="$INSTALL/include" --disable-shared
+#    try make
+#    try make install
+#    cd "$BUILD"
+#    touch built.vorbis
+# fi
 
 # if [ \! -e built.speex ]; then
 #    try tar xvzf "$SOURCE/speex-1.0.5.tar.gz"
@@ -256,16 +262,16 @@ fi
 #    touch built.speex
 # fi
 
-if [ \! -e built.sdl_mixer ]; then
-   try tar xvzf "$SOURCE/SDL_mixer-1.2.6.tar.gz"
-   try patch -p0 < "$SOURCE/SDL_mixer.patch"
-   try cd "$BUILD/SDL_mixer-1.2.6"
-   try ./configure --prefix="$INSTALL" --disable-music-midi
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.sdl_mixer
-fi
+# if [ \! -e built.sdl_mixer ]; then
+#    try tar xvzf "$SOURCE/SDL_mixer-1.2.6.tar.gz"
+#    try patch -p0 < "$SOURCE/SDL_mixer.patch"
+#    try cd "$BUILD/SDL_mixer-1.2.6"
+#    try ./configure --prefix="$INSTALL" --disable-music-midi
+#    try make
+#    try make install
+#    cd "$BUILD"
+#    touch built.sdl_mixer
+# fi
 
 
 # Flac
@@ -281,41 +287,41 @@ fi
 # fi
 
 
-if [ \! -e built.modplug ]; then
-   try tar xvzf "$SOURCE/libmodplug-0.7.tar.gz"
-   try cd "$BUILD/libmodplug-0.7"
-   try ./configure --prefix="$INSTALL" --disable-shared
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.modplug
-fi
+# if [ \! -e built.modplug ]; then
+#    try tar xvzf "$SOURCE/libmodplug-0.7.tar.gz"
+#    try cd "$BUILD/libmodplug-0.7"
+#    try ./configure --prefix="$INSTALL" --disable-shared
+#    try make
+#    try make install
+#    cd "$BUILD"
+#    touch built.modplug
+# fi
 
 
 
-if [ \! -e built.sdl_sound ]; then
-   try $CP -p "$SOURCE/SDL_sound-1.0.1" . 
-   try cd "$BUILD/SDL_sound-1.0.1"
+# if [ \! -e built.sdl_sound ]; then
+#    try $CP -p "$SOURCE/SDL_sound-1.0.1" . 
+#    try cd "$BUILD/SDL_sound-1.0.1"
 
-# cp "$SOURCE/SDL_sound.configure" ./configure
+# # cp "$SOURCE/SDL_sound.configure" ./configure
 
-   export CPPFLAGS="-DSDLSOUND_MINGW_FIX -I$INSTALL/include -I$INSTALL/include/libmodplug" 
-   export LDFLAGS="$LDFLAGS -L$INSTALL/lib"
+#    export CPPFLAGS="-DSDLSOUND_MINGW_FIX -I$INSTALL/include -I$INSTALL/include/libmodplug" 
+#    export LDFLAGS="$LDFLAGS -L$INSTALL/lib"
 
-   MIDI=`python "$SOURCE/midi_flag.py"`
+#    MIDI=`python "$SOURCE/midi_flag.py"`
 
-   try ./configure --prefix="$INSTALL" --disable-mikmod --disable-smpeg --enable-mpglib $MIDI --disable-flac --disable-shared
+#    try ./configure --prefix="$INSTALL" --disable-mikmod --disable-smpeg --enable-mpglib $MIDI --disable-flac --disable-shared
 
-   # try make clean SED=sed
-   try make SED=sed
-   try make install
+#    # try make clean SED=sed
+#    try make SED=sed
+#    try make install
 
-   unset CPPFLAGS
-   LDFLAGS="$OLD_LDFLAGS"
+#    unset CPPFLAGS
+#    LDFLAGS="$OLD_LDFLAGS"
 
-   cd "$BUILD"
-   touch built.sdl_sound
-fi
+#    cd "$BUILD"
+#    touch built.sdl_sound
+# fi
 
 
 # unset MACOSX_DEPLOYMENT_TARGET
@@ -323,9 +329,8 @@ fi
 if [ \! -e built.pygame ]; then
     
    SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
-   SMPEG=`smpeg-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
 
-   try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
+   try tar xvf "$SOURCE/pygame-1.8.1release.tar.gz"
    try cd "$BUILD/pygame-1.8.1release"
 
    # try cp "$SOURCE/movie.c" src/
@@ -338,13 +343,9 @@ if [ \! -e built.pygame ]; then
    try cp "$SOURCE/pygame_init.py" lib/__init__.py
    # try cp "$SOURCE/config"*.py .
 
-   if [ "x$NOSMPEG" = "x" ] ; then
-       try sed -e "s|@SDL@|$SDL|g" -e "s|@SMPEG@|$SMPEG|g" -e "s|@INSTALL@|$INSTALL|g"  "$SOURCE/Setup" > Setup
-   else
-       try sed -e "s|@SDL@|$SDL|g" -e "s|@SMPEG@|$SMPEG|g" "$SOURCE/Setup.nosmpeg" > Setup
-   fi
 
-
+   try python "$SOURCE/edit.py" "$SOURCE/Setup" Setup @SDL@ "$SDL" @INSTALL@ "$INSTALL"
+   
    #   export SDL_CONFIG="$INSTALL/bin/sdl-config"
    # export SMPEG_CONFIG="$INSTALL/bin/smpeg-config"
 
@@ -393,6 +394,77 @@ fi
 #    touch built.ffmpeg
 # fi
 
+
+if [ \! -e built.ffmpeg ]; then
+   try tar xjf "$SOURCE/ffmpeg-0.5.tar.bz2" 
+   try cd "$BUILD/ffmpeg-0.5"
+
+   export CFLAGS="$CFLAGS -fno-common"
+   export CXXFLAGS="$CXXFLAGS -fno-common"
+   MEM_ALIGN_HACK="--enable-memalign-hack"
+
+   try ./configure --prefix="$INSTALL" \
+       --cc="${CC:-gcc}" \
+       $FFMPEGFLAGS \
+       $MEM_ALIGN_HACK \
+       --enable-shared \
+       --disable-encoders \
+       --disable-muxers \
+       --disable-bzlib \
+       --disable-demuxers \
+       --enable-demuxer=au \
+       --enable-demuxer=avi \
+       --enable-demuxer=flac \
+       --enable-demuxer=m4v \
+       --enable-demuxer=matroska \
+       --enable-demuxer=mov \
+       --enable-demuxer=mp3 \
+       --enable-demuxer=mpegps \
+       --enable-demuxer=mpegts \
+       --enable-demuxer=mpegtsraw \
+       --enable-demuxer=mpegvideo \
+       --enable-demuxer=ogg \
+       --enable-demuxer=wav \
+       --disable-decoders \
+       --enable-decoder=flac \
+       --enable-decoder=mp2 \
+       --enable-decoder=mp3 \
+       --enable-decoder=mp3on4 \
+       --enable-decoder=mpeg1video \
+       --enable-decoder=mpeg2video \
+       --enable-decoder=mpegvideo \
+       --enable-decoder=msmpeg4v1 \
+       --enable-decoder=msmpeg4v2 \
+       --enable-decoder=msmpeg4v3 \
+       --enable-decoder=mpeg4 \
+       --enable-decoder=pcm_dvd \
+       --enable-decoder=pcm_s16be \
+       --enable-decoder=pcm_s16le \
+       --enable-decoder=pcm_s8 \
+       --enable-decoder=pcm_u16be \
+       --enable-decoder=pcm_u16le \
+       --enable-decoder=pcm_u8 \
+       --enable-decoder=theora \
+       --enable-decoder=vorbis \
+       --enable-decoder=vp3 \
+       --disable-parsers \
+       --enable-parser=mpegaudio \
+       --enable-parser=mpegvideo \
+       --enable-parser=mpeg4video \
+       --enable-parser=vp3 \
+       --disable-protocols \
+       --enable-protocol=file \
+       --disable-devices \
+       --disable-vdpau \
+       --disable-vhook \
+       --disable-bsfs 
+       
+
+   try make
+   try make install
+   cd "$BUILD"
+   touch built.ffmpeg
+fi
 
 # if [ "x$MSYSTEM" != "x" ]; then
 #     echo

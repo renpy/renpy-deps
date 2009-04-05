@@ -7,11 +7,13 @@
 
 
 #--StartConfig
-SDL = @SDL@
-FONT = -lSDL_ttf
-IMAGE = -lSDL_image
-MIXER = -lSDL_mixer
-SMPEG = @SMPEG@
+SDL = -I@INSTALL@/include -I@INSTALL@/include/SDL -L@INSTALL@/lib @SDL@
+FONT = -I@INSTALL@/include -lSDL_ttf
+IMAGE = -I@INSTALL@/include -lSDL_image
+
+# MIXER = -lSDL_mixer
+# SMPEG = @SMPEG@
+
 PNG = -I@INSTALL@/include/libpng -lpng -lz
 JPEG = -I@INSTALL@/include -ljpeg
 #--EndConfig
@@ -25,11 +27,11 @@ DEBUG =
 
 imageext src/imageext.c $(SDL) $(IMAGE) $(PNG) $(JPEG) $(DEBUG)
 font src/font.c $(SDL) $(FONT) $(DEBUG)
-mixer src/mixer.c $(SDL) $(MIXER) $(DEBUG)
-mixer_music src/music.c $(SDL) $(MIXER) $(DEBUG)
-_numericsurfarray src/_numericsurfarray.c $(SDL) $(DEBUG)
-_numericsndarray src/_numericsndarray.c $(SDL) $(MIXER) $(DEBUG)
-movie src/movie.c $(SDL) $(SMPEG) $(DEBUG)
+# mixer src/mixer.c $(SDL) $(MIXER) $(DEBUG)
+# mixer_music src/music.c $(SDL) $(MIXER) $(DEBUG)
+# _numericsurfarray src/_numericsurfarray.c $(SDL) $(DEBUG)
+# _numericsndarray src/_numericsndarray.c $(SDL) $(MIXER) $(DEBUG)
+# movie src/movie.c $(SDL) $(SMPEG) $(DEBUG)
 # scrap src/scrap.c $(SDL) $(SCRAP) $(DEBUG)
 
 #experimental new movie movie. requires libavcodec and libavformat.
