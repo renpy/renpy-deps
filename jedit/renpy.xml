@@ -140,6 +140,7 @@
 			<KEYWORD1>sustain</KEYWORD1>
 			<KEYWORD1>nvl</KEYWORD1>
 			<KEYWORD1>clear</KEYWORD1>
+                        <KEYWORD1>window</KEYWORD1>
 
 			
 			<!-- builtins -->
