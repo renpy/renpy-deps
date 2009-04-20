@@ -165,7 +165,7 @@ fi
 if [ \! -e built.png ]; then
    try tar xvzf "$SOURCE/libpng-1.2.8-config.tar.gz"
    try cd "$BUILD/libpng-1.2.8-config"
-   try ./configure --prefix="$INSTALL" --enable-static --disable-shared
+   try ./configure --prefix="$INSTALL" --enable-static -disable-shared
    try make
    try make install
    cd "$BUILD"
@@ -173,9 +173,9 @@ if [ \! -e built.png ]; then
 fi
 
 if [ \! -e built.sdl_image ]; then
-   try tar xvzf "$SOURCE/SDL_image-1.2.5.tar.gz"
-   try cd "$BUILD/SDL_image-1.2.5"
-   try ./configure --prefix="$INSTALL" --disable-tif --disable-jpg-shared --disable-png-shared
+   try tar xvzf "$SOURCE/SDL_image-1.2.7.tar.gz"
+   try cd "$BUILD/SDL_image-1.2.7"
+   try ./configure --prefix="$INSTALL" --disable-tif --enable-static --disable-shared --disable-jpg-shared --disable-png-shared
    try make
    try make install
    cd "$BUILD"
@@ -192,6 +192,8 @@ if [ \! -e built.pygame ]; then
 
    # try cp "$SOURCE/movie.c" src/
    try cp "$SOURCE/rwobject.c" src/
+   try cp "$SOURCE/surflock.c" src/
+   # try cp "$SOURCE/transform.c" src/
    # try cp "$SOURCE/sysfont.py" lib/
    try cp "$SOURCE/pygame-setup.py" setup.py
    # try cp "$SOURCE/alphablit.c" src/alphablit.c
