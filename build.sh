@@ -32,10 +32,17 @@ echo
 mkdir -p $BUILD
 mkdir -p $INSTALL
 
+# Unix debug
 # export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
 # export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-fPIC -ggdb -L$INSTALL/lib $LDFLAGS"
+# export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
 
+# Windows debug
+# export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
+
+# Production
 export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
@@ -165,7 +172,7 @@ fi
 if [ \! -e built.png ]; then
    try tar xvzf "$SOURCE/libpng-1.2.8-config.tar.gz"
    try cd "$BUILD/libpng-1.2.8-config"
-   try ./configure --prefix="$INSTALL" --enable-static -disable-shared
+   try ./configure --prefix="$INSTALL" --enable-static --disable-shared
    try make
    try make install
    cd "$BUILD"
@@ -173,9 +180,10 @@ if [ \! -e built.png ]; then
 fi
 
 if [ \! -e built.sdl_image ]; then
+   export LIBS="-lz"
    try tar xvzf "$SOURCE/SDL_image-1.2.7.tar.gz"
    try cd "$BUILD/SDL_image-1.2.7"
-   try ./configure --prefix="$INSTALL" --disable-tif --enable-static --disable-shared --disable-jpg-shared --disable-png-shared
+   try ./configure --prefix="$INSTALL" --disable-tif --enable-static --disable-shared --disable-jpg-shared --disable-png-shared --enable-png --enable-jpg --enable-gif
    try make
    try make install
    cd "$BUILD"
@@ -229,10 +237,12 @@ if [ \! -e built.pygame ]; then
 fi
 
 if [ \! -e built.ffmpeg ]; then
+# if true; then
    try tar xjf "$SOURCE/ffmpeg-0.5.tar.bz2" 
    try cd "$BUILD/ffmpeg-0.5"
 
    try patch -p0 < "$SOURCE/ffmpeg-ogg-size.patch"
+   try patch -p0 < "$SOURCE/ffmpeg-av_cold.patch"
 
    export CFLAGS="$CFLAGS -fno-common"
    export CXXFLAGS="$CXXFLAGS -fno-common"
