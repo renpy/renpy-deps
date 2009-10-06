@@ -33,9 +33,9 @@ mkdir -p $BUILD
 mkdir -p $INSTALL
 
 # Unix debug
-# export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
 
 # Windows debug
 # export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
@@ -43,9 +43,9 @@ mkdir -p $INSTALL
 # export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
 
 # Production
-export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
+# export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 
 if [ "x$MSYSTEM" != "x" ]; then
@@ -99,14 +99,15 @@ if [ \! -e built.sdl ]; then
    try mkdir -p "$INSTALL/include/asm"
    try touch "$INSTALL/include/asm/page.h"
 
-   try tar xzf "$SOURCE/SDL-1.2.11.tar.gz"
-   try cd "$BUILD/SDL-1.2.11"
+   try tar xzf "$SOURCE/SDL-1.2.13.tar.gz"
+   try cd "$BUILD/SDL-1.2.13"
 
-   try patch -p0 < $SOURCE/sdl-windows-title.diff
+   # try patch -p0 < $SOURCE/sdl-windows-title.diff
    try patch -p0 < $SOURCE/sdl-staticgray.diff
-   try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
+   try patch -p0 < $SOURCE/sdl-audio-order.diff
+   # try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
 
-   try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy --disable-video-fbcon
+   try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy --disable-video-fbcon --disable-nas
 
    try make
    try make install
@@ -302,8 +303,8 @@ if [ \! -e built.ffmpeg ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-vhook \
-       --disable-bsfs 
-       
+       --disable-bsfs
+   # --disable-stripping
 
    try make
    try make install
