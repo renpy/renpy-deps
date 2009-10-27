@@ -33,9 +33,9 @@ mkdir -p $BUILD
 mkdir -p $INSTALL
 
 # Unix debug
-export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
+# export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
 
 # Windows debug
 # export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
@@ -43,9 +43,9 @@ export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
 # export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
 
 # Production
-# export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 
 if [ "x$MSYSTEM" != "x" ]; then
@@ -314,6 +314,19 @@ if [ \! -e built.ffmpeg ]; then
 
    cd "$BUILD"
    touch built.ffmpeg
+fi
+
+if [ \! -e built.fribidi ]; then
+
+   export CFLAGS="$CFLAGS -DFRIBIDI_CHUNK_SIZE=4080"
+   
+   try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
+   try cd "$BUILD/fribidi-0.19.2"
+   try ./configure --prefix="$INSTALL"
+   try make
+   try make install
+   cd "$BUILD"
+   touch built.fribidi
 fi
 
 echo
