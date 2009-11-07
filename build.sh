@@ -107,7 +107,7 @@ if [ \! -e built.sdl ]; then
    try patch -p0 < $SOURCE/sdl-audio-order.diff
    # try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
 
-   try ./configure --prefix="$INSTALL"  --disable-debug --disable-video-dummy --disable-video-fbcon --disable-nas
+   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-nas $SDL_ASM
 
    try make
    try make install
@@ -130,10 +130,10 @@ fi
 
 
 if [ \! -e built.freetype ]; then
-   try tar xjf "$SOURCE/freetype-2.3.7.tar.bz2"
-   try cd "$BUILD/freetype-2.3.7"
+   try tar xzf "$SOURCE/freetype-2.3.11.tar.gz"
+   try cd "$BUILD/freetype-2.3.11"
 
-   try cp "$SOURCE/ftmodules.cfg" ./modules.cfg
+   # try cp "$SOURCE/ftmodules.cfg" ./modules.cfg
 
    try ./configure --prefix="$INSTALL"
 

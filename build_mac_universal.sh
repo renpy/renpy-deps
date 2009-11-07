@@ -39,6 +39,7 @@ export LD="gcc $arch"
 export CXX="g++ $arch"
 export CXXLD="g++ $arch"
 export FFMPEGFLAGS="--arch=ppc"
+export SDL_ASM="--disable-nasm"
 
 mkdir -p newbuild.ppc
 try cd newbuild.ppc
