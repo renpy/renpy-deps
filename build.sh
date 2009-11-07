@@ -323,6 +323,7 @@ if [ \! -e built.fribidi ]; then
    try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
    try cd "$BUILD/fribidi-0.19.2"
    try ./configure --prefix="$INSTALL"
+   patch -p0 < "$SOURCE/fribidi-windows.diff"
    try make
    try make install
    cd "$BUILD"

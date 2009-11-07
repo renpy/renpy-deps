@@ -1,0 +1,28 @@
+--- lib/Makefile.old	2009-11-07 02:21:43 -0500
++++ lib/Makefile	2009-11-07 02:21:48 -0500
+@@ -222,7 +222,7 @@
+ lib_LTLIBRARIES = libfribidi.la
+ AM_CPPFLAGS = $(MISC_CFLAGS) $(am__append_2)
+ libfribidi_la_LDFLAGS = -no-undefined -version-info $(LT_VERSION_INFO) \
+-	-export-symbols-regex "^fribidi_.*" $(am__append_1)
++	-export-symbols-regex "^fribidi_.*" # $(am__append_1)
+ libfribidi_la_LIBADD = $(MISC_LIBS) $(am__append_3)
+ libfribidi_la_DEPENDENCIES = $(am__append_4)
+ libfribidi_la_headers = \
+--- bin/fribidi-benchmark.c.old	2009-11-07 02:24:48 -0500
++++ bin/fribidi-benchmark.c	2009-11-07 02:31:44 -0500
+@@ -123,12 +123,12 @@
+   void
+ )
+ {
+-  struct tms tb;
+ #if HAVE_SYS_TIMES_H+0
++  struct tms tb;
+   times (&tb);
+   return 0.01 * tb.tms_utime;
+ #else
+-#warning Please fill in here to use other functions for determining time.
++  return 0.00;
+ #endif
+ }
+ 
