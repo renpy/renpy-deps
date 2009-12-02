@@ -141,7 +141,9 @@
 			<KEYWORD1>nvl</KEYWORD1>
 			<KEYWORD1>clear</KEYWORD1>
                         <KEYWORD1>window</KEYWORD1>
-
+                        <KEYWORD1>pause</KEYWORD1>
+                        <KEYWORD1>transform</KEYWORD1>
+                        <KEYWORD1>define</KEYWORD1>
 			
 			<!-- builtins -->
 			<KEYWORD2>abs</KEYWORD2>

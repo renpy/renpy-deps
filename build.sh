@@ -196,7 +196,7 @@ if [ \! -e built.pygame ]; then
     
    SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
 
-   try tar xvf "$SOURCE/pygame-1.8.1release.tar.gz"
+   try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
    try cd "$BUILD/pygame-1.8.1release"
 
    # try cp "$SOURCE/movie.c" src/
