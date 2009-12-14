@@ -102,7 +102,7 @@ if [ \! -e built.sdl ]; then
    try tar xzf "$SOURCE/SDL-1.2.13.tar.gz"
    try cd "$BUILD/SDL-1.2.13"
 
-   # try patch -p0 < $SOURCE/sdl-windows-title.diff
+   try patch -p0 < $SOURCE/sdl-windows-title.diff
    try patch -p0 < $SOURCE/sdl-staticgray.diff
    try patch -p0 < $SOURCE/sdl-audio-order.diff
    # try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
@@ -323,7 +323,9 @@ if [ \! -e built.fribidi ]; then
    try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
    try cd "$BUILD/fribidi-0.19.2"
    try ./configure --prefix="$INSTALL"
-   patch -p0 < "$SOURCE/fribidi-windows.diff"
+   if [ "x$MSYSTEM" != "x" ]; then
+       try patch -p0 < "$SOURCE/fribidi-windows.diff"
+   fi
    try make
    try make install
    cd "$BUILD"
