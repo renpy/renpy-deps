@@ -47,7 +47,6 @@ export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
-
 if [ "x$MSYSTEM" != "x" ]; then
   export CFLAGS="$CFLAGS -fno-strict-aliasing"
   export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing"
@@ -333,7 +332,21 @@ if [ \! -e built.fribidi ]; then
 fi
 
 # argparse is so tiny.
-cp "$SOURCE/argparse.py" "$PYTHONPATH"
+cp "$SOURCE/argparse.py" "$INSTALL/python"
+
+if [ \! -e built.glew ]; then
+
+   try tar xzf "$SOURCE/glew-1.5.4.tgz"
+   try cd "$BUILD/glew-1.5.4"
+
+   try make OPT="$CFLAGS $LDFLAGS"
+   try make install GLEW_DEST=$INSTALL
+   
+   cd "$BUILD"
+   touch built.glew
+fi
+
+
 
 echo
 cat ../env.sh
