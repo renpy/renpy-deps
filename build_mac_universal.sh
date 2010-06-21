@@ -12,9 +12,15 @@ DIR=`dirname $0`
 
 export RENPY_FRAMEWORK="/Developer/SDKs/MacOSX10.4u.sdk"
 export MACOSX_DEPLOYMENT_TARGET=10.4
+export SDKROOT="$RENPY_FRAMEWORK"
+export SDK_DIR="$RENPY_FRAMEWORK"
+export SDK_NAME=macosx10.4
 export CFLAGS="-isysroot $RENPY_FRAMEWORK -mmacosx-version-min=10.4"
+export EXTRA_CFLAGS="-isysroot $RENPY_FRAMEWORK -mmacosx-version-min=10.4"
 export CXXFLAGS="-isysroot $RENPY_FRAMEWORK -mmacosx-version-min=10.4"
 export LDFLAGS="-Wl,-syslibroot,$RENPY_FRAMEWORK -mmacosx-version-min=10.4"
+# export LDFLAGS="-isysroot $RENPY_FRAMEWORK -mmacosx-version-min=10.4"
+
 
 # Build the i386 version.
 arch="-arch i386" 
@@ -33,6 +39,7 @@ cd ..
 
 # Build the ppc version.
 arch="-arch ppc"
+export MACOSX_DEFAULT_ARCH="ppc"
 
 export CC="gcc $arch"
 export LD="gcc $arch"

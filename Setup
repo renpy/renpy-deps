@@ -6,19 +6,26 @@
 #any unavailable optional modules in the first optional section.
 
 
+#--StartConfig
 SDL = -I@INSTALL@/include -I@INSTALL@/include/SDL -L@INSTALL@/lib @SDL@
 FONT = -I@INSTALL@/include -lSDL_ttf
 IMAGE = -I@INSTALL@/include -lSDL_image
+
+# MIXER = -lSDL_mixer
+# SMPEG = @SMPEG@
+
 PNG = -I@INSTALL@/include/libpng -lpng -lz
 JPEG = -I@INSTALL@/include -ljpeg
+#--EndConfig
 
+#DEBUG = -C-W -C-Wall
 DEBUG = 
 
 #the following modules are optional. you will want to compile
 #everything you can, but you can ignore ones you don't have
 #dependencies for, just comment them out
 
-imageext src/imageext.c $(SDL) $(IMAGE) $(PNG) $(JPEG) $(DEBUG)
+imageext src/imageext.c $(IMAGE) $(SDL) $(PNG) $(JPEG) $(DEBUG) 
 font src/font.c $(SDL) $(FONT) $(DEBUG)
 # mixer src/mixer.c $(SDL) $(MIXER) $(DEBUG)
 # mixer_music src/music.c $(SDL) $(MIXER) $(DEBUG)
@@ -26,13 +33,10 @@ font src/font.c $(SDL) $(FONT) $(DEBUG)
 # _numericsndarray src/_numericsndarray.c $(SDL) $(MIXER) $(DEBUG)
 # movie src/movie.c $(SDL) $(SMPEG) $(DEBUG)
 # scrap src/scrap.c $(SDL) $(SCRAP) $(DEBUG)
-# _camera src/_camera.c src/camera_v4l2.c src/camera_v4l.c $(SDL) $(DEBUG)
-#pypm src/pypm.c $(SDL) $(PORTMIDI) $(PORTTIME) $(DEBUG)
 
-GFX = src/SDL_gfx/SDL_gfxPrimitives.c 
-#GFX = src/SDL_gfx/SDL_gfxBlitFunc.c src/SDL_gfx/SDL_gfxPrimitives.c 
-gfxdraw src/gfxdraw.c $(SDL) $(GFX) $(DEBUG)
-
+#experimental new movie movie. requires libavcodec and libavformat.
+#add any necessary compile flags to this line and uncomment.
+#movieext src/movie.c  src/ffmovie.c $(SDL) -lavcodec -lavformat
 
 
 #these modules are required for pygame to run. they only require
@@ -56,9 +60,8 @@ joystick src/joystick.c $(SDL) $(DEBUG)
 draw src/draw.c $(SDL) $(DEBUG)
 image src/image.c $(SDL) $(DEBUG)
 overlay src/overlay.c $(SDL) $(DEBUG)
-transform src/transform.c src/rotozoom.c src/scale2x.c src/scale_mmx.c $(SDL) $(DEBUG) -D_NO_MMX_FOR_X86_64
+transform src/transform.c src/rotozoom.c src/scale2x.c $(SDL) $(DEBUG)
 mask src/mask.c src/bitmask.c $(SDL) $(DEBUG)
 bufferproxy src/bufferproxy.c $(SDL) $(DEBUG)
 pixelarray src/pixelarray.c $(SDL) $(DEBUG)
-_arraysurfarray src/_arraysurfarray.c $(SDL) $(DEBUG)
 

@@ -9,6 +9,11 @@ export LD_LIBRARY_PATH="$INSTALL/lib:/usr/local/lib"
 export DYLIB_LIBRARY_PATH="$INSTALL/lib"
 export DYLD_FRAMEWORK_PATH="$INSTALL/frameworks"
 
+export CC=${CC:=gcc}
+export CXX=${CXX:=g++}
+export LD=${LD:=gcc}
+export CXXLD=${CXXLD:=g++}
+
 if python -c 'import sys; print sys.version; sys.exit(0)'; then
     echo "Python works."
 else
@@ -194,27 +199,27 @@ if [ \! -e built.pygame ]; then
     
    SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
 
-   try tar xvzf "$SOURCE/pygame-1.9.1release.tar.gz"
-   try cd "$BUILD/pygame-1.9.1release"
+   try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
+   try cd "$BUILD/pygame-1.8.1release"
 
    try patch -p0 src/rwobject.c "$SOURCE/pygame-rwobject.diff"
    
-   # try cp "$SOURCE/movie.c" src/
-   # try cp "$SOURCE/rwobject.c" src/
-   # try cp "$SOURCE/surflock.c" src/
+   try cp "$SOURCE/rwobject.c" src/
+   try cp "$SOURCE/surflock.c" src/
    ## # try cp "$SOURCE/transform.c" src/
    ## # try cp "$SOURCE/sysfont.py" lib/
-   # try cp "$SOURCE/pygame-setup.py" setup.py
+   try cp "$SOURCE/pygame-setup.py" setup.py
    ## try cp "$SOURCE/alphablit.c" src/alphablit.c
    ## # try cp "$SOURCE/display.c" src/display.c
-   # try cp "$SOURCE/macosx.py" lib/macosx.py
-   # try cp "$SOURCE/pygame_init.py" lib/__init__.py
+   try cp "$SOURCE/macosx.py" lib/macosx.py
+   try cp "$SOURCE/pygame_init.py" lib/__init__.py
    ## # try cp "$SOURCE/config"*.py .
+
    # try grep -v "install_parachute ()" src/base.c > src/base.c.new
    # try mv src/base.c.new src/base.c
-
+    
    try python "$SOURCE/edit.py" "$SOURCE/Setup" Setup @SDL@ "$SDL" @INSTALL@ "$INSTALL"
-   
+
    if [ "x$MSYSTEM" != "x" ]; then
        try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
        try cp "$INSTALL/bin/"*.dll "$INSTALL/python/pygame"
@@ -339,8 +344,7 @@ if [ \! -e built.glew ]; then
    try tar xzf "$SOURCE/glew-1.5.4.tgz"
    try cd "$BUILD/glew-1.5.4"
 
-   try make OPT="$CFLAGS $LDFLAGS"
-   try make install GLEW_DEST=$INSTALL
+   try make install OPT="$CFLAGS $LDFLAGS" CC="$CC" LD="$LD" GLEW_DEST=$INSTALL
    
    cd "$BUILD"
    touch built.glew
