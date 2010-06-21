@@ -191,28 +191,28 @@ if [ \! -e built.sdl_image ]; then
    touch built.sdl_image
 fi
 
-
 if [ \! -e built.pygame ]; then
     
    SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
 
-   try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
-   try cd "$BUILD/pygame-1.8.1release"
+   try tar xvzf "$SOURCE/pygame-1.9.1release.tar.gz"
+   try cd "$BUILD/pygame-1.9.1release"
 
+   try patch -p0 src/rwobject.c "$SOURCE/pygame-rwobject.diff"
+   
    # try cp "$SOURCE/movie.c" src/
-   try cp "$SOURCE/rwobject.c" src/
-   try cp "$SOURCE/surflock.c" src/
-   # try cp "$SOURCE/transform.c" src/
-   # try cp "$SOURCE/sysfont.py" lib/
-   try cp "$SOURCE/pygame-setup.py" setup.py
-   # try cp "$SOURCE/alphablit.c" src/alphablit.c
-   # try cp "$SOURCE/display.c" src/display.c
-   try cp "$SOURCE/macosx.py" lib/macosx.py
-   try cp "$SOURCE/pygame_init.py" lib/__init__.py
-   # try cp "$SOURCE/config"*.py .
-
-   try grep -v "install_parachute ()" src/base.c > src/base.c.new
-   try mv src/base.c.new src/base.c
+   # try cp "$SOURCE/rwobject.c" src/
+   # try cp "$SOURCE/surflock.c" src/
+   ## # try cp "$SOURCE/transform.c" src/
+   ## # try cp "$SOURCE/sysfont.py" lib/
+   # try cp "$SOURCE/pygame-setup.py" setup.py
+   ## try cp "$SOURCE/alphablit.c" src/alphablit.c
+   ## # try cp "$SOURCE/display.c" src/display.c
+   # try cp "$SOURCE/macosx.py" lib/macosx.py
+   # try cp "$SOURCE/pygame_init.py" lib/__init__.py
+   ## # try cp "$SOURCE/config"*.py .
+   # try grep -v "install_parachute ()" src/base.c > src/base.c.new
+   # try mv src/base.c.new src/base.c
 
    try python "$SOURCE/edit.py" "$SOURCE/Setup" Setup @SDL@ "$SDL" @INSTALL@ "$INSTALL"
    
@@ -239,14 +239,14 @@ fi
 
 if [ \! -e built.ffmpeg ]; then
 # if true; then
-   try tar xjf "$SOURCE/ffmpeg-0.5.tar.bz2" 
-   try cd "$BUILD/ffmpeg-0.5"
+   try tar xzf "$SOURCE/ffmpeg-0.6.tar.gz" 
+   try cd "$BUILD/ffmpeg-0.6"
 
-   try patch -p0 < "$SOURCE/ffmpeg-ogg-size.patch"
-   try patch -p0 < "$SOURCE/ffmpeg-av_cold.patch"
+   # try patch -p0 < "$SOURCE/ffmpeg-ogg-size.patch"
+   # try patch -p0 < "$SOURCE/ffmpeg-av_cold.patch"
 
-   export CFLAGS="$CFLAGS -fno-common"
-   export CXXFLAGS="$CXXFLAGS -fno-common"
+   export CFLAGS="$CFLAGS -fno-common -Dav_cold="
+   export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
    MEM_ALIGN_HACK="--enable-memalign-hack"
 
    try ./configure --prefix="$INSTALL" \
@@ -302,7 +302,7 @@ if [ \! -e built.ffmpeg ]; then
        --enable-protocol=file \
        --disable-devices \
        --disable-vdpau \
-       --disable-vhook \
+       --disable-filters \
        --disable-bsfs
    # --disable-stripping
 
@@ -331,6 +331,9 @@ if [ \! -e built.fribidi ]; then
    cd "$BUILD"
    touch built.fribidi
 fi
+
+# argparse is so tiny.
+cp "$SOURCE/argparse.py" "$PYTHONPATH"
 
 echo
 cat ../env.sh

@@ -22,9 +22,9 @@ export CXX=${CXX:=g++}
 export LD=${LD:=gcc}
 export CXXLD=${CXXLD:=g++}
 
-export CFLAGS="$CFLAGS -fPIC -I$INSTALL/include"
-export CXXFLAGS="$CXXFLAGS -fPIC -I$INSTALL/include"
-export LDFLAGS="$LDFLAGS -fPIC -L$INSTALL/lib"
+export CFLAGS="$CFLAGS -O3 -I$INSTALL/include"
+export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include"
+export LDFLAGS="$LDFLAGS -O3 -L$INSTALL/lib"
 
 if [ "x$MSYSTEM" != "x" ]; then
   export CFLAGS="$CFLAGS -fno-strict-aliasing"
@@ -80,10 +80,10 @@ fi
 
 if [ \! -e built.python ]; then
 
-    try tar xzf "$SOURCE/Python-2.5.1.tgz" 
-    try cd "$BUILD/Python-2.5.1"
-
-    try patch -p0 < "$SOURCE/python-long-double.diff"
+    try tar xzf "$SOURCE/Python-2.6.5.tgz" 
+    try cd "$BUILD/Python-2.6.5"
+    
+    # try patch -p0 < "$SOURCE/python-long-double.diff"
 
     if [ $MAC = "yes" ]; then
         try ./configure --prefix="$INSTALL" --enable-framework="$DYLD_FRAMEWORK_PATH"
@@ -135,14 +135,14 @@ if [ $MAC = "yes" -a \! -e built.py2app ]; then
     try python setup.py install
     try cd ..
 
-    try "$DYLD_FRAMEWORK_PATH/Python.framework/Versions/2.5/bin/easy_install" -U py2app
+    try "$DYLD_FRAMEWORK_PATH/Python.framework/Versions/2.6/bin/easy_install" -U py2app
     try touch built.py2app
 fi
 
 
 
 if [ $MAC = "yes" ]; then
-    ln -s "$DYLD_FRAMEWORK_PATH/Python.framework/Versions/2.5/bin/"* "$INSTALL/bin"
+    ln -s "$DYLD_FRAMEWORK_PATH/Python.framework/Versions/2.6/bin/"* "$INSTALL/bin"
     # echo "Remember to edit disable_linecache to add third parameter."
 fi
 
