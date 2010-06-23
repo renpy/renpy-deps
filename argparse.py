@@ -95,7 +95,8 @@ import re as _re
 import sys as _sys
 import textwrap as _textwrap
 
-from gettext import gettext as _
+def _(s):
+    return s
 
 try:
     _set = set
