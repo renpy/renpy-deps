@@ -1,0 +1,18 @@
+--- ffmpeg-0.6/libavformat/file.c	2010-04-26 18:36:51.000000000 -0400
++++ ffmpeg-0.6-new/libavformat/file.c	2010-06-23 12:43:34.000000000 -0400
+@@ -75,9 +75,15 @@
+ {
+     int fd = (intptr_t) h->priv_data;
+     if (whence == AVSEEK_SIZE) {
++#ifdef __MSVCRT_VERSION__
++        struct __stat32 st;
++        int ret = _fstat32(fd, &st);
++        return ret < 0 ? AVERROR(errno) : st.st_size;
++#else
+         struct stat st;
+         int ret = fstat(fd, &st);
+         return ret < 0 ? AVERROR(errno) : st.st_size;
++#endif
+     }
+     return lseek(fd, pos, whence);
+ }

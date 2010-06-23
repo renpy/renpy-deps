@@ -48,8 +48,8 @@ export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 if [ "x$MSYSTEM" != "x" ]; then
-  export CFLAGS="$CFLAGS -fno-strict-aliasing"
-  export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing"
+  export CFLAGS="$CFLAGS -fno-strict-aliasing "
+  export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing "
 fi
 
 OLD_CC="$CC"
@@ -101,9 +101,6 @@ if [ \! -e built.sdl ]; then
    try tar xzf "$SOURCE/SDL-1.2.13.tar.gz"
    try cd "$BUILD/SDL-1.2.13"
 
-   try cp "$SOURCE/manifest" conftest.exe.manifest
-   try cp "$SOURCE/manifest" a.exe.manifest
-   
    try patch -p0 < $SOURCE/sdl-windows-title.diff
    try patch -p0 < $SOURCE/sdl-staticgray.diff
    try patch -p0 < $SOURCE/sdl-audio-order.diff
@@ -173,6 +170,8 @@ fi
 
 
 if [ \! -e built.png ]; then
+   export CFLAGS="$CFLAGS -DPNG_NO_WRITE_tIME"
+
    try tar xvzf "$SOURCE/libpng-1.2.8-config.tar.gz"
    try cd "$BUILD/libpng-1.2.8-config"
    try ./configure --prefix="$INSTALL" --enable-static --disable-shared
@@ -195,8 +194,11 @@ fi
 
 if [ \! -e built.pygame ]; then
     
-   SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", ""))'`
+   SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", "").replace("-lSDLmain", "").replace("-Dmain=SDL_main", ""))'`
 
+   echo $SDL
+   sleep 10
+   
    try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
    try cd "$BUILD/pygame-1.8.1release"
 
@@ -240,16 +242,12 @@ if [ \! -e built.pygame ]; then
 fi
 
 if [ \! -e built.ffmpeg ]; then
-# if true; then
    try tar xzf "$SOURCE/ffmpeg-0.6.tar.gz" 
    try cd "$BUILD/ffmpeg-0.6"
 
-   # try patch -p0 < "$SOURCE/ffmpeg-ogg-size.patch"
-   # try patch -p0 < "$SOURCE/ffmpeg-av_cold.patch"
-
-   # Windows doesn't have the time function anymore. Patch it out
-   # on all platforms, we don't use it.
-   try patch -p1 < "$SOURCE/ffmpeg-no_time.diff"
+   # My windows libraries don't seem to export fstat. So use _fstat32
+   # instead.
+   try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
 
    # av_cold is also a problem on windows.
    export CFLAGS="$CFLAGS -fno-common -Dav_cold="
