@@ -9,11 +9,6 @@ export LD_LIBRARY_PATH="$INSTALL/lib:/usr/local/lib"
 export DYLIB_LIBRARY_PATH="$INSTALL/lib"
 export DYLD_FRAMEWORK_PATH="$INSTALL/frameworks"
 
-export CC=${CC:=gcc}
-export CXX=${CXX:=g++}
-export LD=${LD:=gcc}
-export CXXLD=${CXXLD:=g++}
-
 if python -c 'import sys; print sys.version; sys.exit(0)'; then
     echo "Python works."
 else
@@ -106,6 +101,9 @@ if [ \! -e built.sdl ]; then
    try tar xzf "$SOURCE/SDL-1.2.13.tar.gz"
    try cd "$BUILD/SDL-1.2.13"
 
+   try cp "$SOURCE/manifest" conftest.exe.manifest
+   try cp "$SOURCE/manifest" a.exe.manifest
+   
    try patch -p0 < $SOURCE/sdl-windows-title.diff
    try patch -p0 < $SOURCE/sdl-staticgray.diff
    try patch -p0 < $SOURCE/sdl-audio-order.diff
@@ -249,6 +247,11 @@ if [ \! -e built.ffmpeg ]; then
    # try patch -p0 < "$SOURCE/ffmpeg-ogg-size.patch"
    # try patch -p0 < "$SOURCE/ffmpeg-av_cold.patch"
 
+   # Windows doesn't have the time function anymore. Patch it out
+   # on all platforms, we don't use it.
+   try patch -p1 < "$SOURCE/ffmpeg-no_time.diff"
+
+   # av_cold is also a problem on windows.
    export CFLAGS="$CFLAGS -fno-common -Dav_cold="
    export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
    MEM_ALIGN_HACK="--enable-memalign-hack"
@@ -338,6 +341,11 @@ fi
 
 # argparse is so tiny.
 cp "$SOURCE/argparse.py" "$INSTALL/python"
+
+export CC=${CC:=gcc}
+export CXX=${CXX:=g++}
+export LD=${LD:=gcc}
+export CXXLD=${CXXLD:=g++}
 
 if [ \! -e built.glew ]; then
 

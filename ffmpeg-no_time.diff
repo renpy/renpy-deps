@@ -1,0 +1,28 @@
+diff -ur ffmpeg-0.6/ffmpeg.c ffmpeg-0.6-new/ffmpeg.c
+--- ffmpeg-0.6/ffmpeg.c	2010-06-01 02:29:50.000000000 -0400
++++ ffmpeg-0.6-new/ffmpeg.c	2010-06-22 21:49:07.000000000 -0400
+@@ -3900,11 +3900,8 @@
+ static void opt_vstats (void)
+ {
+     char filename[40];
+-    time_t today2 = time(NULL);
+-    struct tm *today = localtime(&today2);
+ 
+-    snprintf(filename, sizeof(filename), "vstats_%02d%02d%02d.log", today->tm_hour, today->tm_min,
+-             today->tm_sec);
++    snprintf(filename, sizeof(filename), "vstats.log");
+     opt_vstats_file(filename);
+ }
+ 
+diff -ur ffmpeg-0.6/libavformat/utils.c ffmpeg-0.6-new/libavformat/utils.c
+--- ffmpeg-0.6/libavformat/utils.c	2010-06-15 09:31:27.000000000 -0400
++++ ffmpeg-0.6-new/libavformat/utils.c	2010-06-22 21:39:50.000000000 -0400
+@@ -3179,7 +3179,7 @@
+     int negative = 0;
+ 
+ #undef time
+-    time_t now = time(0);
++    time_t now = 0;
+ 
+     len = strlen(datestr);
+     if (len > 0)
