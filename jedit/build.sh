@@ -1,5 +1,7 @@
 #!/bin/bash
 
+python make_renpy_xml.py > renpy.xml
+
 # A list of modes we install. This needs to match catalog.
 MODES="java c cplusplus css html javascript makefile nsis2 props pyrex python shellscript svn-commit text xml"
 
