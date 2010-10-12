@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '/home/tom/ab/renpy/doc/source')
+sys.path.insert(0, '/home/tom/ab/renpy/sphinx/source')
 
 import keywords
 

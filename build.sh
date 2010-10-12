@@ -104,6 +104,12 @@ if [ \! -e built.sdl ]; then
    try patch -p0 < $SOURCE/sdl-windows-title.diff
    try patch -p0 < $SOURCE/sdl-staticgray.diff
    try patch -p0 < $SOURCE/sdl-audio-order.diff
+
+   # On windows, we have thep problem that maximizing causes the start
+   # button to overlap the GL window, making performance lousy, so we
+   # disable maximize.
+   try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff 
+   
    # try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
 
    try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-nas $SDL_ASM

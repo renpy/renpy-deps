@@ -35,7 +35,7 @@ class PyGameAppDelegate(NSObject):
     def applicationShouldTerminate_(self, app):
         import pygame.event
         pygame.event.post(pygame.event.Event(pygame.QUIT))
-        return NSTerminateLater
+        return NSTerminateCancel
 
     def windowUpdateNotification_(self, notification):
         win = notification.object()
