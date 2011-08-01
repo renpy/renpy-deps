@@ -33,19 +33,21 @@ mkdir -p $BUILD
 mkdir -p $INSTALL
 
 # Unix debug
-# export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS"
+# export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2 -fPIC"
+# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2 -fPIC"
+# export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS -fPIC"
+# echo warning debug build; sleep 3
 
 # Windows debug
-# export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
+# echo warning debug build; sleep 3
 
 # Production
-export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
+# export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 if [ "x$MSYSTEM" != "x" ]; then
   export CFLAGS="$CFLAGS -fno-strict-aliasing "
@@ -250,7 +252,7 @@ fi
 if [ \! -e built.ffmpeg ]; then
    try tar xzf "$SOURCE/ffmpeg-0.6.tar.gz" 
    try cd "$BUILD/ffmpeg-0.6"
-
+   
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
    try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
@@ -314,8 +316,8 @@ if [ \! -e built.ffmpeg ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-filters \
-       --disable-bsfs
-   # --disable-stripping
+       --disable-bsfs \
+       --disable-stripping
 
    try make
    try make install
@@ -326,6 +328,70 @@ if [ \! -e built.ffmpeg ]; then
    cd "$BUILD"
    touch built.ffmpeg
 fi
+
+mkdir -p "$BUILD/alt"
+
+if [ \! -e built.ffmpegalt ]; then
+   try tar xzf "$SOURCE/ffmpeg-0.6.tar.gz" -C "$BUILD/alt" 
+   try cd "$BUILD/alt/ffmpeg-0.6"
+   
+   # My windows libraries don't seem to export fstat. So use _fstat32
+   # instead.
+   try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
+
+   # av_cold is also a problem on windows.
+   export CFLAGS="$CFLAGS -fno-common -Dav_cold="
+   export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
+   MEM_ALIGN_HACK="--enable-memalign-hack"
+
+   try ./configure --prefix="$INSTALL/alt" \
+       --cc="${CC:-gcc}" \
+       $FFMPEGFLAGS \
+       $MEM_ALIGN_HACK \
+       --enable-shared \
+       --disable-encoders \
+       --disable-muxers \
+       --disable-bzlib \
+       --disable-demuxers \
+       --enable-demuxer=au \
+       --enable-demuxer=avi \
+       --enable-demuxer=flac \
+       --enable-demuxer=matroska \
+       --enable-demuxer=mov \
+       --enable-demuxer=ogg \
+       --enable-demuxer=wav \
+       --disable-decoders \
+       --enable-decoder=flac \
+       --enable-decoder=pcm_dvd \
+       --enable-decoder=pcm_s16be \
+       --enable-decoder=pcm_s16le \
+       --enable-decoder=pcm_s8 \
+       --enable-decoder=pcm_u16be \
+       --enable-decoder=pcm_u16le \
+       --enable-decoder=pcm_u8 \
+       --enable-decoder=theora \
+       --enable-decoder=vorbis \
+       --enable-decoder=vp3 \
+       --disable-parsers \
+       --enable-parser=vp3 \
+       --disable-protocols \
+       --enable-protocol=file \
+       --disable-devices \
+       --disable-vdpau \
+       --disable-filters \
+       --disable-bsfs
+   # --disable-stripping
+
+   try make
+   try make install
+
+   # try mkdir -p "$INSTALL/include/libswscale"
+   # try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
+
+   cd "$BUILD"
+   touch built.ffmpegalt
+fi
+
 
 if [ \! -e built.fribidi ]; then
 

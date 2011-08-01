@@ -26,6 +26,11 @@ export CFLAGS="$CFLAGS -O3 -I$INSTALL/include"
 export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include"
 export LDFLAGS="$LDFLAGS -O3 -L$INSTALL/lib"
 
+# export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include"
+# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include"
+# export LDFLAGS="$LDFLAGS -ggdb -L$INSTALL/lib"
+# echo warning debug build; sleep 3
+
 if [ "x$MSYSTEM" != "x" ]; then
   export CFLAGS="$CFLAGS -fno-strict-aliasing"
   export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing"
