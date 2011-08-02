@@ -1,0 +1,11 @@
+--- src/video/windib/SDL_dibvideo.c.old	2010-07-30 19:10:18.000000000 -0400
++++ src/video/windib/SDL_dibvideo.c	2010-07-30 19:11:47.000000000 -0400
+@@ -476,7 +476,7 @@
+ 	const DWORD windowstyle = 
+ 			(WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX);
+ 	const DWORD resizestyle =
+-			(WS_THICKFRAME|WS_MAXIMIZEBOX);
++			(WS_THICKFRAME);
+ 	int binfo_size;
+ 	BITMAPINFO *binfo;
+ 	HDC hdc;

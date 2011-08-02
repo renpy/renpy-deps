@@ -39,15 +39,15 @@ mkdir -p $INSTALL
 # echo warning debug build; sleep 3
 
 # Windows debug
-export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
-export CXXFLAGS="$CXXFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
-export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
+# export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CXXFLAGS="$CXXFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
 # echo warning debug build; sleep 3
 
 # Production
-# export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 if [ "x$MSYSTEM" != "x" ]; then
   export CFLAGS="$CFLAGS -fno-strict-aliasing "
@@ -427,8 +427,6 @@ if [ \! -e built.glew ]; then
    cd "$BUILD"
    touch built.glew
 fi
-
-
 
 echo
 cat ../env.sh

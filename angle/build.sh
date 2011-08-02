@@ -10,12 +10,13 @@ INSTALL="$RENPY_DEPS_INSTALL"
 try dlltool -d libEGL.def -l"$INSTALL/lib/libEGL.a" -k
 try dlltool -d libGLESv2.def -l"$INSTALL/lib/libGLESv2.a" -k
 
-rm -Rf "$INSTALL/include/EGL"
-rm -Rf "$INSTALL/include/KHR"
-rm -Rf "$INSTALL/include/GLES2"
-rm -Rf "$INSTALL/include/GLSLANG"
+# These headers don't change very often.
+if [ ! -e "$INSTALL/include/EGL" ]; then 
 
-try cp -r EGL KHR GLES2 GLSLANG "$INSTALL/include"
+    try cp -r EGL KHR GLES2 GLSLANG "$INSTALL/include"
+
+fi
+
 try cp *.dll "$INSTALL/bin"
 
 # gcc -o test test.c \
