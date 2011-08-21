@@ -1,11 +1,14 @@
 #!/bin/bash
 
+
 try () {
     "$@" || exit -1
 }
 
+ROOT="$(dirname $0)"
 INSTALL="$RENPY_DEPS_INSTALL"
 
+try cd $ROOT
 
 try dlltool -d libEGL.def -l"$INSTALL/lib/libEGL.a" -k
 try dlltool -d libGLESv2.def -l"$INSTALL/lib/libGLESv2.a" -k
@@ -19,7 +22,3 @@ fi
 
 try cp *.dll "$INSTALL/bin"
 
-# gcc -o test test.c \
-#     -I/newbuild/install/include -I. -L/newbuild/install/lib \
-#     -lmingw32 -lSDLmain -lSDL -mconsole \
-#     -L. -lEGL -lGLESv2

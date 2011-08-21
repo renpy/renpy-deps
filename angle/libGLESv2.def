@@ -115,7 +115,7 @@ EXPORTS
     glUniform1fv                    @113
     glUniform1i@8                     @114
     glUniform1iv                    @115
-    glUniform2f                     @116
+    glUniform2f@12                     @116
     glUniform2fv                    @117
     glUniform2i                     @118
     glUniform2iv                    @119

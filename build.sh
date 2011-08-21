@@ -164,17 +164,36 @@ if [ \! -e built.sdl_ttf ]; then
    touch built.sdl_ttf
 fi
 
-
-if [ \! -e built.jpeg ]; then
-   try tar xvzf "$SOURCE/jpegsrc.v6b.tar.gz"
-   try cd "$BUILD/jpeg-6b"
-   try ./configure --prefix="$INSTALL"
-   try make
-   try make install-lib
-   ranlib "$INSTALL/lib/libjpeg.a"
-   cd "$BUILD"
-   touch built.jpeg
+if [ \! -e built.nasm ]; then
+    try tar xzf "$SOURCE/nasm-2.09.10.tar.gz"
+    try cd "$BUILD/nasm-2.09.10"
+    try ./configure --prefix="$INSTALL"
+    try make
+    try make install
+    cd "$BUILD"
+    try touch built.nasm
 fi
+
+if [ \! -e built.jpegturbo ]; then
+    try tar xzf "$SOURCE/libjpeg-turbo-1.1.1.tar.gz"
+    try cd "$BUILD/libjpeg-turbo-1.1.1"
+    try ./configure --prefix="$INSTALL"
+    try make
+    try make install
+    cd "$BUILD"
+    try touch built.jpegturbo
+fi
+
+# if [ \! -e built.jpeg ]; then
+#    try tar xvzf "$SOURCE/jpegsrc.v6b.tar.gz"
+#    try cd "$BUILD/jpeg-6b"
+#    try ./configure --prefix="$INSTALL"
+#    try make
+#    try make install-lib
+#    ranlib "$INSTALL/lib/libjpeg.a"
+#    cd "$BUILD"
+#    touch built.jpeg
+# fi
 
 
 if [ \! -e built.png ]; then
@@ -250,8 +269,8 @@ if [ \! -e built.pygame ]; then
 fi
 
 if [ \! -e built.ffmpeg ]; then
-   try tar xzf "$SOURCE/ffmpeg-0.6.tar.gz" 
-   try cd "$BUILD/ffmpeg-0.6"
+   try tar xjf "$SOURCE/ffmpeg-0.8.2.tar.bz2" 
+   try cd "$BUILD/ffmpeg-0.8.2"
    
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
@@ -332,8 +351,8 @@ fi
 mkdir -p "$BUILD/alt"
 
 if [ \! -e built.ffmpegalt ]; then
-   try tar xzf "$SOURCE/ffmpeg-0.6.tar.gz" -C "$BUILD/alt" 
-   try cd "$BUILD/alt/ffmpeg-0.6"
+   try tar xjf "$SOURCE/ffmpeg-0.8.2.tar.bz2" -C "$BUILD/alt" 
+   try cd "$BUILD/alt/ffmpeg-0.8.2"
    
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
@@ -379,8 +398,8 @@ if [ \! -e built.ffmpegalt ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-filters \
-       --disable-bsfs
-   # --disable-stripping
+       --disable-bsfs \
+       --disable-stripping
 
    try make
    try make install
@@ -393,16 +412,20 @@ if [ \! -e built.ffmpegalt ]; then
 fi
 
 
-if [ \! -e built.fribidi ]; then
+if [ \! -e built.fribidixxx ]; then
 
    export CFLAGS="$CFLAGS -DFRIBIDI_CHUNK_SIZE=4080"
    
    try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
    try cd "$BUILD/fribidi-0.19.2"
    try ./configure --prefix="$INSTALL"
+
    if [ "x$MSYSTEM" != "x" ]; then
        try patch -p0 < "$SOURCE/fribidi-windows.diff"
+       try python "$SOURCE/replace.py" "lib bin doc" "lib doc" Makefile 
+       echo Did patch.
    fi
+
    try make
    try make install
    cd "$BUILD"
