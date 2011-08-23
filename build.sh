@@ -95,6 +95,26 @@ EOF
 # try cp "$SOURCE/gcc_version.c" "$BUILD"
 # try gcc -c "$BUILD/gcc_version.c"
 
+if [ \! -e built.nasm ]; then
+    try tar xzf "$SOURCE/nasm-2.09.10.tar.gz"
+    try cd "$BUILD/nasm-2.09.10"
+    try ./configure --prefix="$INSTALL"
+    try make
+    try make install
+    cd "$BUILD"
+    try touch built.nasm
+fi
+
+if [ \! -e built.yasm ]; then
+    try tar xzf "$SOURCE/yasm-1.1.0.tar.gz"
+    try cd "$BUILD/yasm-1.1.0"
+    try ./configure --prefix="$INSTALL"
+    try make
+    try make install
+    cd "$BUILD"
+    try touch built.yasm
+fi
+
 if [ \! -e built.sdl ]; then
 
    try mkdir -p "$INSTALL/include/asm"
@@ -124,11 +144,11 @@ fi
 
 
 # This will be built shared on Linux and Mac by build_python, and 
-# static on windows here.
+# on windows here.
 if [ \! -e built.zlib ]; then
    try tar xvzf "$SOURCE/zlib-1.2.3.tar.gz"
    try cd "$BUILD/zlib-1.2.3"
-   try ./configure --prefix="$INSTALL"
+   try ./configure --prefix="$INSTALL" 
    try make
    try make install
    cd "$BUILD"
@@ -164,20 +184,10 @@ if [ \! -e built.sdl_ttf ]; then
    touch built.sdl_ttf
 fi
 
-if [ \! -e built.nasm ]; then
-    try tar xzf "$SOURCE/nasm-2.09.10.tar.gz"
-    try cd "$BUILD/nasm-2.09.10"
-    try ./configure --prefix="$INSTALL"
-    try make
-    try make install
-    cd "$BUILD"
-    try touch built.nasm
-fi
-
 if [ \! -e built.jpegturbo ]; then
     try tar xzf "$SOURCE/libjpeg-turbo-1.1.1.tar.gz"
     try cd "$BUILD/libjpeg-turbo-1.1.1"
-    try ./configure --prefix="$INSTALL"
+    try ./configure --prefix="$INSTALL" $JPEG_ASM
     try make
     try make install
     cd "$BUILD"
@@ -201,7 +211,7 @@ if [ \! -e built.png ]; then
 
    try tar xvzf "$SOURCE/libpng-1.2.8-config.tar.gz"
    try cd "$BUILD/libpng-1.2.8-config"
-   try ./configure --prefix="$INSTALL" --enable-static --disable-shared
+   try ./configure --prefix="$INSTALL" --disable-shared --enable-static
    try make
    try make install
    cd "$BUILD"
@@ -212,7 +222,7 @@ if [ \! -e built.sdl_image ]; then
    export LIBS="-lz"
    try tar xvzf "$SOURCE/SDL_image-1.2.7.tar.gz"
    try cd "$BUILD/SDL_image-1.2.7"
-   try ./configure --prefix="$INSTALL" --disable-tif --enable-static --disable-shared --disable-jpg-shared --disable-png-shared --enable-png --enable-jpg --enable-gif
+   try ./configure --prefix="$INSTALL" --disable-tif --disable-shared --enable-static
    try make
    try make install
    cd "$BUILD"
@@ -412,14 +422,14 @@ if [ \! -e built.ffmpegalt ]; then
 fi
 
 
-if [ \! -e built.fribidixxx ]; then
+if [ \! -e built.fribidi ]; then
 
    export CFLAGS="$CFLAGS -DFRIBIDI_CHUNK_SIZE=4080"
    
    try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
    try cd "$BUILD/fribidi-0.19.2"
    try ./configure --prefix="$INSTALL"
-
+   
    if [ "x$MSYSTEM" != "x" ]; then
        try patch -p0 < "$SOURCE/fribidi-windows.diff"
        try python "$SOURCE/replace.py" "lib bin doc" "lib doc" Makefile 

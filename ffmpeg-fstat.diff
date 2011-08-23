@@ -1,6 +1,7 @@
---- ffmpeg-0.6/libavformat/file.c	2010-04-26 18:36:51.000000000 -0400
-+++ ffmpeg-0.6-new/libavformat/file.c	2010-06-23 12:43:34.000000000 -0400
-@@ -75,9 +75,15 @@
+diff -ur ffmpeg-0.8.2-clean//libavformat/file.c ffmpeg-0.8.2/libavformat/file.c
+--- ffmpeg-0.8.2-clean//libavformat/file.c	2011-08-10 08:18:20.000000000 -0400
++++ ffmpeg-0.8.2/libavformat/file.c	2011-08-22 22:21:00.437811215 -0400
+@@ -95,9 +95,15 @@
  {
      int fd = (intptr_t) h->priv_data;
      if (whence == AVSEEK_SIZE) {
@@ -16,3 +17,32 @@
      }
      return lseek(fd, pos, whence);
  }
+diff -ur ffmpeg-0.8.2-clean//libavutil/file.c ffmpeg-0.8.2/libavutil/file.c
+--- ffmpeg-0.8.2-clean//libavutil/file.c	2011-08-10 08:18:20.000000000 -0400
++++ ffmpeg-0.8.2/libavutil/file.c	2011-08-22 22:22:28.836511069 -0400
+@@ -43,7 +43,13 @@
+ {
+     FileLogContext file_log_ctx = { &file_log_ctx_class, log_offset, log_ctx };
+     int err, fd = open(filename, O_RDONLY);
++
++#ifdef __MSVCRT_VERSION__
++    struct __stat32 st;
++#else
+     struct stat st;
++#endif
++
+     av_unused void *ptr;
+     off_t off_size;
+     char errbuf[128];
+@@ -56,7 +62,11 @@
+         return err;
+     }
+ 
++#ifdef __MSVCRT_VERSION__
++    if (_fstat32(fd, &st) < 0) {
++#else
+     if (fstat(fd, &st) < 0) {
++#endif        
+         err = AVERROR(errno);
+         av_strerror(err, errbuf, sizeof(errbuf));
+         av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in fstat(): %s\n", errbuf);
