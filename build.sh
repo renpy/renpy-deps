@@ -127,7 +127,7 @@ if [ \! -e built.sdl ]; then
    try patch -p0 < $SOURCE/sdl-staticgray.diff
    try patch -p0 < $SOURCE/sdl-audio-order.diff
 
-   # On windows, we have thep problem that maximizing causes the start
+   # On windows, we have the problem that maximizing causes the start
    # button to overlap the GL window, making performance lousy, so we
    # disable maximize.
    try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff 
