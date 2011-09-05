@@ -194,7 +194,7 @@ if [ \! -e built.jpegturbo ]; then
     try touch built.jpegturbo
 fi
 
-# if [ \! -e built.jpeg ]; then
+# if [ $MAC = yes -a \! -e built.jpeg ]; then
 #    try tar xvzf "$SOURCE/jpegsrc.v6b.tar.gz"
 #    try cd "$BUILD/jpeg-6b"
 #    try ./configure --prefix="$INSTALL"
@@ -222,7 +222,7 @@ if [ \! -e built.sdl_image ]; then
    export LIBS="-lz"
    try tar xvzf "$SOURCE/SDL_image-1.2.7.tar.gz"
    try cd "$BUILD/SDL_image-1.2.7"
-   try ./configure --prefix="$INSTALL" --disable-tif --disable-shared --enable-static
+   try ./configure --prefix="$INSTALL" --disable-tif --disable-shared --enable-static --enable-jpg-shared=no
    try make
    try make install
    cd "$BUILD"
@@ -278,9 +278,9 @@ if [ \! -e built.pygame ]; then
    touch built.pygame
 fi
 
-if [ \! -e built.ffmpeg ]; then
-   try tar xjf "$SOURCE/ffmpeg-0.8.2.tar.bz2" 
-   try cd "$BUILD/ffmpeg-0.8.2"
+if [ \! -e built.av ]; then
+   try tar xzf "$SOURCE/libav-0.7.1.tar.gz" 
+   try cd "$BUILD/libav-0.7.1"
    
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
@@ -345,8 +345,7 @@ if [ \! -e built.ffmpeg ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-filters \
-       --disable-bsfs \
-       --disable-stripping
+       --disable-bsfs 
 
    try make
    try make install
@@ -355,14 +354,14 @@ if [ \! -e built.ffmpeg ]; then
    try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
 
    cd "$BUILD"
-   touch built.ffmpeg
+   touch built.av
 fi
 
 mkdir -p "$BUILD/alt"
 
-if [ \! -e built.ffmpegalt ]; then
-   try tar xjf "$SOURCE/ffmpeg-0.8.2.tar.bz2" -C "$BUILD/alt" 
-   try cd "$BUILD/alt/ffmpeg-0.8.2"
+if [ \! -e built.avalt ]; then
+   try tar xzf "$SOURCE/libav-0.7.1.tar.gz" -C "$BUILD/alt" 
+   try cd "$BUILD/alt/libav-0.7.1"
    
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
@@ -408,8 +407,7 @@ if [ \! -e built.ffmpegalt ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-filters \
-       --disable-bsfs \
-       --disable-stripping
+       --disable-bsfs 
 
    try make
    try make install
@@ -418,7 +416,7 @@ if [ \! -e built.ffmpegalt ]; then
    # try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
 
    cd "$BUILD"
-   touch built.ffmpegalt
+   touch built.avalt
 fi
 
 
