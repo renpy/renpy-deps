@@ -50,9 +50,16 @@ export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
 if [ "x$MSYSTEM" != "x" ]; then
-  export CFLAGS="$CFLAGS -fno-strict-aliasing "
-  export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing "
+    export CFLAGS="$CFLAGS -fno-strict-aliasing "
+    export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing "
+else
+    if [ `arch` = "x86_64" ]; then
+        export CFLAGS="-fPIC $CFLAGS"
+        export CXXFLAGS="-fPIC $CFLAGS"
+        export LDFLAGS="-fPIC $CFLAGS"
+    fi
 fi
+
 
 OLD_CC="$CC"
 OLD_LD="$LD"
@@ -80,6 +87,10 @@ try () {
 libtool() {
     cp /usr/local/bin/libtool .
 }
+
+try mkdir -p "$INSTALL/lib"
+rm -Rf "$INSTALL/lib64"
+try ln -s "$INSTALL/lib" "$INSTALL/lib64"
 
 cd $BUILD
 
@@ -211,7 +222,7 @@ if [ \! -e built.png ]; then
 
    try tar xvzf "$SOURCE/libpng-1.2.8-config.tar.gz"
    try cd "$BUILD/libpng-1.2.8-config"
-   try ./configure --prefix="$INSTALL" --disable-shared --enable-static
+   try ./configure --prefix="$INSTALL" --enable-shared --enable-static
    try make
    try make install
    cd "$BUILD"
@@ -220,9 +231,9 @@ fi
 
 if [ \! -e built.sdl_image ]; then
    export LIBS="-lz"
-   try tar xvzf "$SOURCE/SDL_image-1.2.7.tar.gz"
-   try cd "$BUILD/SDL_image-1.2.7"
-   try ./configure --prefix="$INSTALL" --disable-tif --disable-shared --enable-static --enable-jpg-shared=no
+   try tar xvzf "$SOURCE/SDL_image-1.2.10.tar.gz"
+   try cd "$BUILD/SDL_image-1.2.10"
+   try ./configure --prefix="$INSTALL" --disable-tif --enable-shared --enable-static --enable-jpg-shared=no
    try make
    try make install
    cd "$BUILD"
@@ -279,8 +290,11 @@ if [ \! -e built.pygame ]; then
 fi
 
 if [ \! -e built.av ]; then
-   try tar xzf "$SOURCE/libav-0.7.1.tar.gz" 
-   try cd "$BUILD/libav-0.7.1"
+   try tar xzf "$SOURCE/libav-0.7.4.tar.gz" 
+   try cd "$BUILD/libav-0.7.4"
+
+   # https://bugzilla.libav.org/show_bug.cgi?id=36
+   try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
    
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
@@ -360,9 +374,12 @@ fi
 mkdir -p "$BUILD/alt"
 
 if [ \! -e built.avalt ]; then
-   try tar xzf "$SOURCE/libav-0.7.1.tar.gz" -C "$BUILD/alt" 
-   try cd "$BUILD/alt/libav-0.7.1"
+   try tar xzf "$SOURCE/libav-0.7.4.tar.gz" -C "$BUILD/alt" 
+   try cd "$BUILD/alt/libav-0.7.4"
    
+   # https://bugzilla.libav.org/show_bug.cgi?id=36
+   try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
+
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
    try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
@@ -426,7 +443,7 @@ if [ \! -e built.fribidi ]; then
    
    try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
    try cd "$BUILD/fribidi-0.19.2"
-   try ./configure --prefix="$INSTALL"
+   try ./configure --prefix="$INSTALL" --enable-static --disable-shared
    
    if [ "x$MSYSTEM" != "x" ]; then
        try patch -p0 < "$SOURCE/fribidi-windows.diff"

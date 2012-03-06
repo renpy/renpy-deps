@@ -26,6 +26,12 @@ export CFLAGS="$CFLAGS -O3 -I$INSTALL/include"
 export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include"
 export LDFLAGS="$LDFLAGS -O3 -L$INSTALL/lib"
 
+if [ `arch` = "x86_64" ]; then
+    export CFLAGS="-fPIC $CFLAGS"
+    export CXXFLAGS="-fPIC $CFLAGS"
+    export LDFLAGS="-fPIC $CFLAGS"
+fi
+
 # export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include"
 # export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include"
 # export LDFLAGS="$LDFLAGS -ggdb -L$INSTALL/lib"
