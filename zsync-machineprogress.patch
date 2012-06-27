@@ -1,0 +1,48 @@
+diff -ur zsync-0.6.2-pure/progress.c zsync-0.6.2/progress.c
+--- zsync-0.6.2-pure/progress.c	2010-09-16 13:17:49.000000000 -0400
++++ zsync-0.6.2/progress.c	2012-06-02 09:03:04.940709867 -0400
+@@ -55,9 +55,9 @@
+             p->starttime = newtime;
+         p->lasttime = newtime;
+ 
+-        /* Update progress bar displayed */
+-        progbar(pcnt * (20.0 / 100.0), pcnt);
+ 
++        printf("PROGRESS %f\n", pcnt);
++        
+         /* Each time 1s has passed, we update and redisplay our download rate */
+         if (passed) {
+             float rate = newdl - p->lastdl;
+@@ -66,11 +66,12 @@
+                 rate /= passed;
+                 sleft *= passed;
+             }
+-            printf(" %.1f kBps ", rate / 1000.0);
++
++            printf("RATE %f\n", rate);
+             if (sleft < 60 * 1000)
+-                printf("%d:%02d ETA  ", sleft / 60, sleft % 60);
++                printf("ETA %d\n", sleft);
+             else
+-                puts("        ");
++                printf("NOETA\n");
+         }
+         p->lastdl = newdl;
+         p->lastpcnt = pcnt;
+@@ -83,15 +84,5 @@
+  * true), and then release the progress data structures.
+  */
+ void end_progress(struct progress *p, int done) {
+-    if (done == 2)
+-        progbar(20, 100.0);
+-    else
+-        progbar(p->lastpcnt * (20.0 / 100.0), p->lastpcnt);
+-
+-    {
+-        float rate = ((float)p->lastdl) / (p->lasttime - p->starttime + 0.5);
+-        printf(" %.1f kBps ", rate / 1000.0);
+-    }
+-    puts(done == 2 ? "DONE    \n" : !done ? "aborted    \n" : "        \n");
+-    fflush(stdout);
++    printf("ENDPROGRESS\n");
+ }

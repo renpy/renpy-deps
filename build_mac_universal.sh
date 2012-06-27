@@ -57,8 +57,6 @@ echo '#!/bin/sh' > install/bin/arch
 echo 'echo ppc' > install/bin/arch
 chmod a+x install/bin/arch
 
-echo "Archflag:" $ARCHFLAG
-
 try "$DIR/build_python.sh"
 try "$DIR/build.sh"
 cd ..

@@ -45,7 +45,7 @@ mkdir -p $INSTALL
 # echo warning debug build; sleep 3
 
 # Production
-export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
+export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2 -I$INSTALL/include/SDL"
 export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
 
@@ -60,7 +60,6 @@ else
     fi
 fi
 
-
 OLD_CC="$CC"
 OLD_LD="$LD"
 OLD_CXX="$CXX"
@@ -72,7 +71,6 @@ OLD_CXXLDFLAGS="$CXXLDFLAGS"
 
 if [ `uname` = 'Darwin' ]; then
     MAC=yes
-    NOALTIVEC=yes
 else
     MAC=no
 fi
@@ -81,7 +79,7 @@ export SED=sed
 export RENPY_DEPS_INSTALL=$INSTALL
 
 try () {
-    "$@" || exit -1
+    "$@" || exit 1
 }
 
 libtool() {
@@ -95,16 +93,24 @@ try ln -s "$INSTALL/lib" "$INSTALL/lib64"
 cd $BUILD
 
 cat <<EOF > ../env.sh
-export PATH="$PATH"
+export RENPY_ORIGINAL_PATH="\$PATH"
+export RENPY_ORIGINAL_PYTHONPATH="\$PYTHONPATH"
+export RENPY_ORIGINAL_LD_LIBRARY_PATH="\$LD_LIBRARY_PATH"
+export RENPY_ORIGINAL_DYLIB_LIBRARY_PATH="\$DYLIB_LIBRARY_PATH"
+export RENPY_ORIGINAL_DYLD_FRAMEWORK_PATH="\$DYLD_FRAMEWORK_PATH"
+
 export RENPY_DEPS_INSTALL="$INSTALL"
+
+export PATH="$PATH"
+export PYTHONPATH="$INSTALL/python"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH"
 export DYLIB_LIBRARY_PATH="$DYLIB_LIBRARY_PATH"
 export DYLD_FRAMEWORK_PATH="$DYLD_FRAMEWORK_PATH"
-export PYTHONPATH="$INSTALL/python"
 EOF
 
 # try cp "$SOURCE/gcc_version.c" "$BUILD"
 # try gcc -c "$BUILD/gcc_version.c"
+
 
 if [ \! -e built.nasm ]; then
     try tar xzf "$SOURCE/nasm-2.09.10.tar.gz"
@@ -128,24 +134,18 @@ fi
 
 if [ \! -e built.sdl ]; then
 
-   try mkdir -p "$INSTALL/include/asm"
-   try touch "$INSTALL/include/asm/page.h"
+   # try mkdir -p "$INSTALL/include/asm"
+   # try touch "$INSTALL/include/asm/page.h"
 
-   try tar xzf "$SOURCE/SDL-1.2.13.tar.gz"
-   try cd "$BUILD/SDL-1.2.13"
-
-   try patch -p0 < $SOURCE/sdl-windows-title.diff
-   try patch -p0 < $SOURCE/sdl-staticgray.diff
-   try patch -p0 < $SOURCE/sdl-audio-order.diff
+   try tar xzf "$SOURCE/SDL-1.2.15.tar.gz"
+   try cd "$BUILD/SDL-1.2.15"
 
    # On windows, we have the problem that maximizing causes the start
    # button to overlap the GL window, making performance lousy, so we
    # disable maximize.
    try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff 
-   
-   # try patch -p0 < $SOURCE/sdl-no-asm-stretch.diff
 
-   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-nas $SDL_ASM
+   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-video-directfb --disable-nas $SDL_ASM
 
    try make
    try make install
@@ -153,25 +153,34 @@ if [ \! -e built.sdl ]; then
    touch built.sdl
 fi
 
-
 # This will be built shared on Linux and Mac by build_python, and 
 # on windows here.
 if [ \! -e built.zlib ]; then
-   try tar xvzf "$SOURCE/zlib-1.2.3.tar.gz"
-   try cd "$BUILD/zlib-1.2.3"
-   try ./configure --prefix="$INSTALL" 
-   try make
-   try make install
+   try tar xvzf "$SOURCE/zlib-1.2.6.tar.gz"
+   try cd "$BUILD/zlib-1.2.6"
+   if [ "x$MSYSTEM" != "x" ]; then
+       try make -f win32/Makefile.gcc
+
+       try make -f win32/Makefile.gcc install \
+           INCLUDE_PATH="$INSTALL/include" \
+           LIBRARY_PATH="$INSTALL/lib" \
+           BINARY_PATH="$INSTALL/bin" \
+           SHARED_MODE=1
+
+   else
+       try ./configure --prefix="$INSTALL" 
+       try make
+       try make install
+   fi
+       
    cd "$BUILD"
    touch built.zlib
 fi
 
 
 if [ \! -e built.freetype ]; then
-   try tar xzf "$SOURCE/freetype-2.3.11.tar.gz"
-   try cd "$BUILD/freetype-2.3.11"
-
-   # try cp "$SOURCE/ftmodules.cfg" ./modules.cfg
+   try tar xzf "$SOURCE/freetype-2.3.12.tar.gz"
+   try cd "$BUILD/freetype-2.3.12"
 
    try ./configure --prefix="$INSTALL"
 
@@ -196,8 +205,8 @@ if [ \! -e built.sdl_ttf ]; then
 fi
 
 if [ \! -e built.jpegturbo ]; then
-    try tar xzf "$SOURCE/libjpeg-turbo-1.1.1.tar.gz"
-    try cd "$BUILD/libjpeg-turbo-1.1.1"
+    try tar xzf "$SOURCE/libjpeg-turbo-1.2.0.tar.gz"
+    try cd "$BUILD/libjpeg-turbo-1.2.0"
     try ./configure --prefix="$INSTALL" $JPEG_ASM
     try make
     try make install
@@ -205,24 +214,12 @@ if [ \! -e built.jpegturbo ]; then
     try touch built.jpegturbo
 fi
 
-# if [ $MAC = yes -a \! -e built.jpeg ]; then
-#    try tar xvzf "$SOURCE/jpegsrc.v6b.tar.gz"
-#    try cd "$BUILD/jpeg-6b"
-#    try ./configure --prefix="$INSTALL"
-#    try make
-#    try make install-lib
-#    ranlib "$INSTALL/lib/libjpeg.a"
-#    cd "$BUILD"
-#    touch built.jpeg
-# fi
-
-
 if [ \! -e built.png ]; then
    export CFLAGS="$CFLAGS -DPNG_NO_WRITE_tIME"
 
-   try tar xvzf "$SOURCE/libpng-1.2.8-config.tar.gz"
-   try cd "$BUILD/libpng-1.2.8-config"
-   try ./configure --prefix="$INSTALL" --enable-shared --enable-static
+   try tar xvzf "$SOURCE/libpng-1.5.10.tar.gz"
+   try cd "$BUILD/libpng-1.5.10"
+   try ./configure --prefix="$INSTALL" --enable-shared --disable-static
    try make
    try make install
    cd "$BUILD"
@@ -231,9 +228,9 @@ fi
 
 if [ \! -e built.sdl_image ]; then
    export LIBS="-lz"
-   try tar xvzf "$SOURCE/SDL_image-1.2.10.tar.gz"
-   try cd "$BUILD/SDL_image-1.2.10"
-   try ./configure --prefix="$INSTALL" --disable-tif --enable-shared --enable-static --enable-jpg-shared=no
+   try tar xvzf "$SOURCE/SDL_image-1.2.12.tar.gz"
+   try cd "$BUILD/SDL_image-1.2.12"
+   try ./configure --prefix="$INSTALL" --disable-tif --disable-imageio --enable-shared --enable-static --enable-jpg-shared=no
    try make
    try make install
    cd "$BUILD"
@@ -241,38 +238,18 @@ if [ \! -e built.sdl_image ]; then
 fi
 
 if [ \! -e built.pygame ]; then
-    
-   SDL=`sdl-config --cflags --libs | python -c 'import sys; sys.stdout.write(sys.stdin.read().replace("\n", " ").replace("-mwindows", "").replace("-lSDLmain", "").replace("-Dmain=SDL_main", ""))'`
 
-   echo $SDL
-   sleep 10
+   try mkdir -p "$INSTALL/lib/msvcr90"
    
-   try tar xvzf "$SOURCE/pygame-1.8.1release.tar.gz"
-   try cd "$BUILD/pygame-1.8.1release"
+   try tar xzf "$SOURCE/pygame-1.9.1release.tar.gz"
+   try cd "$BUILD/pygame-1.9.1release"
 
-   try patch -p0 src/rwobject.c "$SOURCE/pygame-rwobject.diff"
-   
-   try cp "$SOURCE/rwobject.c" src/
-   try cp "$SOURCE/surflock.c" src/
-   ## # try cp "$SOURCE/transform.c" src/
-   ## # try cp "$SOURCE/sysfont.py" lib/
    try cp "$SOURCE/pygame-setup.py" setup.py
-   ## try cp "$SOURCE/alphablit.c" src/alphablit.c
-   ## # try cp "$SOURCE/display.c" src/display.c
-   try cp "$SOURCE/macosx.py" lib/macosx.py
-   try cp "$SOURCE/pygame_init.py" lib/__init__.py
-   ## # try cp "$SOURCE/config"*.py .
-
-   # try grep -v "install_parachute ()" src/base.c > src/base.c.new
-   # try mv src/base.c.new src/base.c
-    
-   try python "$SOURCE/edit.py" "$SOURCE/Setup" Setup @SDL@ "$SDL" @INSTALL@ "$INSTALL"
+   try python "$SOURCE/write_pygame_setup.py" "$INSTALL" > Setup
 
    if [ "x$MSYSTEM" != "x" ]; then
        try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
        try cp "$INSTALL/bin/"*.dll "$INSTALL/python/pygame"
-       try strip "$INSTALL/python/pygame/"*.dll
-       try strip "$INSTALL/python/pygame/"*.pyd
    else
        try python setup.py build install_lib -d "$INSTALL/python"
    fi
@@ -290,8 +267,8 @@ if [ \! -e built.pygame ]; then
 fi
 
 if [ \! -e built.av ]; then
-   try tar xzf "$SOURCE/libav-0.7.4.tar.gz" 
-   try cd "$BUILD/libav-0.7.4"
+   try tar xzf "$SOURCE/libav-0.7.5.tar.gz" 
+   try cd "$BUILD/libav-0.7.5"
 
    # https://bugzilla.libav.org/show_bug.cgi?id=36
    try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
@@ -309,6 +286,7 @@ if [ \! -e built.av ]; then
        --cc="${CC:-gcc}" \
        $FFMPEGFLAGS \
        $MEM_ALIGN_HACK \
+       --enable-runtime-cpudetect \
        --enable-shared \
        --disable-encoders \
        --disable-muxers \
@@ -371,71 +349,76 @@ if [ \! -e built.av ]; then
    touch built.av
 fi
 
-mkdir -p "$BUILD/alt"
+if [ -n "$RENPY_BUILD_ALT" ]; then
 
-if [ \! -e built.avalt ]; then
-   try tar xzf "$SOURCE/libav-0.7.4.tar.gz" -C "$BUILD/alt" 
-   try cd "$BUILD/alt/libav-0.7.4"
-   
-   # https://bugzilla.libav.org/show_bug.cgi?id=36
-   try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
+    mkdir -p "$BUILD/alt"
 
-   # My windows libraries don't seem to export fstat. So use _fstat32
-   # instead.
-   try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
+    if [ \! -e built.avalt ]; then
+        try tar xzf "$SOURCE/libav-0.7.5.tar.gz" -C "$BUILD/alt" 
+        try cd "$BUILD/alt/libav-0.7.5"
+        
+# https://bugzilla.libav.org/show_bug.cgi?id=36
+        try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
 
-   # av_cold is also a problem on windows.
-   export CFLAGS="$CFLAGS -fno-common -Dav_cold="
-   export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
-   MEM_ALIGN_HACK="--enable-memalign-hack"
+# My windows libraries don't seem to export fstat. So use _fstat32
+# instead.
+        try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
 
-   try ./configure --prefix="$INSTALL/alt" \
-       --cc="${CC:-gcc}" \
-       $FFMPEGFLAGS \
-       $MEM_ALIGN_HACK \
-       --enable-shared \
-       --disable-encoders \
-       --disable-muxers \
-       --disable-bzlib \
-       --disable-demuxers \
-       --enable-demuxer=au \
-       --enable-demuxer=avi \
-       --enable-demuxer=flac \
-       --enable-demuxer=matroska \
-       --enable-demuxer=mov \
-       --enable-demuxer=ogg \
-       --enable-demuxer=wav \
-       --disable-decoders \
-       --enable-decoder=flac \
-       --enable-decoder=pcm_dvd \
-       --enable-decoder=pcm_s16be \
-       --enable-decoder=pcm_s16le \
-       --enable-decoder=pcm_s8 \
-       --enable-decoder=pcm_u16be \
-       --enable-decoder=pcm_u16le \
-       --enable-decoder=pcm_u8 \
-       --enable-decoder=theora \
-       --enable-decoder=vorbis \
-       --enable-decoder=vp3 \
-       --disable-parsers \
-       --enable-parser=vp3 \
-       --disable-protocols \
-       --enable-protocol=file \
-       --disable-devices \
-       --disable-vdpau \
-       --disable-filters \
-       --disable-bsfs 
+# av_cold is also a problem on windows.
+        export CFLAGS="$CFLAGS -fno-common -Dav_cold="
+        export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
+        MEM_ALIGN_HACK="--enable-memalign-hack"
 
-   try make
-   try make install
+        try ./configure --prefix="$INSTALL/alt" \
+            --cc="${CC:-gcc}" \
+            $FFMPEGFLAGS \
+            $MEM_ALIGN_HACK \
+            --enable-runtime-cpudetect \
+            --enable-shared \
+            --disable-encoders \
+            --disable-muxers \
+            --disable-bzlib \
+            --disable-demuxers \
+            --enable-demuxer=au \
+            --enable-demuxer=avi \
+            --enable-demuxer=flac \
+            --enable-demuxer=matroska \
+            --enable-demuxer=mov \
+            --enable-demuxer=ogg \
+            --enable-demuxer=wav \
+            --disable-decoders \
+            --enable-decoder=flac \
+            --enable-decoder=pcm_dvd \
+            --enable-decoder=pcm_s16be \
+            --enable-decoder=pcm_s16le \
+            --enable-decoder=pcm_s8 \
+            --enable-decoder=pcm_u16be \
+            --enable-decoder=pcm_u16le \
+            --enable-decoder=pcm_u8 \
+            --enable-decoder=theora \
+            --enable-decoder=vorbis \
+            --enable-decoder=vp3 \
+            --disable-parsers \
+            --enable-parser=vp3 \
+            --disable-protocols \
+            --enable-protocol=file \
+            --disable-devices \
+            --disable-vdpau \
+            --disable-filters \
+            --disable-bsfs 
+
+        try make
+        try make install
 
    # try mkdir -p "$INSTALL/include/libswscale"
    # try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
 
-   cd "$BUILD"
-   touch built.avalt
-fi
+        cd "$BUILD"
+        touch built.avalt
+    fi
 
+
+fi
 
 if [ \! -e built.fribidi ]; then
 
@@ -457,9 +440,6 @@ if [ \! -e built.fribidi ]; then
    touch built.fribidi
 fi
 
-# argparse is so tiny.
-cp "$SOURCE/argparse.py" "$INSTALL/python"
-
 export CC=${CC:=gcc}
 export CXX=${CXX:=g++}
 export LD=${LD:=gcc}
@@ -467,8 +447,8 @@ export CXXLD=${CXXLD:=g++}
 
 if [ \! -e built.glew ]; then
 
-   try tar xzf "$SOURCE/glew-1.5.4.tgz"
-   try cd "$BUILD/glew-1.5.4"
+   try tar xzf "$SOURCE/glew-1.7.0.tgz"
+   try cd "$BUILD/glew-1.7.0"
 
    try make install OPT="$CFLAGS $LDFLAGS" CC="$CC" LD="$LD" GLEW_DEST=$INSTALL
    
@@ -476,6 +456,19 @@ if [ \! -e built.glew ]; then
    touch built.glew
 fi
 
+
+if [ -n "$MSYSTEM" -a \! -e built.zsync ]; then
+    try tar xjf "$SOURCE/zsync-0.6.2.tar.bz2"
+    try cd "$BUILD/zsync-0.6.2"
+
+    try "./configure" --prefix="$INSTALL"
+    try make
+    try make install
+
+    cd "$BUILD"
+    touch built.zsync
+fi
+    
 echo
 cat ../env.sh
 
