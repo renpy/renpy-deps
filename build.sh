@@ -46,19 +46,28 @@ mkdir -p $INSTALL
 
 # Production
 export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2 -I$INSTALL/include/SDL"
-export CXXFLAGS="$CXXFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2"
 export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
+
+PLATFORM=linux
 
 if [ "x$MSYSTEM" != "x" ]; then
     export CFLAGS="$CFLAGS -fno-strict-aliasing "
     export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing "
+    PLATFORM="windows"
 else
+    if [ `uname` = 'Darwin' ]; then
+       PLATFORM="mac"
+    fi
+    
     if [ `arch` = "x86_64" ]; then
         export CFLAGS="-fPIC $CFLAGS"
         export CXXFLAGS="-fPIC $CFLAGS"
         export LDFLAGS="-fPIC $CFLAGS"
     fi
 fi
+
+export CPPFLAGS="$CFLAGS"
+export CXXFLAGS="$CFLAGS"
 
 OLD_CC="$CC"
 OLD_LD="$LD"
@@ -68,12 +77,6 @@ OLD_CFLAGS="$CFLAGS"
 OLD_CXXFLAGS="$CXXFLAGS"
 OLD_LDFLAGS="$LDFLAGS"
 OLD_CXXLDFLAGS="$CXXLDFLAGS"
-
-if [ `uname` = 'Darwin' ]; then
-    MAC=yes
-else
-    MAC=no
-fi
 
 export SED=sed
 export RENPY_DEPS_INSTALL=$INSTALL
@@ -122,16 +125,28 @@ if [ \! -e built.nasm ]; then
     try touch built.nasm
 fi
 
-if [ \! -e built.yasm ]; then
-    try tar xzf "$SOURCE/yasm-1.1.0.tar.gz"
-    try cd "$BUILD/yasm-1.1.0"
-    try ./configure --prefix="$INSTALL"
-    try make
-    try make install
-    cd "$BUILD"
-    try touch built.yasm
+if [ $PLATFORM != "windows" ]; then
+
+    if [ \! -e built.yasm ]; then
+        try tar xzf "$SOURCE/yasm-1.2.0.tar.gz"
+        try cd "$BUILD/yasm-1.2.0"
+        try ./configure --prefix="$INSTALL"
+        try make
+        try make install
+        cd "$BUILD"
+        try touch built.yasm
+    fi
+    
+else
+
+    # A source-built yasm doesn't seem to work on my computer. So
+    # use the prebuilt version.
+    try cp "$SOURCE/yasm-1.2.0-win32.exe" "$INSTALL/bin/yasm.exe"
+
 fi
 
+
+    
 if [ \! -e built.sdl ]; then
 
    # try mkdir -p "$INSTALL/include/asm"
@@ -145,7 +160,13 @@ if [ \! -e built.sdl ]; then
    # disable maximize.
    try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff 
 
-   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-video-directfb --disable-nas $SDL_ASM
+   if [ $PLATFORM = "mac" ]; then
+       SDL_EXTRA="--disable-video-x11"
+   else
+       SDL_EXTRA=""
+   fi
+   
+   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-video-directfb --disable-nas $SDL_EXTRA $SDL_ASM
 
    try make
    try make install
@@ -215,22 +236,30 @@ if [ \! -e built.jpegturbo ]; then
 fi
 
 if [ \! -e built.png ]; then
-   export CFLAGS="$CFLAGS -DPNG_NO_WRITE_tIME"
 
-   try tar xvzf "$SOURCE/libpng-1.5.10.tar.gz"
-   try cd "$BUILD/libpng-1.5.10"
+   if [ $PLATFORM != "mac" ]; then
+       export CFLAGS="$CFLAGS -DPNG_NO_WRITE_tIME"
+   fi
+   
+   try tar xvzf "$SOURCE/libpng-1.2.49.tar.gz"
+   try cd "$BUILD/libpng-1.2.49"
    try ./configure --prefix="$INSTALL" --enable-shared --disable-static
    try make
    try make install
    cd "$BUILD"
+
    touch built.png
+fi
+
+if [ $PLATFORM = "windows" ]; then
+   try cp "$INSTALL/lib/libpng.dll.a" "$INSTALL/lib/libpng12.dll.a"
 fi
 
 if [ \! -e built.sdl_image ]; then
    export LIBS="-lz"
    try tar xvzf "$SOURCE/SDL_image-1.2.12.tar.gz"
    try cd "$BUILD/SDL_image-1.2.12"
-   try ./configure --prefix="$INSTALL" --disable-tif --disable-imageio --enable-shared --enable-static --enable-jpg-shared=no
+   try ./configure --prefix="$INSTALL" --disable-tif --disable-imageio --enable-shared --disable-static --disable-jpg-shared --disable-png-shared --disable-webp --disable-xcf
    try make
    try make install
    cd "$BUILD"
@@ -247,7 +276,7 @@ if [ \! -e built.pygame ]; then
    try cp "$SOURCE/pygame-setup.py" setup.py
    try python "$SOURCE/write_pygame_setup.py" "$INSTALL" > Setup
 
-   if [ "x$MSYSTEM" != "x" ]; then
+   if [ $PLATFORM = "windows" ]; then
        try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
        try cp "$INSTALL/bin/"*.dll "$INSTALL/python/pygame"
    else
@@ -267,8 +296,8 @@ if [ \! -e built.pygame ]; then
 fi
 
 if [ \! -e built.av ]; then
-   try tar xzf "$SOURCE/libav-0.7.5.tar.gz" 
-   try cd "$BUILD/libav-0.7.5"
+   try tar xzf "$SOURCE/libav-0.7.6.tar.gz" 
+   try cd "$BUILD/libav-0.7.6"
 
    # https://bugzilla.libav.org/show_bug.cgi?id=36
    try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
@@ -457,7 +486,8 @@ if [ \! -e built.glew ]; then
 fi
 
 
-if [ -n "$MSYSTEM" -a \! -e built.zsync ]; then
+if [ $PLATFORM != "windows" ] ; then 
+  if [ \! -e built.zsync ] ; then
     try tar xjf "$SOURCE/zsync-0.6.2.tar.bz2"
     try cd "$BUILD/zsync-0.6.2"
 
@@ -467,6 +497,7 @@ if [ -n "$MSYSTEM" -a \! -e built.zsync ]; then
 
     cd "$BUILD"
     touch built.zsync
+  fi
 fi
     
 echo
