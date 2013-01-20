@@ -20,6 +20,7 @@ cp jedit/doc/Apache.LICENSE.txt $I
 cp jedit/doc/COPYING.txt $I
 cp jedit/doc/COPYING.PLUGINS.txt $I
 
+
 for i in $MODES; do
     cp jedit/modes/$i.xml $I/modes/
 done
@@ -31,3 +32,4 @@ cp renpy.props $I/properties
 cp WhiteSpace.jar $I/jars
 cp BufferTabs.jar $I/jars
 cp jedit.exe $I
+cp jEdit.edit.py $I

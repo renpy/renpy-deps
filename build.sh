@@ -295,6 +295,12 @@ if [ \! -e built.pygame ]; then
    touch built.pygame
 fi
 
+LIBAV_FLAGS=
+
+if [ $PLATFORM = "windows" ]; then
+   LIBAV_FLAGS="--disable-pthreads --enable-w32threads"
+fi
+
 if [ \! -e built.av ]; then
    try tar xzf "$SOURCE/libav-0.7.6.tar.gz" 
    try cd "$BUILD/libav-0.7.6"
@@ -311,9 +317,11 @@ if [ \! -e built.av ]; then
    export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
    MEM_ALIGN_HACK="--enable-memalign-hack"
 
+   
    try ./configure --prefix="$INSTALL" \
        --cc="${CC:-gcc}" \
        $FFMPEGFLAGS \
+       $LIBAV_FLAGS \
        $MEM_ALIGN_HACK \
        --enable-runtime-cpudetect \
        --enable-shared \
@@ -334,6 +342,7 @@ if [ \! -e built.av ]; then
        --enable-demuxer=mpegvideo \
        --enable-demuxer=ogg \
        --enable-demuxer=wav \
+       --enable-demuxer=webm \
        --disable-decoders \
        --enable-decoder=flac \
        --enable-decoder=mp2 \
@@ -356,11 +365,13 @@ if [ \! -e built.av ]; then
        --enable-decoder=theora \
        --enable-decoder=vorbis \
        --enable-decoder=vp3 \
+       --enable-decoder=vp8 \
        --disable-parsers \
        --enable-parser=mpegaudio \
        --enable-parser=mpegvideo \
        --enable-parser=mpeg4video \
        --enable-parser=vp3 \
+       --enable-parser=vp8 \
        --disable-protocols \
        --enable-protocol=file \
        --disable-devices \
@@ -415,6 +426,7 @@ if [ -n "$RENPY_BUILD_ALT" ]; then
             --enable-demuxer=mov \
             --enable-demuxer=ogg \
             --enable-demuxer=wav \
+            --enable-demuxer=webm \
             --disable-decoders \
             --enable-decoder=flac \
             --enable-decoder=pcm_dvd \
@@ -427,8 +439,10 @@ if [ -n "$RENPY_BUILD_ALT" ]; then
             --enable-decoder=theora \
             --enable-decoder=vorbis \
             --enable-decoder=vp3 \
+            --enable-decoder=vp8 \
             --disable-parsers \
             --enable-parser=vp3 \
+            --enable-parser=vp8 \
             --disable-protocols \
             --enable-protocol=file \
             --disable-devices \
@@ -491,6 +505,8 @@ if [ $PLATFORM != "windows" ] ; then
     try tar xjf "$SOURCE/zsync-0.6.2.tar.bz2"
     try cd "$BUILD/zsync-0.6.2"
 
+    try patch -p1 < "$SOURCE/zsync-no-isatty.diff"
+    
     try "./configure" --prefix="$INSTALL"
     try make
     try make install
@@ -499,7 +515,20 @@ if [ $PLATFORM != "windows" ] ; then
     touch built.zsync
   fi
 fi
-    
+
+if [ $PLATFORM = "linux" -a \! -e built.patchelf ]; then
+    try tar xzf "$SOURCE/patchelf-0.6.tar.gz"
+    try cd "$BUILD/patchelf-0.6"
+
+    try "./configure" --prefix="$INSTALL"
+    try make
+    try make install
+
+    cd "$BUILD"
+    touch built.patchelf
+fi
+
+
 echo
 cat ../env.sh
 

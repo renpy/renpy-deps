@@ -63,7 +63,7 @@ cc1 -E %{traditional|traditional-cpp:-traditional-cpp}
 
 
 *libgcc:
-%{mthreads:-lmingwthrd} -lmingw32    %{shared-libgcc:-lgcc_s} %{!shared-libgcc:-lgcc_eh}    -lgcc    -lmoldname90 -lmingwex -lmsvcr90
+%{mthreads:-lmingwthrd} -lmingw32    %{shared-libgcc:-lgcc_s} %{!shared-libgcc:-lgcc_eh}    -lgcc  -lmoldname90 -lmingwex -lmsvcr90
 
 *startfile:
 %{shared|mdll:dllcrt2%O%s}   %{!shared:%{!mdll:crt2%O%s}} %{pg:gcrt2%O%s}   crtbegin.o%s
