@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SOURCE=`dirname "$0"`
+SOURCE=`dirname "$0"`/source
 PWD=`pwd`
 BUILD=$PWD/build
 INSTALL=$PWD/install
