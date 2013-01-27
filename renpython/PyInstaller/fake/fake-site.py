@@ -13,8 +13,6 @@ def init():
 
     path = path[:i] + "/../pythonlib2.7"
         
-    print path
-
     sys.path.append(path)
     import os.path
     sys.path.pop()
