@@ -176,16 +176,36 @@ class Build(object):
             self.copy_module(name, path)
         else:
             self.copy_binary(name, path)
-            
+
+
+    def patchelf(self):
+        
+        def patchfn(fn, origin):
+
+            if os.path.isdir(fn):
+                
+                for i in os.listdir(fn):
+                    patchfn(os.path.join(fn, i), origin + "/..")
+                
+            else:
+                
+                with open(fn, "rb") as f:
+                    head = f.read(4)
+                    
+                    if head != b"\x7fELF":
+                        return
+                
+                subprocess.check_call(["patchelf", "--set-rpath", origin, fn])
+
+        for fn in os.listdir(self.platlib):
+            patchfn(os.path.join(self.platlib, fn), "$ORIGIN")
+
             
     def python(self):
 
         def copy_python(src, dest):
             fn = os.path.join(self.platlib, dest)
             self.copy_file(src, fn)
-
-            if linux:
-                subprocess.check_call(["patchelf", "--set-rpath", "$ORIGIN", fn])
 
         if windows:
             copy_python(sys.executable, "python.exe")
@@ -251,4 +271,8 @@ if __name__ == "__main__":
     b.files()
     b.move_pure()
     b.python()
+
+    if linux:
+        b.patchelf()
+        
     
