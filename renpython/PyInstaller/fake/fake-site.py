@@ -52,13 +52,14 @@ def init():
     
 init()
 
+
+
 ################################################################################
 # Argv Emulation
 ################################################################################
 
 # Taken from py2app.
     
-import sys
 import os
 import time
 
@@ -301,8 +302,8 @@ def _run_argvemulator(timeout = 60):
             open_url_handler, FALSE)
 
 
-def _argv_emulation():
-    import sys
+def _renpy_argv_emulation():
+
     # only use if started by LaunchServices
     for arg in sys.argv[1:]:
         if arg.startswith('-psn'):
@@ -316,5 +317,3 @@ def _argv_emulation():
                 del sys.argv[1]
 
             break
-
-_argv_emulation()
