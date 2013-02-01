@@ -203,12 +203,9 @@ class Build(object):
     def patchmacho(self):
         
         def generate_parents(fn):
-            relative = "@executable_path"
-            
             while fn != self.platlib:
                 fn = os.path.dirname(fn)
-                yield (fn, relative)
-                relative += "/.."
+                yield fn
         
         def patchfn(fn):
 
@@ -230,12 +227,23 @@ class Build(object):
                 
                 def changefunc(s):
                     basename = os.path.basename(s)
-                    for d, relative in generate_parents(fn):
+                    for d in generate_parents(fn):
                         if os.path.exists(os.path.join(d, basename)):
-                            print s, "->", relative + "/" + basename
+                            relpath = os.path.relpath(d, self.platlib)
+                            
+                            if relpath != ".":
+                                relative = "@executable_path/" + relpath
+                            else:
+                                relative = "@executable_path"
+                                
+                            # relative = "@execution_path/" + os.path.relpath(d, self.platlib)
+
+                            print "  <", s
+                            print "  >", relative + "/" + basename
+
                             return relative + "/" + basename
                     
-                    print s, "->", None
+                    print "  X", s
                     return None
                      
                 libs = set()
@@ -255,7 +263,6 @@ class Build(object):
                         continue
                     
                     cmd = [ "install_name_tool", "-change", old, new, fn ]                     
-                    print(cmd)
                     subprocess.check_call(cmd)
                 
         for fn in os.listdir(self.platlib):
