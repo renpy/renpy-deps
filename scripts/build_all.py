@@ -134,7 +134,7 @@ if args.linux:
 if args.mac:
     mac = Command("mac", [
             "ssh",
-            "root@mary12",
+            "tom@mary12",
             "/Volumes/shared/ab/renpy-deps/scripts/build_renpy_mac.sh",
             ])
 
