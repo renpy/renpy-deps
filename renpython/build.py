@@ -200,6 +200,66 @@ class Build(object):
         for fn in os.listdir(self.platlib):
             patchfn(os.path.join(self.platlib, fn), "$ORIGIN")
 
+    def patchmacho(self):
+        
+        def generate_parents(fn):
+            relative = "@executable_path"
+            
+            while fn != self.platlib:
+                fn = os.path.dirname(fn)
+                yield (fn, relative)
+                relative += "/.."
+        
+        def patchfn(fn):
+
+            if os.path.isdir(fn):
+                
+                for i in os.listdir(fn):
+                    patchfn(os.path.join(fn, i))
+                
+            else:
+                
+                with open(fn, "rb") as f:
+                    head = f.read(4)
+                    if head != b"\xCF\xFA\xED\xFE":
+                        return
+                
+                print
+                print fn
+                print
+                
+                def changefunc(s):
+                    basename = os.path.basename(s)
+                    for d, relative in generate_parents(fn):
+                        if os.path.exists(os.path.join(d, basename)):
+                            print s, "->", relative + "/" + basename
+                            return relative + "/" + basename
+                    
+                    print s, "->", None
+                    return None
+                     
+                libs = set()
+                        
+                p = subprocess.Popen([ "otool", "-L", fn ], stdout=subprocess.PIPE)
+                for l in p.stdout:
+                    if l[0] != "\t":
+                        continue
+                    
+                    libs.add(l.split()[0])
+                    
+                p.wait()
+                
+                for old in libs:
+                    new = changefunc(old)
+                    if new is None:
+                        continue
+                    
+                    cmd = [ "install_name_tool", "-change", old, new, fn ]                     
+                    print(cmd)
+                    subprocess.check_call(cmd)
+                
+        for fn in os.listdir(self.platlib):
+            patchfn(os.path.join(self.platlib, fn))
             
     def python(self):
 
@@ -212,7 +272,7 @@ class Build(object):
             copy_python(sys.executable.replace(".exe", "w.exe"), "pythonw.exe")
         elif macintosh:
             copy_python(sys.executable, "python")
-            copy_python(sys.executable + "w", "pythonw")
+            copy_python(sys.executable, "pythonw")
         else:
             copy_python(sys.executable, "python")
             copy_python(sys.executable, "pythonw")
@@ -256,8 +316,6 @@ class Build(object):
             if ispure(source):
                 shutil.move(source, dest)
 
-   
-
 if __name__ == "__main__":
 
     ap = argparse.ArgumentParser()
@@ -274,5 +332,7 @@ if __name__ == "__main__":
 
     if linux:
         b.patchelf()
+    if macintosh:
+        b.patchmacho()
         
-    
+        
