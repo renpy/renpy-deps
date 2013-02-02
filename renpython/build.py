@@ -48,7 +48,6 @@ EXCLUDES = [
     '_numpy',
     'multiarray',
     "pyasn1",
-    'pygame.cdrom',
     'pygame.mixer',
     'pygame.mixer_music',
     'pygame.movie',
@@ -194,8 +193,10 @@ class Build(object):
                     
                     if head != b"\x7fELF":
                         return
-                
-                subprocess.check_call(["patchelf", "--set-rpath", origin, fn])
+
+                subprocess.check_call([ "chmod", "u+w", fn ])
+                subprocess.check_call([ "strip", "-x", "-S", fn ])
+                subprocess.check_call([ "patchelf", "--set-rpath", origin, fn])
 
         for fn in os.listdir(self.platlib):
             patchfn(os.path.join(self.platlib, fn), "$ORIGIN")
@@ -247,6 +248,8 @@ class Build(object):
                     return None
                      
                 libs = set()
+                        
+                subprocess.check_call([ "strip", "-x", "-S", fn ])
                         
                 p = subprocess.Popen([ "otool", "-L", fn ], stdout=subprocess.PIPE)
                 for l in p.stdout:
