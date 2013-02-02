@@ -145,6 +145,8 @@ if args.linux:
 if args.mac:
     mac.join()
 
+subprocess.check_call([ "./build_finish.sh" ])
+
 print
 print failed, "failed."
 print succeded, "succeded."

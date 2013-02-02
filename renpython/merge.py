@@ -11,8 +11,6 @@ import os
 def recursive_copy(src, dest):
     
     if os.path.isdir(src):
-        print(src)
-        
         if not os.path.exists(dest):
             os.mkdir(dest)
             
