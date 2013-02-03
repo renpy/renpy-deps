@@ -1,7 +1,7 @@
 #!/bin/sh
 
 try () {
-    "$@" || exit -1
+    "$@" || exit 1
 }
 
 DIR=$1
