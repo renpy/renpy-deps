@@ -47,8 +47,27 @@ def init():
     exe_path = os.path.abspath(sys.executable)
     exe_dir = os.path.dirname(exe_path)
     lib_dir = os.path.dirname(exe_dir)
+
+    import site
+
+    # Simplify the path.
+    sys.path = [
+        os.path.dirname(site.__file__),
+        os.path.join(lib_dir, "pythonlib2.7"),
+        ]
     
-    sys.path.append(os.path.join(lib_dir, "pythonlib2.7"))
+    # On windows, add the DLL directory to the path.
+    import platform
+    if platform.win32_ver()[0]:
+        path = os.environ['PATH'].split(';')
+        
+        if path[0] != exe_dir:
+            path.insert(0, exe_dir)
+            os.environ['PATH'] = ";".join(path)
+            
+        
+        
+    
     
 init()
 
