@@ -8,6 +8,7 @@ import tempfile
 import PyInstaller.build as build
 from PyInstaller.build import Analysis
 import argparse
+import fnmatch
 
 ROOT = os.path.dirname(os.path.abspath(sys.argv[0]))
 
@@ -58,6 +59,8 @@ EXCLUDES = [
     "sndhdr",
     '_ssl',
     "ssl",
+    "win32pipe",
+    "win32api",
     ]
 
 def print_analysis(a):
@@ -69,12 +72,26 @@ def print_analysis(a):
             for j in sorted(getattr(a, i)):
                 print " ", j
 
+FILE_EXCLUDES = [
+    "D3DCOMPILER*.dll",
+    "d3dx9_*.dll",
+    "msvcp*.dll",
+    "msvcm*.dll",
+    "pywintypes*.dll",
+    ]
+
 def renpy_filter(name, path, kind):
     
     if path.startswith("/usr"):
         return False
     if path.startswith("/lib"):
         return False
+    
+    basename = os.path.basename(path)
+    
+    for i in FILE_EXCLUDES:
+        if fnmatch.fnmatch(basename, i):
+            return
     
     if name.startswith("renpy.") and kind == "PYMODULE":
         return False
@@ -103,6 +120,7 @@ class Build(object):
         os.makedirs(self.platlib)
         os.makedirs(self.purepy)
         
+        build.specnm = "renpy"
         build.BUILDPATH = tempfile.mkdtemp()
         build.WARNFILE = os.path.join(self.workdir, "warnings.txt")
         build.DEPSFILE = os.path.join(self.workdir, "deps.txt")
@@ -270,6 +288,46 @@ class Build(object):
                 
         for fn in os.listdir(self.platlib):
             patchfn(os.path.join(self.platlib, fn))
+
+    def patchcoff(self):
+        
+        def patchfn(fn):
+
+            if os.path.isdir(fn):
+                
+                for i in os.listdir(fn):
+                    patchfn(os.path.join(fn, i))
+                
+            else:
+
+                EXTENSIONS = [
+                    ".exe",
+                    ".dll",
+                    ".pyd",
+                    ]
+                
+                for i in EXTENSIONS:
+                    if fn.lower().endswith(i):
+                        break
+                else:
+                    return
+
+                p = subprocess.Popen([ "objdump", "-h", fn ], stdout=subprocess.PIPE)
+
+                has_debug = False
+
+                for l in p.stdout:
+                    if ".debug_info" in l:
+                        has_debug = True
+                    
+                p.wait()
+
+                if has_debug:
+                    subprocess.check_call([ "strip", "--strip-debug", "--keep-file-symbols", fn ])
+        
+        for fn in os.listdir(self.platlib):
+            patchfn(os.path.join(self.platlib, fn))
+        
             
     def python(self):
 
@@ -344,5 +402,7 @@ if __name__ == "__main__":
         b.patchelf()
     if macintosh:
         b.patchmacho()
+    if windows:
+        b.patchcoff()
         
         

@@ -15,13 +15,12 @@ try python -OO $DEPS/renpython/merge.py \
     $RENPY \
     linux-x86_64 \
     linux-i686 \
-    darwin-x86_64
+    darwin-x86_64 \
+    windows-i686
  
 WINLIB=$RENPY/lib/windows-i686
     
-try mkdir -p $WINLIB
-
 try cp $DEPS/windows/zsync.exe $WINLIB
 try cp $DEPS/windows/zsyncmake.exe $WINLIB
-try cp $DEPS/windows/dxwebsetup.exe $RENPY/lib
+try cp $DEPS/windows/dxwebsetup.exe $WINLIB
 
