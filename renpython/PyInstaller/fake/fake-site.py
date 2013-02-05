@@ -64,10 +64,6 @@ def init():
         if path[0] != exe_dir:
             path.insert(0, exe_dir)
             os.environ['PATH'] = ";".join(path)
-            
-        
-        
-    
     
 init()
 
