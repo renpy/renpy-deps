@@ -77,6 +77,7 @@ FILE_EXCLUDES = [
     "d3dx9_*.dll",
     "msvcp*.dll",
     "msvcm*.dll",
+    "gdiplus.dll",
     "pywintypes*.dll",
     ]
 
@@ -94,6 +95,9 @@ def renpy_filter(name, path, kind):
             return
     
     if name.startswith("renpy.") and kind == "PYMODULE":
+        return False
+
+    if name.startswith("Editra.") and kind == "PYMODULE":
         return False
     
     return True
@@ -125,10 +129,13 @@ class Build(object):
         build.WARNFILE = os.path.join(self.workdir, "warnings.txt")
         build.DEPSFILE = os.path.join(self.workdir, "deps.txt")
 
-    def analyze(self, renpy_path):
+    def analyze(self, base, script):
 
-        sys.path.insert(0, renpy_path)
-        self.analysis = Analysis([ os.path.join(renpy_path, "renpy.py") ], 
+        script = os.path.join(base, script)
+
+        sys.path.insert(0, os.path.dirname(script))
+
+        self.analysis = Analysis([ script ], 
             hookspath=[ os.path.join(ROOT, "hooks") ],
             hiddenimports=[ 'site' ],
             excludes=EXCLUDES)
@@ -152,6 +159,7 @@ class Build(object):
         
         print "Modules:", " ".join(self.modules)
         print "Binaries:", " ".join(self.binaries)
+        print "Workdir:", self.workdir
 
     def copy_file(self, src, dst):
         
@@ -388,12 +396,18 @@ if __name__ == "__main__":
 
     ap = argparse.ArgumentParser()
     ap.add_argument("platform")
-    ap.add_argument("renpy")
+    ap.add_argument("base")
+    ap.add_argument("script", default="renpy.py")
+    
+    ap.add_argument("--encodings", action="store_true")
     
     args = ap.parse_args()
 
-    b = Build(args.platform, args.renpy)
-    b.analyze(args.renpy)
+    global encodings
+    encodings = args.encodings
+
+    b = Build(args.platform, args.base)
+    b.analyze(args.base, args.script)
     b.files()
     b.move_pure()
     b.python()

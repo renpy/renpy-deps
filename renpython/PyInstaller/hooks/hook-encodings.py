@@ -17,16 +17,20 @@
 
 #encodings',
 
-# Ren'Py - don't import encodings.
+import __main__
 
-#attrs = [('search_function',0)]
-#
-#import os, sys, glob
-#from distutils import sysconfig
-#hiddenimports = []
-#libpath = sysconfig.get_python_lib(plat_specific=0, standard_lib=1)
-#for f in glob.glob(os.path.join(libpath, "encodings", "*.py")):
-#    f = os.path.basename(f)
-#    f = os.path.splitext(f)[0]
-#    if f != "__init__":
-#        hiddenimports.append(f)
+attrs = [('search_function',0)]
+
+import os, sys, glob
+from distutils import sysconfig
+
+hiddenimports = []
+
+if __main__.encodings:
+
+    libpath = sysconfig.get_python_lib(plat_specific=0, standard_lib=1)
+    for f in glob.glob(os.path.join(libpath, "encodings", "*.py")):
+        f = os.path.basename(f)
+        f = os.path.splitext(f)[0]
+        if f != "__init__":
+            hiddenimports.append(f)
