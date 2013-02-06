@@ -43,10 +43,10 @@ def main():
     def renpy(*args):
         return os.path.join(renpy_path, *args)
     
-    if not os.path.exists(renpy("renpy.py")):
+    if not os.path.exists(renpy("renpy.py")) and not os.path.exists(renpy("Editra")):
         print("The first argument needs to be the path to renpy.")
-        sys.exist(0)
-        
+        sys.exit(0)
+
     if os.path.isdir(renpy("lib")):
         shutil.rmtree(renpy("lib"))
         
