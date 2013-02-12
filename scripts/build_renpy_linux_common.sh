@@ -13,7 +13,7 @@ try python setup.py clean --all
 try python setup.py install_lib -d $PYTHONPATH
 
 try cd /home/tom/ab/renpy-deps/renpython
-try python -OO build.py linux-`arch` /home/tom/ab/renpy
+try python -OO build.py linux-`arch` /home/tom/ab/renpy renpy.py
 
 
 #

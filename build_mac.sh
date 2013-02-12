@@ -20,4 +20,3 @@ export JPEG_ASM="--host x86_64-apple-darwin"
 
 try "$DIR/build_python.sh"
 try "$DIR/build.sh"
-

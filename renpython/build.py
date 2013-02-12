@@ -337,7 +337,7 @@ class Build(object):
             patchfn(os.path.join(self.platlib, fn))
         
             
-    def python(self):
+    def python(self, command):
 
         def copy_python(src, dest):
             fn = os.path.join(self.platlib, dest)
@@ -346,12 +346,16 @@ class Build(object):
         if windows:
             copy_python(sys.executable, "python.exe")
             copy_python(sys.executable.replace(".exe", "w.exe"), "pythonw.exe")
-        elif macintosh:
-            copy_python(sys.executable, "python")
-            copy_python(sys.executable, "pythonw")
+            copy_python(sys.executable.replace(".exe", "w.exe"), command + ".exe")
         else:
             copy_python(sys.executable, "python")
             copy_python(sys.executable, "pythonw")
+            copy_python(sys.executable, command)
+
+            exedir = os.path.dirname(sys.executable)
+            copy_python(os.path.join(exedir, "zsync"), "zsync")
+            copy_python(os.path.join(exedir, "zsyncmake"), "zsyncmake")
+
             
     def move_pure(self):
         """
@@ -400,6 +404,7 @@ if __name__ == "__main__":
     ap.add_argument("script", default="renpy.py")
     
     ap.add_argument("--encodings", action="store_true")
+    ap.add_argument("--command", action="store", default="renpy")
     
     args = ap.parse_args()
 
@@ -410,7 +415,7 @@ if __name__ == "__main__":
     b.analyze(args.base, args.script)
     b.files()
     b.move_pure()
-    b.python()
+    b.python(args.command)
 
     if linux:
         b.patchelf()

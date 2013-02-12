@@ -2,14 +2,20 @@
 #include <stdlib.h>
 #include <malloc.h>
 
-#ifndef COMMAND
-#define COMMAND L"\\lib\\windows-i686\\pythonw.exe"
+#ifndef PYTHON_DIR
+#define PYTHON_DIR L"\\lib\\windows-i686\\"
 #endif
 
+#ifndef SCRIPT_DIR
+#define SCRIPT_DIR L"\\"
+#endif
+
+#define PATHLEN 65536
 
 int wmain(int argc, wchar_t **argv) {
 
 	wchar_t *dirname = L".";
+	wchar_t *basename;
 
 	/* Compute dirname from argv0. */
 	{
@@ -19,6 +25,7 @@ int wmain(int argc, wchar_t **argv) {
 
 		argv0_copy = wcsdup(argv[0]);
 		c = argv0_copy;
+		basename = argv0_copy;
 
 		while (*c) {
 			if (*c == L'\\' || *c == L'/') {
@@ -31,29 +38,46 @@ int wmain(int argc, wchar_t **argv) {
 
 		if (endc) {
 			*endc = 0;
+			basename = endc + 1;
+		}
+	}
+
+	/* If the basename ends with .exe, remove that. */
+	{
+		int dot = wcslen(basename) - 4;
+
+		if (basename[dot] == L'.') {
+			basename[dot] = 0;
 		}
 	}
 
 	/* Figure out the path to python. */
 	int dirnamelen = wcslen(dirname);
-	wchar_t python[dirnamelen + 200];
+	wchar_t python[PATHLEN];
 
 	wcscpy(python, dirname);
-	wcscat(python, COMMAND);
+	wcscat(python, PYTHON_DIR);
+
+#ifdef PYTHON
+	wcscat(python, PYTHON);
+#else
+	wcscat(python, basename);
+	wcscat(python, L".exe");
+#endif
 
 	/* Figure out the python script. */
-	wchar_t script[wcslen(argv[0]) + 4];
+	wchar_t script[PATHLEN];
 
 	{
-		wcscpy(script, argv[0]);
+		wcscpy(script, dirname);
+		wcscat(script, SCRIPT_DIR);
 
-		int dot = wcslen(script) - 4;
-
-		if (script[dot] == L'.') {
-			script[dot] = 0;
-		}
-
+#ifdef SCRIPT
+		wcscat(script, SCRIPT);
+#else
+		wcscat(script, basename);
 		wcscat(script, L".py");
+#endif
 	}
 
 	/* Set up the new arguments. */

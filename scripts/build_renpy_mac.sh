@@ -14,6 +14,6 @@ try python setup.py clean --all
 try python setup.py install_lib -d $PYTHONPATH
 
 try cd $AB/renpy-deps/renpython
-try python -OO build.py darwin-x86_64 $AB/renpy
+try python -OO build.py darwin-x86_64 $AB/renpy renpy.py
 
 echo done.
