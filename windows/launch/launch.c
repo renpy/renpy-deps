@@ -1,6 +1,9 @@
+#define UNICODE
+
 #include <wchar.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <windows.h>
 
 #ifndef PYTHON_DIR
 #define PYTHON_DIR L"\\lib\\windows-i686\\"
@@ -113,6 +116,16 @@ int wmain(int argc, wchar_t **argv) {
 		}
 	}
 
+	{
+		wchar_t message[PATHLEN];
+		wsprintf(message, L"Could not execute %ls. Is it missing?", python);
+
+		MessageBoxW(
+				NULL,
+				message,
+				argv[0],
+				0);
+	}
 
 //	wprintf(L"dirname = %ls\n", dirname);
 //	wprintf(L"python = %ls\n", python);
