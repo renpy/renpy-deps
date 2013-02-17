@@ -55,7 +55,6 @@ EXCLUDES = [
     'pygame.sndarray',
     'pygame.surfarray',
     'readline',
-    "rsa.pkcs1",
     "sndhdr",
     '_ssl',
     "ssl",
