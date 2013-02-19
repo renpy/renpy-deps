@@ -48,7 +48,6 @@ EXCLUDES = [
     'os2emxpath',
     '_numpy',
     'multiarray',
-    "pyasn1",
     'pygame.mixer',
     'pygame.mixer_music',
     'pygame.movie',
@@ -409,6 +408,9 @@ if __name__ == "__main__":
 
     global encodings
     encodings = args.encodings
+
+    if args.command == "renpy":
+        EXCLUDES.append("pkg_resources")
 
     b = Build(args.platform, args.base)
     b.analyze(args.base, args.script)
