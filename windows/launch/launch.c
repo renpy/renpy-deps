@@ -116,7 +116,7 @@ int wmain(int argc, wchar_t **argv) {
 		int i;
 
 		newargs[0] = quote(python);
-		newargs[1] = quote(L"-OO");
+		newargs[1] = quote(L"-EOO");
 		newargs[2] = quote(script);
 
 		for (i = 1; i < argc; i++) {
