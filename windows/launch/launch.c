@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <windows.h>
+#include <stdlib.h>
 
 #ifndef PYTHON_DIR
 #define PYTHON_DIR L"\\lib\\windows-i686\\"
@@ -14,6 +15,31 @@
 #endif
 
 #define PATHLEN 65536
+
+/**
+ * Quotes s so that it can be passed via the windows command line.
+ */
+wchar_t *quote(const wchar_t *s) {
+	wchar_t *rv = (wchar_t *) malloc(sizeof(wchar_t) * 2 * wcslen(s));
+
+	const wchar_t *src = s;
+	wchar_t *dst = rv;
+
+	*dst++ = L'"';
+
+	while(*src) {
+		if(*src == L'\\' || *src == L'"') {
+			*dst++ = L'\\';
+		}
+
+		*dst++ = *src++;
+	}
+
+	*dst++ = L'"';
+	*dst++ = 0;
+
+	return rv;
+}
 
 int wmain(int argc, wchar_t **argv) {
 
@@ -89,12 +115,12 @@ int wmain(int argc, wchar_t **argv) {
 	{
 		int i;
 
-		newargs[0] = python;
-		newargs[1] = L"-OO";
-		newargs[2] = script;
+		newargs[0] = quote(python);
+		newargs[1] = quote(L"-OO");
+		newargs[2] = quote(script);
 
 		for (i = 1; i < argc; i++) {
-			newargs[2 + i] = argv[i];
+			newargs[2 + i] = quote(argv[i]);
 		}
 
 		newargs[argc + 2] = NULL;
