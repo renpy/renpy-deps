@@ -200,8 +200,10 @@ fi
 
 
 if [ \! -e built.freetype ]; then
-   try tar xzf "$SOURCE/freetype-2.3.12.tar.gz"
-   try cd "$BUILD/freetype-2.3.12"
+   try tar xaf "$SOURCE/freetype-2.4.11.tar.bz2"
+   try cd "$BUILD/freetype-2.4.11"
+
+   try patch -p1 < "$SOURCE/freetype-2.2.1-enable-valid.patch"
 
    try ./configure --prefix="$INSTALL"
 
