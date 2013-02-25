@@ -59,11 +59,8 @@ def init():
     # On windows, add the DLL directory to the path.
     import platform
     if platform.win32_ver()[0]:
-        path = os.environ.get("PATH", "").split(';')
-        
-        if path[0] != exe_dir:
-            path.insert(0, exe_dir)
-            os.environ['PATH'] = ";".join(path)
+        from ctypes import windll, c_char_p
+        windll.kernel32.SetDllDirectoryA(exe_dir)
     
 init()
 
