@@ -33,10 +33,10 @@ PYVERSION="2.7"
 EXCLUDES = [ 
     "archive",
     "compiler",
-    "distutils",
     'doctest',
     'dotblas',
     '_dotblas',
+    "enchant.tests",
     "getpass",
     "iu",
     'macpath',
@@ -48,17 +48,22 @@ EXCLUDES = [
     'os2emxpath',
     '_numpy',
     'multiarray',
+    "py2exe",
     'pygame.mixer',
     'pygame.mixer_music',
     'pygame.movie',
     'pygame.sndarray',
     'pygame.surfarray',
+    'pywin',
+    'pythoncom',
     'readline',
     "sndhdr",
     '_ssl',
     "ssl",
+    'unittest',
     "win32pipe",
     "win32api",
+    "win32com",
     ]
 
 def print_analysis(a):
@@ -95,10 +100,30 @@ def renpy_filter(name, path, kind):
     if name.startswith("renpy.") and kind == "PYMODULE":
         return False
 
-    if name.startswith("Editra.") and kind == "PYMODULE":
+    return True
+
+def editra_filter(name, path, kind):
+    
+    if path.startswith("/usr"):
+        return False
+    if path.startswith("/lib"):
+        return False
+    
+    basename = os.path.basename(path)
+    
+    for i in FILE_EXCLUDES:
+        if fnmatch.fnmatch(basename, i):
+            return
+    
+    path = os.path.normpath(path)
+    exclude = os.path.normpath(editra_exclude)
+        
+    if path.startswith(exclude):
         return False
     
     return True
+
+file_filter = renpy_filter
 
 class Build(object):
 
@@ -132,6 +157,9 @@ class Build(object):
         script = os.path.join(base, script)
 
         sys.path.insert(0, os.path.dirname(script))
+        
+        print sys.path
+
 
         self.analysis = Analysis([ script ], 
             hookspath=[ os.path.join(ROOT, "hooks") ],
@@ -192,7 +220,7 @@ class Build(object):
         
     def process(self, name, path, kind):
         
-        if not renpy_filter(name, path, kind):
+        if not file_filter(name, path, kind):
             return
         
         if kind == "EXTENSION" or kind == "PYMODULE":
@@ -411,7 +439,13 @@ if __name__ == "__main__":
 
     if args.command == "renpy":
         EXCLUDES.append("pkg_resources")
-
+        EXCLUDES.append("distutils")
+        file_filter = renpy_filter
+    
+    elif args.command == "editra":
+        editra_exclude = args.base
+        file_filter = editra_filter
+    
     b = Build(args.platform, args.base)
     b.analyze(args.base, args.script)
     b.files()
