@@ -61,8 +61,8 @@ else
     
     if [ `arch` = "x86_64" ]; then
         export CFLAGS="-fPIC $CFLAGS"
-        export CXXFLAGS="-fPIC $CFLAGS"
-        export LDFLAGS="-fPIC $CFLAGS"
+        export CXXFLAGS="-fPIC $CXXFLAGS"
+        export LDFLAGS="-fPIC $LDFLAGS"
     fi
 fi
 
