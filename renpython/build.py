@@ -78,8 +78,6 @@ def print_analysis(a):
 FILE_EXCLUDES = [
     "D3DCOMPILER*.dll",
     "d3dx9_*.dll",
-    "msvcp*.dll",
-    "msvcm*.dll",
     "gdiplus.dll",
     "pywintypes*.dll",
     ]
@@ -440,6 +438,8 @@ if __name__ == "__main__":
     if args.command == "renpy":
         EXCLUDES.append("pkg_resources")
         EXCLUDES.append("distutils")
+        FILE_EXCLUDES.append("msvcp*.dll")
+        FILE_EXCLUDES.append("msvcm*.dll")
         file_filter = renpy_filter
     
     elif args.command == "editra":
