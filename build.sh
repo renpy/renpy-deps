@@ -275,6 +275,8 @@ if [ \! -e built.pygame ]; then
    try tar xzf "$SOURCE/pygame-1.9.1release.tar.gz"
    try cd "$BUILD/pygame-1.9.1release"
 
+   try patch -p0 < "$SOURCE/pygame-blit-release-gil.diff"
+
    try cp "$SOURCE/pygame-setup.py" setup.py
    try python "$SOURCE/write_pygame_setup.py" "$INSTALL" > Setup
 
