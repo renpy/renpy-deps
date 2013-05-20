@@ -158,7 +158,9 @@ if [ \! -e built.sdl ]; then
    # On windows, we have the problem that maximizing causes the start
    # button to overlap the GL window, making performance lousy, so we
    # disable maximize.
+   
    try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff 
+   try patch -p0 < $SOURCE/sdl-remove-windows-item.diff
 
    if [ $PLATFORM = "mac" ]; then
        SDL_EXTRA="--disable-video-x11"
