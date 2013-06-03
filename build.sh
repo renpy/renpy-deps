@@ -303,22 +303,23 @@ LIBAV_FLAGS=
 
 if [ $PLATFORM = "windows" ]; then
    LIBAV_FLAGS="--disable-pthreads --enable-w32threads"
+   # LIBAV_CFLAGS="-Dstat=__stat32 -Dfstat=_fstat32"
 fi
 
 if [ \! -e built.av ]; then
-   try tar xzf "$SOURCE/libav-0.7.6.tar.gz" 
-   try cd "$BUILD/libav-0.7.6"
+   try tar xzf "$SOURCE/libav-9.6.tar.gz" 
+   try cd "$BUILD/libav-9.6"
 
    # https://bugzilla.libav.org/show_bug.cgi?id=36
-   try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
+   # try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
    
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
-   try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
+   # try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
 
    # av_cold is also a problem on windows.
-   export CFLAGS="$CFLAGS -fno-common -Dav_cold="
-   export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
+   export CFLAGS="$CFLAGS -fno-common $LIBAV_CFLAGS"
+   export CXXFLAGS="$CXXFLAGS -fno-common $LIBAV_CFLAGS"
    MEM_ALIGN_HACK="--enable-memalign-hack"
 
    
@@ -393,24 +394,24 @@ if [ \! -e built.av ]; then
    touch built.av
 fi
 
+CFLAGS="$OLD_CFLAGS"
+CXXFLAGS="$OLD_CXXFLAGS"
+
 if [ -n "$RENPY_BUILD_ALT" ]; then
 
     mkdir -p "$BUILD/alt"
 
     if [ \! -e built.avalt ]; then
-        try tar xzf "$SOURCE/libav-0.7.5.tar.gz" -C "$BUILD/alt" 
-        try cd "$BUILD/alt/libav-0.7.5"
-        
-# https://bugzilla.libav.org/show_bug.cgi?id=36
-        try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
+        try tar xzf "$SOURCE/libav-9.6.tar.gz" -C "$BUILD/alt" 
+        try cd "$BUILD/alt/libav-9.6"
 
-# My windows libraries don't seem to export fstat. So use _fstat32
-# instead.
-        try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
+        # My windows libraries don't seem to export fstat. So use _fstat32
+        # instead.
+        #try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
 
 # av_cold is also a problem on windows.
-        export CFLAGS="$CFLAGS -fno-common -Dav_cold="
-        export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold="
+        export CFLAGS="$CFLAGS -fno-common -Dav_cold= $LIBAV_CFLAGS"
+        export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold= $LIBAV_CFLAGS"
         MEM_ALIGN_HACK="--enable-memalign-hack"
 
         try ./configure --prefix="$INSTALL/alt" \
@@ -464,8 +465,11 @@ if [ -n "$RENPY_BUILD_ALT" ]; then
         touch built.avalt
     fi
 
-
 fi
+
+CFLAGS="$OLD_CFLAGS"
+CXXFLAGS="$OLD_CXXFLAGS"
+
 
 if [ \! -e built.fribidi ]; then
 
