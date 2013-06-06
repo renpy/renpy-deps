@@ -302,22 +302,20 @@ fi
 LIBAV_FLAGS=
 
 if [ $PLATFORM = "windows" ]; then
-   LIBAV_FLAGS="--disable-pthreads --enable-w32threads"
-   # LIBAV_CFLAGS="-Dstat=__stat32 -Dfstat=_fstat32"
+      LIBAV_FLAGS="--disable-pthreads --enable-w32threads"
+   LIBAV_CFLAGS="-D__MINGW32__"
 fi
 
 if [ \! -e built.av ]; then
    try tar xzf "$SOURCE/libav-9.6.tar.gz" 
    try cd "$BUILD/libav-9.6"
 
-   # https://bugzilla.libav.org/show_bug.cgi?id=36
-   # try patch -p1 < "$SOURCE/libav-map-anonymous.diff"
-   
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
-   # try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
+   if [ $PLATFORM = "windows" ]; then
+        try patch -p1 < "$SOURCE/libav-fstat.diff"
+   fi
 
-   # av_cold is also a problem on windows.
    export CFLAGS="$CFLAGS -fno-common $LIBAV_CFLAGS"
    export CXXFLAGS="$CXXFLAGS -fno-common $LIBAV_CFLAGS"
    MEM_ALIGN_HACK="--enable-memalign-hack"
@@ -378,7 +376,6 @@ if [ \! -e built.av ]; then
        --enable-parser=vp3 \
        --enable-parser=vp8 \
        --disable-protocols \
-       --enable-protocol=file \
        --disable-devices \
        --disable-vdpau \
        --disable-filters \
@@ -449,7 +446,6 @@ if [ -n "$RENPY_BUILD_ALT" ]; then
             --enable-parser=vp3 \
             --enable-parser=vp8 \
             --disable-protocols \
-            --enable-protocol=file \
             --disable-devices \
             --disable-vdpau \
             --disable-filters \
