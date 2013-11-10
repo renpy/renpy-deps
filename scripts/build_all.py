@@ -26,7 +26,7 @@ class Remote(threading.Thread):
         self.cmd = cmd
 
         self.start()
-        
+
     def run(self):
         log = file("log_" + self.plat + ".txt", "w")
 
@@ -42,16 +42,16 @@ class Remote(threading.Thread):
         f.write("\n")
 
         f.flush()
-        
+
         code = 255
-        
+
         for l in f:
             log.write(l)
             sys.stdout.write(l[2:])
-            
+
             if l[0] == "R":
                 code = int(l[2:])
-                
+
         if code != 0:
             print self.plat, "build failed."
             failed.append(self.plat)
@@ -60,7 +60,7 @@ class Remote(threading.Thread):
             succeded.append(self.plat)
 
 
-            
+
 
 class Command(threading.Thread):
 
@@ -72,14 +72,14 @@ class Command(threading.Thread):
         self.tail_done = False
 
         self.start()
-        
-        
+
+
     def tail(self):
 
         tf = file("log_" + self.plat + ".txt", "r")
 
         pos = 0
-        
+
         while not self.tail_done:
             tf.seek(pos)
             for l in tf:
@@ -89,13 +89,13 @@ class Command(threading.Thread):
             time.sleep(.05)
 
         tf.close()
-        
+
     def run(self):
         log = file("log_" + self.plat + ".txt", "w")
 
         tail_thread = threading.Thread(target=self.tail)
         tail_thread.start()
-        
+
         proc = subprocess.Popen(self.cmd, stdout=log, stderr=log)
         proc.wait()
 
@@ -110,25 +110,28 @@ class Command(threading.Thread):
         tail_thread.join()
 
 start = time.time()
-        
+
 os.chdir("/home/tom/ab/renpy-deps/scripts")
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--no-windows", dest="windows", action="store_false", default=True)
 ap.add_argument("--no-mac", dest="mac", action="store_false", default=True)
 ap.add_argument("--no-linux", dest="linux", action="store_false", default=True)
+ap.add_argument("--project", "-p", dest="project", action="store", default="renpy")
 args = ap.parse_args()
 
 if args.windows:
     windows = Remote("windows", "lucy12", [
             "c:/mingw/msys/1.0/bin/sh.exe",
             "/t/ab/renpy-deps/scripts/build_renpy_win.sh",
+            "/t/ab/" + args.project,
             ])
 
 
 if args.linux:
     linux = Command("linux", [
             "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
+            "/home/tom/ab/" + args.project,
             ])
 
 if args.mac:
@@ -136,18 +139,22 @@ if args.mac:
             "ssh",
             "tom@mary12",
             "/Volumes/shared/ab/renpy-deps/scripts/build_renpy_mac.sh",
+            "/Volumes/shared/ab/" + args.project,
             ])
 
 if args.windows:
     windows.join()
 if args.linux:
-    linux.join()        
+    linux.join()
 if args.mac:
     mac.join()
 
-subprocess.check_call([ "./build_finish.sh" ])
+subprocess.check_call([ "./build_finish.sh", "/home/tom/ab/" + args.project ])
 
 print
 print failed, "failed."
 print succeded, "succeded."
 print "Build took", int(time.time() - start), "seconds."
+
+if failed:
+    sys.exit(1)

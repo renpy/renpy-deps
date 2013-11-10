@@ -6,7 +6,10 @@ try () {
 
 . /newbuild/env.sh
 
-try cd /t/ab/renpy/module
+RENPY="${1:-/t/ab/renpy}"
+DEPS="/t/ab/renpy-deps"
+
+try cd "$RENPY/module"
 try python setup.py clean
 try python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH
-try python -OO /t/ab/renpy-deps/renpython/build.py windows-i686 /t/ab/renpy renpy.py
+try python -O "$DEPS/renpython/build.py" windows-i686 "$RENPY" renpy.py

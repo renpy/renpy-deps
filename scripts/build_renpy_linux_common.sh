@@ -1,21 +1,20 @@
 #!/bin/sh
 
-DEPS="$1"
+PLATFORM="$1"
+RENPY="${2:-/home/tom/ab/renpy}"
 
 try () {
     "$@" || exit 1
 }
 
-. "/home/tom/ab/$DEPS-deps/env.sh"
+. "/home/tom/ab/$PLATFORM-deps/env.sh"
 
-try cd /home/tom/ab/renpy/module
+DEPS="/home/tom/ab/renpy-deps"
+
+try cd "$RENPY/module"
 try python setup.py clean --all
 try python setup.py install_lib -d $PYTHONPATH
 
-try cd /home/tom/ab/renpy-deps/renpython
-try python -OO build.py linux-`arch` /home/tom/ab/renpy renpy.py
+try cd "$DEPS/renpython"
+try python -O build.py linux-`arch` "$RENPY" renpy.py
 
-
-#
-# try cd /home/tom/ab/py4renpy
-# try ./build.sh 
