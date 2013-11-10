@@ -8,6 +8,8 @@ import sys
 import time
 import argparse
 
+verbose = False
+
 SECRET="I didn't really want to write this code, but ssh on windows sucked so bad."
 
 failed = [ ]
@@ -47,7 +49,8 @@ class Remote(threading.Thread):
 
         for l in f:
             log.write(l)
-            sys.stdout.write(l[2:])
+            if verbose:
+                sys.stdout.write(l[2:])
 
             if l[0] == "R":
                 code = int(l[2:])
@@ -83,7 +86,8 @@ class Command(threading.Thread):
         while not self.tail_done:
             tf.seek(pos)
             for l in tf:
-                sys.stdout.write(l)
+                if verbose:
+                    sys.stdout.write(l)
             pos = tf.tell()
 
             time.sleep(.05)
@@ -118,7 +122,10 @@ ap.add_argument("--no-windows", dest="windows", action="store_false", default=Tr
 ap.add_argument("--no-mac", dest="mac", action="store_false", default=True)
 ap.add_argument("--no-linux", dest="linux", action="store_false", default=True)
 ap.add_argument("--project", "-p", dest="project", action="store", default="renpy")
+ap.add_argument("--verbose", "-v", dest="verbose", action="store_true", default=False)
 args = ap.parse_args()
+
+verbose = args.verbose
 
 if args.windows:
     windows = Remote("windows", "lucy12", [
