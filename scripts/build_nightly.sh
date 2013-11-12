@@ -1,20 +1,10 @@
 #!/bin/bash
 
-vars=( \
-    SSH_AUTH_SOCK \
-    SSH_AGENT_PID \
-    )
-
-pid=$(ps -C gnome-session -o pid --no-heading)
-eval "unset ${vars[@]}; $(printf "export %s;" $(sed 's/\x00/\n/g' /proc/${pid//[^0-9]/}/environ | grep $(printf -- "-e ^%s= " "${vars[@]}")) )"
-
 try () {
     "$@" || exit 1
 }
 
 # Check out Ren'Py.
-
-
 try cd /home/tom/ab
 rm -Rf nightly-renpy
 
@@ -67,7 +57,6 @@ try cd /home/tom/ab/nightly-renpy
 try python -O distribute.py --fast "$RENPY_NIGHTLY"
 
 # Upload everything to the server.
-
 try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@erika.onegeek.org:/home/tom/WWW.nightly --delete
 
 
