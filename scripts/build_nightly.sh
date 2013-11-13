@@ -4,6 +4,9 @@ try () {
     "$@" || exit 1
 }
 
+# Update the README.
+try cp /home/tom/ab/renpy-deps/scripts/README.nightly /home/tom/ab/WWW.nightly/README
+
 # Check out Ren'Py.
 try cd /home/tom/ab
 rm -Rf nightly-renpy

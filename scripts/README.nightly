@@ -1,0 +1,27 @@
+Ren'Py Nightly Builds
+=====================
+
+These are nightly builds of Ren'Py, primarily created to let you help
+with testing and development of Ren'Py. DO NOT RELEASE GAMES WITH
+THESE, as they may contain bugs and APIs that will not remain
+supported.
+
+
+Only the SDK is built on a nightly basis. Each night's build is
+placed in a directory of the form:
+
+    renpy-nightly-<year>-<month>-<day>-<git-branch>-<revision>
+
+This means that the newest code is at the bottom of the list.
+
+
+If, while testing these builds, you find a bug in Ren'Py, please let
+us know by filing a bug at https://github.com/renpy/renpy/issues .
+
+
+These builds are made on a best-effort basis, on computers that can be
+used for other projects. A day's build may be missing if the master
+git branch can't be built, or if the computers that build it are
+not available. Please email pytom@bishoujo.us if a build you're
+expecting is missing - I'll be able to give you a better status
+update.
