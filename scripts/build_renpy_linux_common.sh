@@ -18,3 +18,5 @@ try python setup.py install_lib -d $PYTHONPATH
 try cd "$DEPS/renpython"
 try python -O build.py linux-`arch` "$RENPY" renpy.py
 
+# Give some time for processes to die before schroot unmounts us.
+sleep 1

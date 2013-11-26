@@ -34,7 +34,7 @@ try ./after_checkout.sh
 REV=$(git rev-parse --short HEAD)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
-if [ -e dl/*-$REV ]; then
+if [ -z "$1" -a -e dl/*-$REV ]; then
   echo $REV has already been built.
   exit 0
 fi
