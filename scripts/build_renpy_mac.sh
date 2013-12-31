@@ -4,11 +4,15 @@ BASE=/Users/tom
 AB=/Volumes/shared/ab
 RENPY="${1:-/Volumes/shared/ab/renpy}"
 
+
 try () {
     "$@" || exit 1
 }
 
 . "$BASE/newbuild/env.sh"
+
+export RENPY_CC="ccache gcc"
+export RENPY_LD="ccache gcc"
 
 try cd "$RENPY/module"
 try python setup.py clean --all
