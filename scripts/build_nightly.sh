@@ -5,28 +5,27 @@ try () {
 }
 
 # Update the README.
-try cp /home/tom/ab/renpy-deps/scripts/README.nightly /home/tom/ab/WWW.nightly/README
+try cp /home/tom/ab/renpy-deps/scripts/README.nightly /home/tom/ab/WWW.nightly/README.txt
 
 # Check out Ren'Py.
 try cd /home/tom/ab
 rm -Rf nightly-renpy
 
-try git clone \
-    https://github.com/renpy/renpy.git \
-    --reference /home/tom/ab/renpy \
-    nightly-renpy
+if [ -n "$1" ] ; then
+    try git clone "$1" --reference /home/tom/ab/renpy nightly-renpy
+else
+	try git clone \
+	    https://github.com/renpy/renpy.git \
+	    --reference /home/tom/ab/renpy \
+	    nightly-renpy
+fi
 
 try cd nightly-renpy
 
 # Symlink some files over.
-
 try ln -s /home/tom/ab/WWW.nightly dl
 
-# For debug purposes, copy some files over.
-try cp /home/tom/ab/renpy/after_checkout.sh .
-try cp /home/tom/ab/renpy/distribute.py .
-try cp /home/tom/ab/renpy/launcher/game/options.rpy launcher/game
-
+# Run the after checkout script.
 try ./after_checkout.sh
 
 # Figure out a reasonable version name, and check that it doesn't already
