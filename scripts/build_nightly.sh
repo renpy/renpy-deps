@@ -60,6 +60,8 @@ try ./run.sh tutorial quit
 
 try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy
 
+# Run some basic tests.
+try ./renpy.sh tutorial lint
 
 if [ -n "$1" ]; then
     exit
