@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# For testing purposes, run this with ./build_nightly.sh ~/ab/renpy
+
 try () {
     "$@" || exit 1
 }
@@ -9,18 +11,26 @@ try cp /home/tom/ab/renpy-deps/scripts/README.nightly /home/tom/ab/WWW.nightly/R
 
 # Check out Ren'Py.
 try cd /home/tom/ab
-rm -Rf nightly-renpy
 
 if [ -n "$1" ] ; then
-    try git clone "$1" --reference /home/tom/ab/renpy nightly-renpy
+    if [ -e nightly-renpy/.git ]; then
+        try cd nightly-renpy
+        try git pull
+    else
+        try git clone "$1" --reference /home/tom/ab/renpy nightly-renpy
+        try cd nightly-renpy
+    fi
 else
+    rm -Rf nightly-renpy
+
 	try git clone \
 	    https://github.com/renpy/renpy.git \
 	    --reference /home/tom/ab/renpy \
 	    nightly-renpy
+
+    try cd nightly-renpy
 fi
 
-try cd nightly-renpy
 
 # Symlink some files over.
 try ln -s /home/tom/ab/WWW.nightly dl
@@ -49,6 +59,11 @@ export RENPY_DEPS_INSTALL=/usr::/usr/lib/x86_64-linux-gnu/
 try ./run.sh tutorial quit
 
 try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy
+
+
+if [ -n "$1" ]; then
+    exit
+fi
 
 # Build the documentation.
 try cd /home/tom/ab/nightly-renpy/sphinx
