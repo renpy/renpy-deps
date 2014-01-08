@@ -31,10 +31,6 @@ else
     try cd nightly-renpy
 fi
 
-
-# Symlink some files over.
-try ln -s /home/tom/ab/WWW.nightly dl
-
 # Run the after checkout script.
 try ./after_checkout.sh
 
@@ -50,7 +46,7 @@ fi
 
 export RENPY_NIGHTLY="renpy-nightly-$(date +%Y-%m-%d)-$BRANCH-$REV"
 
-# Build Ren'Py
+# Generate source.
 . /home/tom/.virtualenvs/nightlyrenpy/bin/activate
 
 export RENPY_CYTHON=cython
@@ -58,21 +54,28 @@ export RENPY_DEPS_INSTALL=/usr::/usr/lib/x86_64-linux-gnu/
 
 try ./run.sh tutorial quit
 
+# Build Ren'Py for real.
 try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy
-
-# Run some basic tests.
-try ./renpy.sh tutorial lint
-
-if [ -n "$1" ]; then
-    exit
-fi
 
 # Build the documentation.
 try cd /home/tom/ab/nightly-renpy/sphinx
 try ./build.sh
 
+# Run some basic tests.
+try cd /home/tom/ab/nightly-renpy
+
+export RENPY_AUTOTEST=1
+
+try ./renpy.sh tutorial lint
+try ./renpy.sh testcases
+
+if [ -n "$1" ]; then
+    exit
+fi
+
 # Build the distribution.
 try cd /home/tom/ab/nightly-renpy
+try ln -s /home/tom/ab/WWW.nightly dl
 try python -O distribute.py --fast "$RENPY_NIGHTLY"
 
 # Upload everything to the server.
