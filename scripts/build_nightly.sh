@@ -51,6 +51,7 @@ export RENPY_NIGHTLY="renpy-nightly-$(date +%Y-%m-%d)-$BRANCH-$REV"
 
 export RENPY_CYTHON=cython
 export RENPY_DEPS_INSTALL=/usr::/usr/lib/x86_64-linux-gnu/
+export RENPY_SIMPLE_EXCEPTIONS=1
 
 try ./run.sh tutorial quit
 
