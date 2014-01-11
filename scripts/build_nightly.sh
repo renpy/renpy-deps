@@ -82,4 +82,7 @@ try python -O distribute.py --fast "$RENPY_NIGHTLY"
 # Upload everything to the server.
 try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@erika.onegeek.org:/home/tom/WWW.nightly --delete
 
+# Delete old nightlies.
+find /home/tom/magnetic/ab/WWW.nightly/ -ctime +30 -delete
+
 
