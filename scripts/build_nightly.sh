@@ -6,11 +6,38 @@ try () {
     "$@" || exit 1
 }
 
+link () {
+    if [ ! -L $2 ]; then
+      try ln -s $1 $2
+    fi
+}
+
 # Update the README.
 try cp /home/tom/ab/renpy-deps/scripts/README.nightly /home/tom/ab/WWW.nightly/README.txt
 
-# Check out Ren'Py.
 try cd /home/tom/ab
+
+# Check out the android build.
+
+if [ -n "$1" -a -e nightly-android/.git ]; then
+    try cd nightly-android
+    try git pull
+else
+    rm -Rf nightly-android
+
+    try git clone "git@github.com:renpy/rapt.git" \
+        --reference /home/tom/ab/android nightly-android
+
+    try cd nightly-android
+fi
+
+try git submodule update --init
+link /home/tom/ab/android/android-ndk-r8c android-ndk-r8c
+link /home/tom/ab/android/android-sdk android-sdk
+
+try cd ..
+
+# Check out Ren'Py.
 
 if [ -n "$1" ] ; then
     if [ -e nightly-renpy/.git ]; then
@@ -33,6 +60,12 @@ fi
 
 # Run the after checkout script.
 try ./after_checkout.sh
+
+link /home/tom/ab/WWW.nightly dl
+link /home/tom/ab/nightly-android android
+link /home/tom/ab/nightly-android/dist/renpy rapt
+link /home/tom/ab/renpy/editra editra
+link /home/tom/ab/renpy/jedit jedit
 
 # Figure out a reasonable version name, and check that it doesn't already
 # exist.
@@ -75,9 +108,12 @@ if [ -n "$1" ]; then
 fi
 
 # Build the distribution.
-try cd /home/tom/ab/nightly-renpy
-try ln -s /home/tom/ab/WWW.nightly dl
-try python -O distribute.py --fast "$RENPY_NIGHTLY"
+try python -O distribute.py "$RENPY_NIGHTLY"
+
+# Create a symlink to the current nightly.
+try cd /home/tom/magnetic/ab/WWW.nightly/
+rm current
+ln -s "$RENPY_NIGHTLY" current
 
 # Upload everything to the server.
 try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@erika.onegeek.org:/home/tom/WWW.nightly --delete
