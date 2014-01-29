@@ -5,6 +5,10 @@ PWD=`pwd`
 BUILD=$PWD/build
 INSTALL=$PWD/install
 
+# The xes are required to prevent msys from interpreting these as
+# paths. (We use the system python to do this normalization.)
+SOURCE=`python $SOURCE/norm_source.py "x$PWD" "x$SOURCE"`
+
 
 export LD_LIBRARY_PATH="$INSTALL/lib"
 export DYLIB_LIBRARY_PATH="$INSTALL/lib"
@@ -71,7 +75,7 @@ if [ \! -e built.zlib ]; then
    try tar xvzf "$SOURCE/zlib-1.2.6.tar.gz"
    try cd "$BUILD/zlib-1.2.6"
    try ./configure --prefix="$INSTALL" --shared
-   try make 
+   try make
    try make install
    cd "$BUILD"
    touch built.zlib
@@ -79,7 +83,7 @@ fi
 
 if [ \! -e built.bz2 ]; then
 
-    try tar xvzf "$SOURCE/bzip2-1.0.6.tar.gz"    
+    try tar xvzf "$SOURCE/bzip2-1.0.6.tar.gz"
     try cd "$BUILD/bzip2-1.0.6"
 
     try make CFLAGS="$CFLAGS -Wall -Winline -D_FILE_OFFSET_BITS=64" LDFLAGS="$LDFLAGS" CC="$CC" LD="$LD" CXX="$CXX" CXXLD="$CXXLD"
@@ -90,16 +94,16 @@ fi
 
 if [ \! -e built.python ]; then
 
-    try tar xzf "$SOURCE/Python-2.7.3.tgz" 
+    try tar xzf "$SOURCE/Python-2.7.3.tgz"
     try cd "$BUILD/Python-2.7.3"
-    
+
     if [ $MAC = "yes" ]; then
-        # try ./configure --prefix="$INSTALL" --enable-framework="$DYLD_FRAMEWORK_PATH" 
+        # try ./configure --prefix="$INSTALL" --enable-framework="$DYLD_FRAMEWORK_PATH"
         try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4  #-with-universal-archs=x86_64 --enable-universalsdk=$SDKROOT
     else
         try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4
 fi
-    
+
     try make
     try make install
     try cd "$BUILD"
@@ -114,20 +118,20 @@ if [ \! -e built.pydeps ]; then
 fi
 
 if [ \! -e built.rsa ]; then
-    try easy_install rsa    
+    try easy_install rsa
     try touch built.rsa
 fi
 
 if [ \! -e built.macholib ]; then
-    try easy_install macholib   
+    try easy_install macholib
     try touch built.macholib
 fi
 
-    
+
 
 
 #if [ $MAC = "yes"  ]; then
-#    
+#
 #    if [ \! -e built.pyobjc ] ; then
 #        try easy_install pyobjc==2.2
 #        touch built.pyobjc
@@ -148,11 +152,11 @@ fi
 
 
 # if [ \! -e built.py2app ]; then
-#     cp "$SOURCE/ez_setup.py" . 
+#     cp "$SOURCE/ez_setup.py" .
 #     try python ez_setup.py -U setuptools
-    
+
 #     try cp -Rp "$SOURCE/macholib" .
-#     try cd macholib 
+#     try cd macholib
 #     try python setup.py install
 #     try cd ..
 
