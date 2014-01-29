@@ -96,6 +96,9 @@ export RENPY_SIMPLE_EXCEPTIONS=1
 
 try ./run.sh tutorial quit
 
+# Copy launcher over.
+cp /home/tom/ab/renpy-deps/windows/launch/renpy.exe .
+
 # Build Ren'Py for real.
 try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy
 
