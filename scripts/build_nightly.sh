@@ -22,6 +22,11 @@ try cd /home/tom/ab
 if [ -n "$1" -a -e nightly-android/.git ]; then
     try cd nightly-android
     try git pull
+
+    try cd python-for-android
+    try git pull
+    try cd ..
+
 else
     rm -Rf nightly-android
 
@@ -29,6 +34,9 @@ else
         --reference /home/tom/ab/android nightly-android
 
     try cd nightly-android
+
+    try git clone "git@github.com:renpytom/python-for-android.git" \
+        --reference /home/tom/ab/android/python-for-android python-for-android
 fi
 
 try git submodule update --init
