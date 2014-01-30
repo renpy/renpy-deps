@@ -109,10 +109,8 @@ try ./build.sh
 # Run some basic tests.
 try cd /home/tom/ab/nightly-renpy
 
-export RENPY_AUTOTEST=1
-
+try /home/tom/ab/renpy-deps/scripts/test_all.py -p nightly-renpy
 try ./renpy.sh tutorial lint
-try ./renpy.sh testcases
 
 if [ -n "$1" ]; then
     exit

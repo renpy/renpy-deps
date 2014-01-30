@@ -1,3 +1,1 @@
-log_linux.txt
-log_mac.txt
-log_windows.txt
+log_*.txt
