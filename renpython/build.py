@@ -30,7 +30,7 @@ else:
 PYVERSION="2.7"
 
 # A list of modules to exclude from packaging.
-EXCLUDES = [ 
+EXCLUDES = [
     "archive",
     "compiler",
     'doctest',
@@ -67,11 +67,11 @@ EXCLUDES = [
     ]
 
 def print_analysis(a):
-        
+
     for i in [ 'scripts', 'pure', 'binaries', 'zipfiles', 'datas', 'dependencies' ]:
         if getattr(a, i, None):
             print i + ":"
-            
+
             for j in sorted(getattr(a, i)):
                 print " ", j
 
@@ -83,42 +83,42 @@ FILE_EXCLUDES = [
     ]
 
 def renpy_filter(name, path, kind):
-    
+
     if path.startswith("/usr"):
         return False
     if path.startswith("/lib"):
         return False
-    
+
     basename = os.path.basename(path)
-    
+
     for i in FILE_EXCLUDES:
         if fnmatch.fnmatch(basename, i):
             return
-    
+
     if name.startswith("renpy.") and kind == "PYMODULE":
         return False
 
     return True
 
 def editra_filter(name, path, kind):
-    
+
     if path.startswith("/usr"):
         return False
     if path.startswith("/lib"):
         return False
-    
+
     basename = os.path.basename(path)
-    
+
     for i in FILE_EXCLUDES:
         if fnmatch.fnmatch(basename, i):
             return
-    
+
     path = os.path.normpath(path)
     exclude = os.path.normpath(editra_exclude)
-        
+
     if path.startswith(exclude):
         return False
-    
+
     return True
 
 file_filter = renpy_filter
@@ -127,24 +127,24 @@ class Build(object):
 
 
     def __init__(self, platform, renpy):
-        
+
         self.platform = platform
         self.workdir = os.path.join(renpy, "build", platform)
         self.platlib = os.path.join(self.workdir, "lib", platform)
 
         if windows:
             self.platpy = os.path.join(self.workdir, "lib", platform, "Lib")
-        else:        
+        else:
             self.platpy = os.path.join(self.workdir, "lib", platform, "lib", "python" + PYVERSION)
-        
+
         self.purepy = os.path.join(self.workdir, "lib", "pythonlib" + PYVERSION)
-        
+
         if os.path.exists(self.workdir):
             shutil.rmtree(self.workdir)
-            
+
         os.makedirs(self.platlib)
         os.makedirs(self.purepy)
-        
+
         build.specnm = "renpy"
         build.BUILDPATH = tempfile.mkdtemp()
         build.WARNFILE = os.path.join(self.workdir, "warnings.txt")
@@ -155,11 +155,11 @@ class Build(object):
         script = os.path.join(base, script)
 
         sys.path.insert(0, os.path.dirname(script))
-        
+
         print sys.path
 
 
-        self.analysis = Analysis([ script ], 
+        self.analysis = Analysis([ script ],
             hookspath=[ os.path.join(ROOT, "hooks") ],
             hiddenimports=[ 'site' ],
             excludes=EXCLUDES)
@@ -168,11 +168,11 @@ class Build(object):
 
         self.modules = [ ]
         self.binaries = [ ]
-        
+
         def process_list(l):
             for name, path, kind in l:
                 self.process(name, path, kind)
-                
+
         process_list(self.analysis.pure)
         process_list(self.analysis.binaries)
         process_list(self.analysis.zipfiles)
@@ -180,24 +180,24 @@ class Build(object):
 
         self.modules.sort()
         self.binaries.sort()
-        
+
         print "Modules:", " ".join(self.modules)
         print "Binaries:", " ".join(self.binaries)
         print "Workdir:", self.workdir
 
     def copy_file(self, src, dst):
-        
+
         dirname = os.path.dirname(dst)
         if not os.path.exists(dirname):
             os.makedirs(dirname)
-            
+
         shutil.copy2(src, dst)
-        
+
     def copy_module(self, name, path):
         """
-        Copies a python module (either a name or extension) to a 
+        Copies a python module (either a name or extension) to a
         """
-        
+
         barefn, ext = os.path.splitext(path)
 
         if not barefn.endswith("__init__"):
@@ -210,17 +210,17 @@ class Build(object):
         self.modules.append(name)
 
     def copy_binary(self, name, path):
-        
+
         fn = os.path.join(self.platlib, name)
         self.copy_file(path, fn)
-        
+
         self.binaries.append(name)
-        
+
     def process(self, name, path, kind):
-        
+
         if not file_filter(name, path, kind):
             return
-        
+
         if kind == "EXTENSION" or kind == "PYMODULE":
             self.copy_module(name, path)
         else:
@@ -228,19 +228,19 @@ class Build(object):
 
 
     def patchelf(self):
-        
+
         def patchfn(fn, origin):
 
             if os.path.isdir(fn):
-                
+
                 for i in os.listdir(fn):
                     patchfn(os.path.join(fn, i), origin + "/..")
-                
+
             else:
-                
+
                 with open(fn, "rb") as f:
                     head = f.read(4)
-                    
+
                     if head != b"\x7fELF":
                         return
 
@@ -252,84 +252,84 @@ class Build(object):
             patchfn(os.path.join(self.platlib, fn), "$ORIGIN")
 
     def patchmacho(self):
-        
+
         def generate_parents(fn):
             while fn != self.platlib:
                 fn = os.path.dirname(fn)
                 yield fn
-        
+
         def patchfn(fn):
 
             if os.path.isdir(fn):
-                
+
                 for i in os.listdir(fn):
                     patchfn(os.path.join(fn, i))
-                
+
             else:
-                
+
                 with open(fn, "rb") as f:
                     head = f.read(4)
                     if head != b"\xCF\xFA\xED\xFE":
                         return
-                
+
                 print
                 print fn
                 print
-                
+
                 def changefunc(s):
                     basename = os.path.basename(s)
                     for d in generate_parents(fn):
                         if os.path.exists(os.path.join(d, basename)):
                             relpath = os.path.relpath(d, self.platlib)
-                            
+
                             if relpath != ".":
                                 relative = "@executable_path/" + relpath
                             else:
                                 relative = "@executable_path"
-                                
+
                             # relative = "@execution_path/" + os.path.relpath(d, self.platlib)
 
                             print "  <", s
                             print "  >", relative + "/" + basename
 
                             return relative + "/" + basename
-                    
+
                     print "  X", s
                     return None
-                     
+
                 libs = set()
-                        
+
                 subprocess.check_call([ "strip", "-x", "-S", fn ])
-                        
+
                 p = subprocess.Popen([ "otool", "-L", fn ], stdout=subprocess.PIPE)
                 for l in p.stdout:
                     if l[0] != "\t":
                         continue
-                    
+
                     libs.add(l.split()[0])
-                    
+
                 p.wait()
-                
+
                 for old in libs:
                     new = changefunc(old)
                     if new is None:
                         continue
-                    
-                    cmd = [ "install_name_tool", "-change", old, new, fn ]                     
+
+                    cmd = [ "install_name_tool", "-change", old, new, fn ]
                     subprocess.check_call(cmd)
-                
+
         for fn in os.listdir(self.platlib):
             patchfn(os.path.join(self.platlib, fn))
 
     def patchcoff(self):
-        
+
         def patchfn(fn):
 
             if os.path.isdir(fn):
-                
+
                 for i in os.listdir(fn):
                     patchfn(os.path.join(fn, i))
-                
+
             else:
 
                 EXTENSIONS = [
@@ -337,7 +337,7 @@ class Build(object):
                     ".dll",
                     ".pyd",
                     ]
-                
+
                 for i in EXTENSIONS:
                     if fn.lower().endswith(i):
                         break
@@ -351,16 +351,16 @@ class Build(object):
                 for l in p.stdout:
                     if ".debug_info" in l:
                         has_debug = True
-                    
+
                 p.wait()
 
                 if has_debug:
                     subprocess.check_call([ "strip", "--strip-debug", "--keep-file-symbols", fn ])
-        
+
         for fn in os.listdir(self.platlib):
             patchfn(os.path.join(self.platlib, fn))
-        
-            
+
+
     def python(self, command):
 
         def copy_python(src, dest):
@@ -380,17 +380,17 @@ class Build(object):
             copy_python(os.path.join(exedir, "zsync"), "zsync")
             copy_python(os.path.join(exedir, "zsyncmake"), "zsyncmake")
 
-            
+
     def move_pure(self):
         """
         Moves pure-python code from platpy to purepy.
         """
-        
+
         def ispure(fn):
             """
             Returns true if fn is a pure python module or package.
             """
-            
+
             if not os.path.isdir(fn):
                 if fn.endswith(".py"):
                     return True
@@ -399,26 +399,41 @@ class Build(object):
                 if fn.endswith(".pyc"):
                     return True
                 return False
-                
-            
+
+
             for _directory, _directories, files in os.walk(fn):
                 for i in files:
                     if not ispure(i):
                         return False
-                    
+
             return True
 
         for fn in os.listdir(self.platpy):
             source = os.path.join(self.platpy, fn)
             dest = os.path.join(self.purepy, fn)
-            
+
             prefix, _ext = os.path.splitext(fn)
-            
+
             if prefix in [ "os", "site" ]:
                 continue
-            
+
             if ispure(source):
                 shutil.move(source, dest)
+
+    def make_dynload(self):
+        # Prevents python from complaining about exec-prefix.
+        dynload = os.path.join(self.platpy, "lib-dynload")
+
+        os.makedirs(dynload)
+
+        with open(os.path.join(dynload, "dynload.txt"), "w") as f:
+            f.write("""\
+This directory exists because Python will complain about a missing exec_prefix
+if it doesn't. This file exists because some archive formats and version control
+systems dislike empty directories.
+""")
+
+
 
 if __name__ == "__main__":
 
@@ -426,10 +441,10 @@ if __name__ == "__main__":
     ap.add_argument("platform")
     ap.add_argument("base")
     ap.add_argument("script", default="renpy.py")
-    
+
     ap.add_argument("--encodings", action="store_true")
     ap.add_argument("--command", action="store", default="renpy")
-    
+
     args = ap.parse_args()
 
     global encodings
@@ -441,11 +456,11 @@ if __name__ == "__main__":
         FILE_EXCLUDES.append("msvcp*.dll")
         FILE_EXCLUDES.append("msvcm*.dll")
         file_filter = renpy_filter
-    
+
     elif args.command == "editra":
         editra_exclude = args.base
         file_filter = editra_filter
-    
+
     b = Build(args.platform, args.base)
     b.analyze(args.base, args.script)
     b.files()
@@ -458,5 +473,5 @@ if __name__ == "__main__":
         b.patchmacho()
     if windows:
         b.patchcoff()
-        
-        
+
+    b.make_dynload()
