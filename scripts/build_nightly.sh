@@ -85,7 +85,7 @@ if [ -z "$1" -a -e dl/*-$REV ]; then
   exit 0
 fi
 
-export RENPY_NIGHTLY="renpy-nightly-$(date +%Y-%m-%d)-$BRANCH-$REV"
+export RENPY_NIGHTLY="renpy-nightly-$(date +%Y-%m-%d)-$REV"
 
 # Generate source.
 . /home/tom/.virtualenvs/nightlyrenpy/bin/activate
