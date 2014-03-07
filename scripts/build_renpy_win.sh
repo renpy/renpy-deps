@@ -9,6 +9,8 @@ try () {
 RENPY="${1:-/t/ab/renpy}"
 DEPS="/t/ab/renpy-deps"
 
+rm -Rf "$PYTHONPATH/renpy"
+
 try cd "$RENPY/module"
 try python setup.py clean
 try python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH
