@@ -43,6 +43,10 @@ try git submodule update --init
 link /home/tom/ab/android/android-ndk-r8c android-ndk-r8c
 link /home/tom/ab/android/android-sdk android-sdk
 
+# Copy downloaded files, so we don't have to download them again.
+mkdir -p /home/tom/ab/nightly-android/python-for-android/.packages
+cp /home/tom/ab/android/python-for-android/.packages/* /home/tom/ab/nightly-android/python-for-android/.packages
+
 try cd ..
 
 # Check out Ren'Py.
