@@ -102,7 +102,7 @@ if [ \! -e built.python ]; then
         try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4  #-with-universal-archs=x86_64 --enable-universalsdk=$SDKROOT
     else
         try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4
-fi
+    fi
 
     try make
     try make install

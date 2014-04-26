@@ -58,7 +58,7 @@ else
     if [ `uname` = 'Darwin' ]; then
        PLATFORM="mac"
     fi
-    
+
     if [ `arch` = "x86_64" ]; then
         export CFLAGS="-fPIC $CFLAGS"
         export CXXFLAGS="-fPIC $CXXFLAGS"
@@ -136,7 +136,7 @@ if [ $PLATFORM != "windows" ]; then
         cd "$BUILD"
         try touch built.yasm
     fi
-    
+
 else
 
     # A source-built yasm doesn't seem to work on my computer. So
@@ -146,7 +146,7 @@ else
 fi
 
 
-    
+
 if [ \! -e built.sdl ]; then
 
    # try mkdir -p "$INSTALL/include/asm"
@@ -158,8 +158,8 @@ if [ \! -e built.sdl ]; then
    # On windows, we have the problem that maximizing causes the start
    # button to overlap the GL window, making performance lousy, so we
    # disable maximize.
-   
-   try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff 
+
+   try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff
    try patch -p0 < $SOURCE/sdl-remove-windows-item.diff
 
    if [ $PLATFORM = "mac" ]; then
@@ -167,7 +167,7 @@ if [ \! -e built.sdl ]; then
    else
        SDL_EXTRA=""
    fi
-   
+
    try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-video-directfb --disable-nas $SDL_EXTRA $SDL_ASM
 
    try make
@@ -176,7 +176,7 @@ if [ \! -e built.sdl ]; then
    touch built.sdl
 fi
 
-# This will be built shared on Linux and Mac by build_python, and 
+# This will be built shared on Linux and Mac by build_python, and
 # on windows here.
 if [ \! -e built.zlib ]; then
    try tar xvzf "$SOURCE/zlib-1.2.6.tar.gz"
@@ -191,11 +191,11 @@ if [ \! -e built.zlib ]; then
            SHARED_MODE=1
 
    else
-       try ./configure --prefix="$INSTALL" 
+       try ./configure --prefix="$INSTALL"
        try make
        try make install
    fi
-       
+
    cd "$BUILD"
    touch built.zlib
 fi
@@ -244,7 +244,7 @@ if [ \! -e built.png ]; then
    if [ $PLATFORM != "mac" ]; then
        export CFLAGS="$CFLAGS -DPNG_NO_WRITE_tIME"
    fi
-   
+
    try tar xvzf "$SOURCE/libpng-1.2.49.tar.gz"
    try cd "$BUILD/libpng-1.2.49"
    try ./configure --prefix="$INSTALL" --enable-shared --disable-static
@@ -273,7 +273,7 @@ fi
 if [ \! -e built.pygame ]; then
 
    try mkdir -p "$INSTALL/lib/msvcr90"
-   
+
    try tar xzf "$SOURCE/pygame-1.9.1release.tar.gz"
    try cd "$BUILD/pygame-1.9.1release"
 
@@ -286,7 +286,7 @@ if [ \! -e built.pygame ]; then
    else
        try python setup.py build install_lib -d "$INSTALL/python"
    fi
-   
+
    try cp lib/*.ico "$INSTALL/python/pygame"
    try cp lib/*.icns "$INSTALL/python/pygame"
    try cp lib/*.tiff "$INSTALL/python/pygame"
@@ -307,7 +307,7 @@ if [ $PLATFORM = "windows" ]; then
 fi
 
 if [ \! -e built.av ]; then
-   try tar xzf "$SOURCE/libav-9.6.tar.gz" 
+   try tar xzf "$SOURCE/libav-9.6.tar.gz"
    try cd "$BUILD/libav-9.6"
 
    # My windows libraries don't seem to export fstat. So use _fstat32
@@ -320,12 +320,13 @@ if [ \! -e built.av ]; then
    export CXXFLAGS="$CXXFLAGS -fno-common $LIBAV_CFLAGS"
    MEM_ALIGN_HACK="--enable-memalign-hack"
 
-   
+
    try ./configure --prefix="$INSTALL" \
        --cc="${CC:-gcc}" \
        $FFMPEGFLAGS \
        $LIBAV_FLAGS \
        $MEM_ALIGN_HACK \
+       --arch=`arch` \
        --enable-runtime-cpudetect \
        --enable-shared \
        --disable-encoders \
@@ -379,7 +380,7 @@ if [ \! -e built.av ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-filters \
-       --disable-bsfs 
+       --disable-bsfs
 
    try make
    try make install
@@ -399,7 +400,7 @@ if [ -n "$RENPY_BUILD_ALT" ]; then
     mkdir -p "$BUILD/alt"
 
     if [ \! -e built.avalt ]; then
-        try tar xzf "$SOURCE/libav-9.6.tar.gz" -C "$BUILD/alt" 
+        try tar xzf "$SOURCE/libav-9.6.tar.gz" -C "$BUILD/alt"
         try cd "$BUILD/alt/libav-9.6"
 
         # My windows libraries don't seem to export fstat. So use _fstat32
@@ -449,7 +450,7 @@ if [ -n "$RENPY_BUILD_ALT" ]; then
             --disable-devices \
             --disable-vdpau \
             --disable-filters \
-            --disable-bsfs 
+            --disable-bsfs
 
         try make
         try make install
@@ -470,14 +471,14 @@ CXXFLAGS="$OLD_CXXFLAGS"
 if [ \! -e built.fribidi ]; then
 
    export CFLAGS="$CFLAGS -DFRIBIDI_CHUNK_SIZE=4080"
-   
+
    try tar xvzf "$SOURCE/fribidi-0.19.2.tar.gz"
    try cd "$BUILD/fribidi-0.19.2"
    try ./configure --prefix="$INSTALL" --enable-static --disable-shared
-   
+
    if [ "x$MSYSTEM" != "x" ]; then
        try patch -p0 < "$SOURCE/fribidi-windows.diff"
-       try python "$SOURCE/replace.py" "lib bin doc" "lib doc" Makefile 
+       try python "$SOURCE/replace.py" "lib bin doc" "lib doc" Makefile
        echo Did patch.
    fi
 
@@ -498,19 +499,19 @@ if [ \! -e built.glew ]; then
    try cd "$BUILD/glew-1.7.0"
 
    try make install OPT="$CFLAGS $LDFLAGS" CC="$CC" LD="$LD" GLEW_DEST=$INSTALL
-   
+
    cd "$BUILD"
    touch built.glew
 fi
 
 
-if [ $PLATFORM != "windows" ] ; then 
+if [ $PLATFORM != "windows" ] ; then
   if [ \! -e built.zsync ] ; then
     try tar xjf "$SOURCE/zsync-0.6.2.tar.bz2"
     try cd "$BUILD/zsync-0.6.2"
 
     try patch -p1 < "$SOURCE/zsync-no-isatty.diff"
-    
+
     try "./configure" --prefix="$INSTALL"
     try make
     try make install

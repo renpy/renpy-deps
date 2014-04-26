@@ -23,16 +23,16 @@ else:
     SCRAP="SCRAP = -lX11"
     EXTRA=""
 
-    
+
 TEMPLATE = """\
 SDL =  -I{INSTALL}/include/SDL -I{INSTALL}/include  -L{INSTALL}/lib -D_REENTRANT -lSDL
 FONT = -I{INSTALL}/include -L{INSTALL}/lib  -lSDL_ttf
-IMAGE =  -I{INSTALL}/include -L{INSTALL}/lib -lSDL_image 
+IMAGE =  -I{INSTALL}/include -L{INSTALL}/lib -lSDL_image
 PNG = -I{INSTALL}/include -L{INSTALL}/lib  -lpng -lz
 JPEG = -I{INSTALL}/include -L{INSTALL}i/lib  -ljpeg
 {SCRAP}
 
-DEBUG = 
+DEBUG =
 
 #the following modules are optional. you will want to compile
 #everything you can, but you can ignore ones you don't have
@@ -43,8 +43,8 @@ font src/font.c $(SDL) $(FONT) $(DEBUG)
 scrap src/scrap.c $(SDL) $(SCRAP) $(DEBUG)
 {EXTRA}
 
-GFX = src/SDL_gfx/SDL_gfxPrimitives.c 
-#GFX = src/SDL_gfx/SDL_gfxBlitFunc.c src/SDL_gfx/SDL_gfxPrimitives.c 
+GFX = src/SDL_gfx/SDL_gfxPrimitives.c
+#GFX = src/SDL_gfx/SDL_gfxBlitFunc.c src/SDL_gfx/SDL_gfxPrimitives.c
 gfxdraw src/gfxdraw.c $(SDL) $(GFX) $(DEBUG)
 
 
@@ -83,4 +83,4 @@ data = TEMPLATE.format(
 
 sys.stdout.write(data)
 
-    
+
