@@ -533,6 +533,17 @@ if [ $PLATFORM = "linux" -a \! -e built.patchelf ]; then
     touch built.patchelf
 fi
 
+if [ \! -e built.pyttsx ]; then
+
+   try tar xzf "$SOURCE/pyttsx-1.1.tar.gz"
+   try cd "$BUILD/pyttsx-1.1"
+
+
+   try python setup.py install_lib -d "$INSTALL/python"
+
+   cd "$BUILD"
+   touch built.pyttsx
+fi
 
 echo
 cat ../env.sh
