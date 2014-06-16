@@ -8,9 +8,21 @@ import sys
 import subprocess
 from apscheduler.scheduler import Scheduler
 
+PIDFILE = "/home/tom/.build_nightly"
+
+if os.path.exists(PIDFILE):
+    with open(PIDFILE) as f:
+        pid = int(f.read())
+
+    try:
+        os.kill(pid, 15)
+    except:
+        pass
+
+with open(PIDFILE, "w") as f:
+    f.write("%d" % os.getpid())
 
 os.chdir(os.path.dirname(sys.argv[0]))
-
 
 sched = Scheduler(standalone=True)
 

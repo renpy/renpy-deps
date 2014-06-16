@@ -113,7 +113,7 @@ try ./build.sh
 # Run some basic tests.
 try cd /home/tom/ab/nightly-renpy
 
-try /home/tom/ab/renpy-deps/scripts/test_all.py -p nightly-renpy
+try /home/tom/ab/renpy-deps/scripts/test_all.py --no-mac -p nightly-renpy
 try ./renpy.sh tutorial lint
 
 if [ -n "$1" ]; then
