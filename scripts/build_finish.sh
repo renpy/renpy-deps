@@ -24,4 +24,4 @@ WINLIB="$RENPY/lib/windows-i686"
 try cp "$DEPS/windows/zsync.exe" "$WINLIB"
 try cp "$DEPS/windows/zsyncmake.exe" "$WINLIB"
 try cp "$DEPS/windows/dxwebsetup.exe" "$WINLIB"
-
+try cp "$DEPS/windows/say.vbs" "$WINLIB"
