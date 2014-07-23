@@ -162,6 +162,10 @@ if [ \! -e built.sdl ]; then
    try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff
    try patch -p0 < $SOURCE/sdl-remove-windows-item.diff
 
+   # Fixes a problem on OS X Mavericks where we crash when showing the
+   # window centered on the secondary monitor of a multi-monitor system.
+   try patch -p0 < $SOURCE/sdl-remove-nswindow-center.diff
+
    if [ $PLATFORM = "mac" ]; then
        SDL_EXTRA="--disable-video-x11"
    else
