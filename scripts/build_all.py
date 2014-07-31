@@ -118,6 +118,9 @@ start = time.time()
 os.chdir("/home/tom/ab/renpy-deps/scripts")
 
 ap = argparse.ArgumentParser()
+ap.add_argument("--mac-user", default="tom")
+ap.add_argument("--mac-host", default="mary12")
+ap.add_argument("--windows-host", default="lucy12")
 ap.add_argument("--no-windows", dest="windows", action="store_false", default=True)
 ap.add_argument("--no-mac", dest="mac", action="store_false", default=True)
 ap.add_argument("--no-linux", dest="linux", action="store_false", default=True)
@@ -128,7 +131,7 @@ args = ap.parse_args()
 verbose = args.verbose
 
 if args.windows:
-    windows = Remote("windows", "lucy12", [
+    windows = Remote("windows", args.windows_host, [
             "c:/mingw/msys/1.0/bin/sh.exe",
             "/t/ab/renpy-deps/scripts/build_renpy_win.sh",
             "/t/ab/" + args.project,
@@ -144,7 +147,7 @@ if args.linux:
 if args.mac:
     mac = Command("mac", [
             "ssh",
-            "tom@mary12",
+            "{}@{}".format(args.mac_user, args.mac_host),
             "/Volumes/shared/ab/renpy-deps/scripts/build_renpy_mac.sh",
             "/Volumes/shared/ab/" + args.project,
             ])
