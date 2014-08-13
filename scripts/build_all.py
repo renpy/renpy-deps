@@ -8,6 +8,8 @@ import sys
 import time
 import argparse
 
+import config
+
 verbose = False
 
 SECRET="I didn't really want to write this code, but ssh on windows sucked so bad."
@@ -118,9 +120,9 @@ start = time.time()
 os.chdir("/home/tom/ab/renpy-deps/scripts")
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--mac-user", default="tom")
-ap.add_argument("--mac-host", default="mary12")
-ap.add_argument("--windows-host", default="lucy12")
+ap.add_argument("--mac-user", default=config.mac_user)
+ap.add_argument("--mac-host", default=config.mac_host)
+ap.add_argument("--windows-host", default=config.windows_host)
 ap.add_argument("--no-windows", dest="windows", action="store_false", default=True)
 ap.add_argument("--no-mac", dest="mac", action="store_false", default=True)
 ap.add_argument("--no-linux", dest="linux", action="store_false", default=True)
