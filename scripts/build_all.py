@@ -132,6 +132,14 @@ args = ap.parse_args()
 
 verbose = args.verbose
 
+if args.linux:
+    linux = Command("linux", [
+            "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
+            "/home/tom/ab/" + args.project,
+            ])
+
+    time.sleep(2)
+
 if args.windows:
     windows = Remote("windows", args.windows_host, [
             "c:/mingw/msys/1.0/bin/sh.exe",
@@ -139,12 +147,6 @@ if args.windows:
             "/t/ab/" + args.project,
             ])
 
-
-if args.linux:
-    linux = Command("linux", [
-            "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
-            "/home/tom/ab/" + args.project,
-            ])
 
 if args.mac:
     mac = Command("mac", [

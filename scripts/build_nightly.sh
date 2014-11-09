@@ -105,6 +105,7 @@ cp /home/tom/ab/renpy-deps/windows/launch/renpy.exe .
 
 # Build Ren'Py for real.
 try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy
+unset RENPY_BUILD_ALL
 
 # Build the documentation.
 try cd /home/tom/ab/nightly-renpy/sphinx
