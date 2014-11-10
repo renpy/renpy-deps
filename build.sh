@@ -152,19 +152,22 @@ if [ \! -e built.sdl ]; then
    # try mkdir -p "$INSTALL/include/asm"
    # try touch "$INSTALL/include/asm/page.h"
 
-   try tar xzf "$SOURCE/SDL-1.2.15.tar.gz"
-   try cd "$BUILD/SDL-1.2.15"
+   try tar xzf "$SOURCE/SDL2-2.0.3.tar.gz"
+   try cd "$BUILD/SDL2-2.0.3"
+
+   # Fix header issue in 2.0.3.
+   try cp "$SOURCE/SDL_platform.h" include
 
    # On windows, we have the problem that maximizing causes the start
    # button to overlap the GL window, making performance lousy, so we
    # disable maximize.
 
-   try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff
-   try patch -p0 < $SOURCE/sdl-remove-windows-item.diff
+   # try patch -p0 < $SOURCE/sdl-no-windows-maximize.diff
+   # try patch -p0 < $SOURCE/sdl-remove-windows-item.diff
 
    # Fixes a problem on OS X Mavericks where we crash when showing the
    # window centered on the secondary monitor of a multi-monitor system.
-   try patch -p0 < $SOURCE/sdl-remove-nswindow-center.diff
+   # try patch -p0 < $SOURCE/sdl-remove-nswindow-center.diff
 
    if [ $PLATFORM = "mac" ]; then
        SDL_EXTRA="--disable-video-x11"
@@ -172,7 +175,7 @@ if [ \! -e built.sdl ]; then
        SDL_EXTRA=""
    fi
 
-   try ./configure --prefix="$INSTALL" --disable-debug --disable-video-dummy --disable-video-fbcon --disable-video-directfb --disable-nas $SDL_EXTRA $SDL_ASM
+   try ./configure --prefix="$INSTALL" --disable-video-dummy --disable-video-directfb --disable-nas $SDL_EXTRA $SDL_ASM
 
    try make
    try make install
@@ -221,11 +224,11 @@ if [ \! -e built.freetype ]; then
 fi
 
 if [ \! -e built.sdl_ttf ]; then
-   try tar xvzf "$SOURCE/SDL_ttf-2.0.8.tar.gz"
-   try cd "$BUILD/SDL_ttf-2.0.8"
+   try tar xvzf "$SOURCE/SDL2_ttf-2.0.12.tar.gz"
+   try cd "$BUILD/SDL2_ttf-2.0.12"
    try ./configure --prefix="$INSTALL"
 
-   try patch -p1 < "$SOURCE/no_freetype_internals.dpatch"
+   # try patch -p1 < "$SOURCE/no_freetype_internals.dpatch"
 
    try make
    try make install
@@ -265,8 +268,8 @@ fi
 
 if [ \! -e built.sdl_image ]; then
    export LIBS="-lz"
-   try tar xvzf "$SOURCE/SDL_image-1.2.12.tar.gz"
-   try cd "$BUILD/SDL_image-1.2.12"
+   try tar xvzf "$SOURCE/SDL2_image-2.0.0.tar.gz"
+   try cd "$BUILD/SDL2_image-2.0.0"
    try ./configure --prefix="$INSTALL" --disable-tif --disable-imageio --enable-shared --disable-static --disable-jpg-shared --disable-png-shared --disable-webp --disable-xcf
    try make
    try make install
@@ -274,34 +277,54 @@ if [ \! -e built.sdl_image ]; then
    touch built.sdl_image
 fi
 
-if [ \! -e built.pygame ]; then
-
-   try mkdir -p "$INSTALL/lib/msvcr90"
-
-   try tar xzf "$SOURCE/pygame-1.9.1release.tar.gz"
-   try cd "$BUILD/pygame-1.9.1release"
-
-   try cp "$SOURCE/pygame-setup.py" setup.py
-   try python "$SOURCE/write_pygame_setup.py" "$INSTALL" > Setup
-
-   if [ $PLATFORM = "windows" ]; then
-       try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
-       try cp "$INSTALL/bin/"*.dll "$INSTALL/python/pygame"
-   else
-       try python setup.py build install_lib -d "$INSTALL/python"
-   fi
-
-   try cp lib/*.ico "$INSTALL/python/pygame"
-   try cp lib/*.icns "$INSTALL/python/pygame"
-   try cp lib/*.tiff "$INSTALL/python/pygame"
-   try cp lib/*.ttf "$INSTALL/python/pygame"
-   try cp lib/*.bmp "$INSTALL/python/pygame"
-
-   try python setup.py install_headers -d "$INSTALL/include/pygame"
-
+if [ \! -e built.sdl_gfx ]; then
+   try tar xvzf "$SOURCE/SDL2_gfx-1.0.1.tar.gz"
+   try cd "$BUILD/SDL2_gfx-1.0.1"
+   try ./configure --prefix="$INSTALL"
+   try make
+   try make install
    cd "$BUILD"
-   touch built.pygame
+   touch built.sdl_gfx
 fi
+
+if [ \! -e built.sdl_mixer ]; then
+   tar xzf "$SOURCE/SDL2_mixer-2.0.0.tar.gz"
+   try cd "$BUILD/SDL2_mixer-2.0.0"
+   try ./configure --prefix="$INSTALL"
+   try make
+   try make install
+   cd "$BUILD"
+   touch built.sdl_mixer
+fi
+
+#if [ \! -e built.pygame ]; then
+#
+#   try mkdir -p "$INSTALL/lib/msvcr90"
+#
+#   try tar xzf "$SOURCE/pygame-1.9.1release.tar.gz"
+#   try cd "$BUILD/pygame-1.9.1release"
+#
+#   try cp "$SOURCE/pygame-setup.py" setup.py
+#   try python "$SOURCE/write_pygame_setup.py" "$INSTALL" > Setup
+#
+#   if [ $PLATFORM = "windows" ]; then
+#       try python setup.py build --compiler=mingw32 install_lib -d "$INSTALL/python"
+#       try cp "$INSTALL/bin/"*.dll "$INSTALL/python/pygame"
+#   else
+#       try python setup.py build install_lib -d "$INSTALL/python"
+#   fi
+#
+#   try cp lib/*.ico "$INSTALL/python/pygame"
+#   try cp lib/*.icns "$INSTALL/python/pygame"
+#   try cp lib/*.tiff "$INSTALL/python/pygame"
+#   try cp lib/*.ttf "$INSTALL/python/pygame"
+#   try cp lib/*.bmp "$INSTALL/python/pygame"
+#
+#   try python setup.py install_headers -d "$INSTALL/include/pygame"
+#
+#   cd "$BUILD"
+#   touch built.pygame
+#fi
 
 LIBAV_FLAGS=
 
