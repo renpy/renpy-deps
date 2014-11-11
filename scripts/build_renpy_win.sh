@@ -14,6 +14,8 @@ INCLUDE="/newbuild/install/include/pygame_sdl2"
 
 rm -Rf "$PYTHONPATH/renpy"
 
+export MSYSTEM=MINGW32
+
 set -e
 
 export PYGAME_SDL2_INSTALL_HEADERS=1
@@ -23,6 +25,6 @@ python setup.py clean --all
 python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH install_headers -d $INCLUDE
 
 cd "$RENPY/module"
-python setup.py clean
+python setup.py clean --all
 python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH
 python -O "$DEPS/renpython/build.py" windows-i686 "$RENPY" renpy.py
