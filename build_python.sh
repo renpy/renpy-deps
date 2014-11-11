@@ -9,7 +9,6 @@ INSTALL=$PWD/install
 # paths. (We use the system python to do this normalization.)
 SOURCE=`python $SOURCE/norm_source.py "x$PWD" "x$SOURCE"`
 
-
 export LD_LIBRARY_PATH="$INSTALL/lib"
 export DYLIB_LIBRARY_PATH="$INSTALL/lib"
 export DYLD_FRAMEWORK_PATH="$INSTALL/frameworks"
@@ -112,63 +111,29 @@ fi
 
 hash -r python
 
-if [ \! -e built.pydeps ]; then
-    try python "$SOURCE/distribute_setup.py"
-    try touch built.pydeps
-fi
+set -e
 
-if [ \! -e built.rsa ]; then
-    try easy_install rsa
-    try touch built.rsa
-fi
+pysetup() {
+    name="$1"
+    version="$2"
 
-if [ \! -e built.macholib ]; then
-    try easy_install macholib
-    try touch built.macholib
-fi
+    echo $name
 
+    if [ \! -e built.$name ]; then
+	    tar xzf "$SOURCE/$name-$version.tar.gz"
+	    cd "$BUILD/$name-$version"
 
+	    python setup.py install
 
+	    cd "$BUILD"
+	    touch built.$name
+	fi
+}
 
-#if [ $MAC = "yes"  ]; then
-#
-#    if [ \! -e built.pyobjc ] ; then
-#        try easy_install pyobjc==2.2
-#        touch built.pyobjc
-#    fi
-#
-#    if [ \! -e built.py2app ] ; then
-#        try easy_install py2app
-#        touch built.py2app
-#    fi
-#
-#    for i in "$PYFRAMEWORK/bin/"*; do
-#        j="$INSTALL/bin/"`basename $i`
-#        if [ \! -e $j ] ; then
-#            ln -s $i $j
-#        fi
-#    done
-#fi
-
-
-# if [ \! -e built.py2app ]; then
-#     cp "$SOURCE/ez_setup.py" .
-#     try python ez_setup.py -U setuptools
-
-#     try cp -Rp "$SOURCE/macholib" .
-#     try cd macholib
-#     try python setup.py install
-#     try cd ..
-
-#     try "$DYLD_FRAMEWORK_PATH/Python.framework/Versions/2.6/bin/easy_install" -U py2app
-#     try touch built.py2app
-# fi
-
-
-
-# if [ $MAC = "yes" ]; then
-#     bin/"* "$INSTALL/bin"
-#    # echo "Remember to edit disable_linecache to add third parameter."
-#fi
+pysetup setuptools 7.0
+pysetup pyasn1 0.1.7
+pysetup rsa 3.1.4
+pysetup altgraph 0.12
+pysetup macholib 1.7
 
 exit 0
