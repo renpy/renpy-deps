@@ -146,7 +146,6 @@ else
 fi
 
 
-
 if [ \! -e built.sdl ]; then
 
    # try mkdir -p "$INSTALL/include/asm"
@@ -175,7 +174,7 @@ if [ \! -e built.sdl ]; then
        SDL_EXTRA=""
    fi
 
-   try ./configure --prefix="$INSTALL" --disable-video-dummy --disable-video-directfb --disable-nas $SDL_EXTRA $SDL_ASM
+   try ./configure --prefix="$INSTALL" --disable-dependency-tracking --disable-video-dummy --disable-video-directfb --disable-nas $SDL_EXTRA $SDL_ASM
 
    try make
    try make install
