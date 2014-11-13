@@ -236,8 +236,8 @@ if [ \! -e built.sdl_ttf ]; then
 fi
 
 if [ \! -e built.jpegturbo ]; then
-    try tar xzf "$SOURCE/libjpeg-turbo-1.2.0.tar.gz"
-    try cd "$BUILD/libjpeg-turbo-1.2.0"
+    try tar xzf "$SOURCE/libjpeg-turbo-1.3.1.tar.gz"
+    try cd "$BUILD/libjpeg-turbo-1.3.1"
     try ./configure --prefix="$INSTALL" $JPEG_ASM
     try make
     try make install
