@@ -9,7 +9,7 @@ GLuint programObject;
 GLuint LoadShader ( GLenum type, const char *shaderSrc ) {
    GLuint shader;
    GLint compiled;
-   
+
    // Create the shader object
    shader = glCreateShader ( type );
 
@@ -18,26 +18,26 @@ GLuint LoadShader ( GLenum type, const char *shaderSrc ) {
 
    // Load the shader source
    glShaderSource ( shader, 1, &shaderSrc, NULL );
-   
+
    // Compile the shader
    glCompileShader ( shader );
 
    // Check the compile status
    glGetShaderiv ( shader, GL_COMPILE_STATUS, &compiled );
 
-   if ( !compiled ) 
+   if ( !compiled )
    {
       GLint infoLen = 0;
 
       glGetShaderiv ( shader, GL_INFO_LOG_LENGTH, &infoLen );
-      
+
       if ( infoLen > 1 )
       {
          char* infoLog = malloc (sizeof(char) * infoLen );
 
          glGetShaderInfoLog ( shader, infoLen, NULL, infoLog );
-         printf( "Error compiling shader:\n%s\n", infoLog );            
-         
+         printf( "Error compiling shader:\n%s\n", infoLog );
+
          free ( infoLog );
       }
 
@@ -53,14 +53,14 @@ GLuint LoadShader ( GLenum type, const char *shaderSrc ) {
 // Initialize the shader and program object
 //
 int Init() {
-   GLbyte vShaderStr[] =  
+   GLbyte vShaderStr[] =
       "attribute vec4 vPosition;    \n"
       "void main()                  \n"
       "{                            \n"
       "   gl_Position = vPosition;  \n"
       "}                            \n";
-   
-   GLbyte fShaderStr[] =  
+
+   GLbyte fShaderStr[] =
       "precision mediump float;\n"\
       "void main()                                  \n"
       "{                                            \n"
@@ -77,14 +77,14 @@ int Init() {
 
    // Create the program object
    programObject = glCreateProgram ( );
-   
+
    if ( programObject == 0 )
       return 0;
 
    glAttachShader ( programObject, vertexShader );
    glAttachShader ( programObject, fragmentShader );
 
-   // Bind vPosition to attribute 0   
+   // Bind vPosition to attribute 0
    glBindAttribLocation ( programObject, 0, "vPosition" );
 
    // Link the program
@@ -93,19 +93,19 @@ int Init() {
    // Check the link status
    glGetProgramiv ( programObject, GL_LINK_STATUS, &linked );
 
-   if ( !linked ) 
+   if ( !linked )
    {
       GLint infoLen = 0;
 
       glGetProgramiv ( programObject, GL_INFO_LOG_LENGTH, &infoLen );
-      
+
       if ( infoLen > 1 )
       {
          char* infoLog = malloc (sizeof(char) * infoLen );
 
          glGetProgramInfoLog ( programObject, infoLen, NULL, infoLog );
-         printf("Error linking program:\n%s\n", infoLog );            
-         
+         printf("Error linking program:\n%s\n", infoLog );
+
          free ( infoLog );
       }
 
@@ -122,13 +122,13 @@ int Init() {
 //
 void Draw ( )
 {
-   GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f, 
+   GLfloat vVertices[] = {  0.0f,  0.5f, 0.0f,
                            -0.5f, -0.5f, 0.0f,
                             0.5f, -0.5f, 0.0f };
-      
+
    // Set the viewport
    glViewport ( 0, 0, 640, 480 );
-   
+
    // Clear the color buffer
    glClear ( GL_COLOR_BUFFER_BIT );
 
@@ -149,6 +149,7 @@ int main(int argc, char **argv) {
 
     SDL_Event event;
     SDL_Surface *screen;
+    SDL_Window *window;
     SDL_SysWMinfo wminfo;
     EGLDisplay display;
     EGLint major, minor;
@@ -156,7 +157,7 @@ int main(int argc, char **argv) {
     EGLConfig config;
     EGLSurface surface;
     EGLContext context;
-    
+
     const EGLint attrs[] = {
          EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
          EGL_NONE
@@ -166,31 +167,34 @@ int main(int argc, char **argv) {
         EGL_CONTEXT_CLIENT_VERSION, 2,
         EGL_NONE
     };
-    
-    int err;
 
-    err = SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER);
+    SDL_Init(SDL_INIT_EVERYTHING);
 
-    screen = SDL_SetVideoMode(640, 480, 32, 0);
-    SDL_Flip(screen);
+    window = SDL_CreateWindow(
+     		"GLES Test",
+ 			SDL_WINDOWPOS_UNDEFINED,
+ 			SDL_WINDOWPOS_UNDEFINED,
+ 			640,
+ 			480,
+ 			0);
 
     SDL_VERSION(&wminfo.version);
-    SDL_GetWMInfo(&wminfo);
+    SDL_GetWindowWMInfo(window, &wminfo);
 
-    display = eglGetDisplay(GetDC(wminfo.window));
+    display = eglGetDisplay(GetDC(wminfo.info.win.window));
     eglInitialize(display, &major, &minor);
-    
+
     printf("Error %x.\n", eglGetError());
 
     eglBindAPI(EGL_OPENGL_ES_API);
-    
+
     printf("Error %x.\n", eglGetError());
 
     eglChooseConfig(display, attrs, &config, 1, &num_config);
 
     printf("Error %x.\n", eglGetError());
 
-    surface = eglCreateWindowSurface(display, config, wminfo.window, NULL);
+    surface = eglCreateWindowSurface(display, config, wminfo.info.win.window, NULL);
 
     printf("Error. %x\n", eglGetError());
 
@@ -203,7 +207,7 @@ int main(int argc, char **argv) {
     printf("Error. %x\n", eglGetError());
 
     Init();
-    
+
     while(1) {
         Draw();
 
@@ -217,5 +221,5 @@ int main(int argc, char **argv) {
             break;
         }
     }
-    
+
 }
