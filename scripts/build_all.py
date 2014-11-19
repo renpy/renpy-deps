@@ -127,7 +127,9 @@ ap.add_argument("--no-windows", dest="windows", action="store_false", default=Tr
 ap.add_argument("--no-mac", dest="mac", action="store_false", default=True)
 ap.add_argument("--no-linux", dest="linux", action="store_false", default=True)
 ap.add_argument("--project", "-p", dest="project", action="store", default="renpy")
+ap.add_argument("--pygame_sdl2", "-s", dest="pygame_sdl2", action="store", default="pygame_sdl2")
 ap.add_argument("--verbose", "-v", dest="verbose", action="store_true", default=False)
+ap.add_argument("--noclean", "-n", dest="clean", action="store_const", const="noclean", default="clean")
 args = ap.parse_args()
 
 verbose = args.verbose
@@ -135,7 +137,9 @@ verbose = args.verbose
 if args.linux:
     linux = Command("linux", [
             "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
+            args.clean,
             "/home/tom/ab/" + args.project,
+            "/home/tom/ab/" + args.pygame_sdl2,
             ])
 
     time.sleep(2)
@@ -144,7 +148,9 @@ if args.windows:
     windows = Remote("windows", args.windows_host, [
             "c:/mingw/msys/1.0/bin/sh.exe",
             "/t/ab/renpy-deps/scripts/build_renpy_win.sh",
+            args.clean,
             "/t/ab/" + args.project,
+            "/t/ab/" + args.pygame_sdl2,
             ])
 
 
@@ -153,7 +159,9 @@ if args.mac:
             "ssh",
             "{}@{}".format(args.mac_user, args.mac_host),
             "/Volumes/shared/ab/renpy-deps/scripts/build_renpy_mac.sh",
+            args.clean,
             "/Volumes/shared/ab/" + args.project,
+            "/Volumes/shared/ab/" + args.pygame_sdl2,
             ])
 
 if args.windows:
