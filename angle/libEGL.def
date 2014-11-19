@@ -18,16 +18,13 @@ eglGetCurrentDisplay@0  	@28
 eglGetCurrentSurface@4  	@27
 eglGetDisplay@4         	@2
 eglGetError@0           	@1
-eglGetPlatformDisplayEXT	@35
 eglGetProcAddress@4     	@34
 eglInitialize@12        	@3
 eglMakeCurrent@16       	@25
-eglPostSubBufferNV      	@37
 eglQueryAPI@0           	@15
 eglQueryContext@16      	@29
 eglQueryString@8        	@5
 eglQuerySurface@16      	@13
-eglQuerySurfacePointerANGLE	@36
 eglReleaseTexImage@12   	@21
 eglReleaseThread@0      	@17
 eglSurfaceAttrib@16     	@19
