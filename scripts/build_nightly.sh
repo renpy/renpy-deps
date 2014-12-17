@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # For testing purposes, run this with ./build_nightly.sh ~/ab/renpy
 
 try () {
@@ -24,6 +26,7 @@ if [ -n "$1" -a -e nightly-android/.git ]; then
     try git pull
 
     try cd python-for-android
+    try git checkout master
     try git pull
     try cd ..
 
@@ -35,38 +38,57 @@ else
 
     try cd nightly-android
 
-    try git clone "git@github.com:renpytom/python-for-android.git" \
+    try git clone "git@github.com:renpy/python-for-android.git" \
         --reference /home/tom/ab/android/python-for-android python-for-android
 fi
 
 try git submodule update --init
-link /home/tom/ab/android/android-ndk-r8c android-ndk-r8c
+link /home/tom/ab/android/android-ndk-r10c android-ndk-r10c
+link /home/tom/ab/android/android-sdk-r23 android-sdk-r23
 link /home/tom/ab/android/android-sdk android-sdk
 
 # Copy downloaded files, so we don't have to download them again.
-mkdir -p /home/tom/ab/nightly-android/python-for-android/.packages
-cp /home/tom/ab/android/python-for-android/.packages/* /home/tom/ab/nightly-android/python-for-android/.packages
+rm -Rf /home/tom/ab/nightly-android/python-for-android/.packages
+cp -a /home/tom/ab/android/python-for-android/.packages /home/tom/ab/nightly-android/python-for-android/.packages
 
+try cd ..
+
+# Activate the virtualenv for the prebuild.
+. /home/tom/.virtualenvs/nightlyrenpy/bin/activate
+
+# Check out pygame_sdl2.
+
+if [ -n "$1" ] ; then
+    if [ -e nightly-pygame_sdl2/.git ]; then
+        try cd nightly-pygame_sdl2
+        try git pull
+    else
+        try git clone /home/tom/ab/pygame_sdl2 --reference /home/tom/ab/pygame_sdl2 nightly-pygame_sdl2
+        try cd nightly-pygame_sdl2
+    fi
+else
+    rm -Rf nightly-pygame_sdl2
+    try git clone https://github.com/renpy/pygame_sdl2.git --reference /home/tom/ab/pygame_sdl2 nightly-pygame_sdl2
+    try cd nightly-pygame_sdl2
+fi
+
+try python setup.py install
 try cd ..
 
 # Check out Ren'Py.
 
 if [ -n "$1" ] ; then
+
     if [ -e nightly-renpy/.git ]; then
         try cd nightly-renpy
         try git pull
     else
-        try git clone "$1" --reference /home/tom/ab/renpy nightly-renpy
+        try git clone /home/tom/ab/renpy --reference /home/tom/ab/renpy nightly-renpy
         try cd nightly-renpy
     fi
 else
     rm -Rf nightly-renpy
-
-	try git clone \
-	    https://github.com/renpy/renpy.git \
-	    --reference /home/tom/ab/renpy \
-	    nightly-renpy
-
+	  try git clone https://github.com/renpy/renpy.git --reference /home/tom/ab/renpy nightly-renpy
     try cd nightly-renpy
 fi
 
@@ -92,7 +114,6 @@ fi
 export RENPY_NIGHTLY="renpy-nightly-$(date +%Y-%m-%d)-$REV"
 
 # Generate source.
-. /home/tom/.virtualenvs/nightlyrenpy/bin/activate
 
 export RENPY_CYTHON=cython
 export RENPY_DEPS_INSTALL=/usr::/usr/lib/x86_64-linux-gnu/
@@ -104,7 +125,7 @@ try ./run.sh tutorial quit
 cp /home/tom/ab/renpy-deps/windows/launch/renpy.exe .
 
 # Build Ren'Py for real.
-try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy
+try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy -s nightly-pygame_sdl2
 unset RENPY_BUILD_ALL
 
 # Build the documentation.
@@ -122,7 +143,7 @@ if [ -n "$1" ]; then
 fi
 
 # Build the distribution.
-try python -O distribute.py "$RENPY_NIGHTLY"
+try python -O distribute.py "$RENPY_NIGHTLY" --pygame /home/tom/ab/nightly-pygame_sdl2
 
 # Create a symlink to the current nightly.
 try cd /home/tom/magnetic/ab/WWW.nightly/
