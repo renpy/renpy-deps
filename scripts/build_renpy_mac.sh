@@ -5,7 +5,7 @@ AB=/Volumes/shared/ab
 clean=${1:-clean}
 RENPY="${2:-/Volumes/shared/ab/renpy}"
 PYGAME_SDL2="${3:-/Volumes/shared/ab/pygame_sdl2}"
-
+RENIOS="${4:-/Users/tom/ripe/renios}"
 
 try () {
     "$@" || exit 1
@@ -32,5 +32,11 @@ python setup.py install_lib -d $PYTHONPATH
 
 cd "$AB/renpy-deps/renpython"
 python -O build.py darwin-x86_64 "$RENPY" renpy.py
+
+unset RENPY_CC
+unset RENPY_LD
+
+cd "$RENIOS"
+./build_all.sh
 
 echo done.
