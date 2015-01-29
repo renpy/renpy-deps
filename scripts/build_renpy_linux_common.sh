@@ -7,6 +7,19 @@ clean=${2:-clean}
 RENPY="${3:-/home/tom/ab/renpy}"
 PYGAME_SDL2="${4:-/home/tom/ab/pygame_sdl2}"
 
+export RENPY_STEAM_SDK=/home/tom/ab/steam/sdk
+case `arch` in
+    x86_64)
+        export RENPY_STEAM_PLATFORM=linux64
+        ;;
+    i686)
+        export RENPY_STEAM_PLATFORM=linux32
+        ;;
+    *)
+        echo "Unknown platform" `arch`.
+esac
+
+
 DEPS="/home/tom/ab/renpy-deps"
 
 . "/home/tom/ab/$PLATFORM-deps/env.sh"
