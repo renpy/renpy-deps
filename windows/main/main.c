@@ -8,6 +8,8 @@
 #include <SDL.h>
 #include <SDL_main.h>
 
+#include <Python.h>
+
 static char *argv0;
 
 /* Reports an error message using a dialog box, then quits. */
@@ -35,7 +37,7 @@ static void error(const char *message, ...) {
  */
 static char *find_py() {
 	int full_path_size = GetFullPathName(argv0, 0, NULL, NULL);
-	char *full_path = (char *) calloc(full_path_size + 1, 1);
+	char full_path[full_path_size + 1];
 	char *basename;
 	char *dir;
 
@@ -56,15 +58,37 @@ static char *find_py() {
 
 	snprintf(rv, rv_len, "%s\\%s", full_path, basename);
 
-	free(full_path);
-
 	return rv;
 }
 
 int main(int argc, char **argv) {
-
 	/* Store argv0 so the other functions can use it. */
 	argv0 = argv[0];
 
-	error("%s", find_py());
+	char *py_filename = find_py();
+
+	FILE *py_f = fopen(py_filename, "rb");
+	if (! py_f) {
+		error("Could not open %s.", py_filename);
+	}
+
+	char *py_argv[argc + 1];
+
+    py_argv[0] = py_filename;
+
+    for (int i = 1; i < argc; i++) {
+    	py_argv[i] = argv[i];
+    }
+
+    py_argv[argc] = NULL;
+
+    Py_IgnoreEnvironmentFlag++;
+    Py_OptimizeFlag++;
+
+	Py_SetProgramName(argv0);
+	Py_Initialize();
+	PySys_SetArgvEx(argc, py_argv, 1);
+    PyEval_InitThreads();
+
+    return PyRun_SimpleFileEx(py_f, py_filename, 1);
 }
