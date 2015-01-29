@@ -33,3 +33,5 @@ cd "$RENPY/module"
 [ $clean = noclean ] || python setup.py clean --all
 python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH
 python -O "$DEPS/renpython/build.py" windows-i686 "$RENPY" renpy.py
+
+cp "$DEPS/windows/main/main.exe" "$RENPY/build/windows-i686/lib/windows-i686/renpy.exe"

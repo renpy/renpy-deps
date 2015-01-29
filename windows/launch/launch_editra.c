@@ -94,19 +94,36 @@ int wmain(int argc, wchar_t **argv) {
 	wcscat(python, L".exe");
 #endif
 
+	/* Figure out the python script. */
+	wchar_t script[PATHLEN];
+
+	{
+		wcscpy(script, dirname);
+		wcscat(script, SCRIPT_DIR);
+
+#ifdef SCRIPT
+		wcscat(script, SCRIPT);
+#else
+		wcscat(script, basename);
+		wcscat(script, L".py");
+#endif
+	}
+
 	/* Set up the new arguments. */
-	wchar_t *newargs[argc + 1];
+	wchar_t *newargs[argc + 3];
 
 	{
 		int i;
 
 		newargs[0] = quote(python);
+		newargs[1] = quote(L"-EOO");
+		newargs[2] = quote(script);
 
 		for (i = 1; i < argc; i++) {
-			newargs[i] = quote(argv[i]);
+			newargs[2 + i] = quote(argv[i]);
 		}
 
-		newargs[argc] = NULL;
+		newargs[argc + 2] = NULL;
 	}
 
 	_wexecv(python, (const wchar_t *const *) newargs);
