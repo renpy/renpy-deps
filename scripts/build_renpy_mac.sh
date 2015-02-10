@@ -17,10 +17,13 @@ INCLUDE="$BASE/newbuild/install/include/pygame_sdl2"
 
 export RENPY_CC="ccache gcc"
 export RENPY_LD="ccache gcc"
+export RENPY_CXX="ccache g++"
 
 set -e
 
 export PYGAME_SDL2_INSTALL_HEADERS=1
+export RENPY_STEAM_SDK=$AB/steam/sdk
+export RENPY_STEAM_PLATFORM=osx32
 
 cd "$PYGAME_SDL2"
 [ $clean = noclean ] || python setup.py clean --all
@@ -35,6 +38,7 @@ python -O build.py darwin-x86_64 "$RENPY" renpy.py
 
 unset RENPY_CC
 unset RENPY_LD
+unset RENPY_CXX
 
 cd "$RENIOS"
 ./build_all.sh

@@ -23,6 +23,9 @@ set -e
 export PYGAME_SDL2_INSTALL_HEADERS=1
 export CFLAGS="-I$INCLUDE"
 
+export RENPY_STEAM_SDK="${RENPY_STEAM_SDK:-/t/ab/steam/sdk}"
+export RENPY_STEAM_PLATFORM=
+
 cd "$PYGAME_SDL2"
 [ $clean = noclean ] || python setup.py clean --all
 python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH install_headers -d $INCLUDE/pygame_sdl2
