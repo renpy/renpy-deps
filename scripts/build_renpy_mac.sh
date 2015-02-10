@@ -40,6 +40,9 @@ unset RENPY_CC
 unset RENPY_LD
 unset RENPY_CXX
 
+unset RENPY_STEAM_SDK
+unset RENPY_STEAM_PLATFORM
+
 cd "$RENIOS"
 ./build_all.sh
 
