@@ -1,0 +1,3 @@
+#include "winuser.h"
+0 ICON "renpy_icon.ico"
+1 RT_MANIFEST "msvcr90.manifest"
