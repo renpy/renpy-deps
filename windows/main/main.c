@@ -76,19 +76,35 @@ int main(int argc, char **argv) {
 
     py_argv[0] = py_filename;
 
+    int py_argc = 1;
+
     for (int i = 1; i < argc; i++) {
-    	py_argv[i] = argv[i];
+
+    	// If called with the -EO <script> patter, skip it. (For compatibility
+    	// with upgrades from pre-6.99 Ren'Py.)
+    	if (argv[i][0] == '-') {
+    		i += 1;
+    		continue;
+    	}
+
+    	py_argv[py_argc++] = argv[i];
     }
 
-    py_argv[argc] = NULL;
+    py_argv[py_argc] = NULL;
 
     Py_IgnoreEnvironmentFlag++;
     Py_OptimizeFlag++;
 
 	Py_SetProgramName(argv0);
 	Py_Initialize();
-	PySys_SetArgvEx(argc, py_argv, 1);
+	PySys_SetArgvEx(py_argc, py_argv, 1);
     PyEval_InitThreads();
+
+    PyRun_SimpleString(
+    		"import sys, os\n"
+    		"sys.renpy_executable = sys.executable\n"
+    		"sys.executable = os.path.dirname(sys.executable) + '\\\\pythonw.exe'\n"
+    		);
 
     return PyRun_SimpleFileEx(py_f, py_filename, 1);
 }
