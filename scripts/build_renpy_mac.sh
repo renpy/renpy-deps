@@ -44,6 +44,6 @@ unset RENPY_STEAM_SDK
 unset RENPY_STEAM_PLATFORM
 
 cd "$RENIOS"
-./build_all.sh
+[ $clean = noclean ] || ./build_all.sh
 
 echo done.
