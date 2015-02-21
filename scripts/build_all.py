@@ -158,10 +158,10 @@ if args.mac:
     mac = Command("mac", [
             "ssh",
             "{}@{}".format(args.mac_user, args.mac_host),
-            "/Volumes/shared/ab/renpy-deps/scripts/build_renpy_mac.sh",
+            "/Volumes/ab/renpy-deps/scripts/build_renpy_mac.sh",
             args.clean,
-            "/Volumes/shared/ab/" + args.project,
-            "/Volumes/shared/ab/" + args.pygame_sdl2,
+            "/Volumes/ab/" + args.project,
+            "/Volumes/ab/" + args.pygame_sdl2,
             ])
 
 if args.windows:

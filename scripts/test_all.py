@@ -149,8 +149,8 @@ if args.mac:
     mac = Command("mac", [
             "ssh",
             "{}@{}".format(args.mac_user, args.mac_host),
-            "/Volumes/shared/ab/" + args.project + "/renpy.sh",
-            "/Volumes/shared/ab/" + args.project + "/testcases",
+            "/Volumes/ab/" + args.project + "/renpy.sh",
+            "/Volumes/ab/" + args.project + "/testcases",
             "auto"
             ])
 

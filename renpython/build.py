@@ -299,6 +299,7 @@ class Build(object):
 
                 libs = set()
 
+                os.chmod(fn, 0755)
                 subprocess.check_call([ "strip", "-x", "-S", fn ])
 
                 p = subprocess.Popen([ "otool", "-L", fn ], stdout=subprocess.PIPE)
