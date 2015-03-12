@@ -11,6 +11,10 @@ try () {
     "$@" || exit 1
 }
 
+if [ ! -e "$RENPY" ]; then
+  osascript -e 'tell application "finder"' -e 'open location "cifs://eileen/ab"' -e 'end tell'
+fi
+
 . "$BASE/newbuild/env.sh"
 
 INCLUDE="$BASE/newbuild/install/include/pygame_sdl2"
