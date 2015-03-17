@@ -34,25 +34,22 @@ mkdir -p $INSTALL
 
 # Unix debug
 # export CFLAGS="$CFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2 -fPIC"
-# export CXXFLAGS="$CXXFLAGS -ggdb -I$INSTALL/include -I$INSTALL/include/freetype2 -fPIC"
 # export LDFLAGS="-ggdb -L$INSTALL/lib $LDFLAGS -fPIC"
 # echo warning debug build; sleep 3
 
 # Windows debug
-# export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
-# export CXXFLAGS="$CXXFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2"
+# export CFLAGS="$CFLAGS -gstabs -I$INSTALL/include -I$INSTALL/include/freetype2 -I$INSTALL/include/SDL"
 # export LDFLAGS="-gstabs -L$INSTALL/lib $LDFLAGS"
 # echo warning debug build; sleep 3
 
 # Production
-export CFLAGS="$CFLAGS -O3 -I$INSTALL/include -I$INSTALL/include/freetype2 -I$INSTALL/include/SDL"
-export LDFLAGS="-O3 -L$INSTALL/lib $LDFLAGS"
+export CFLAGS="$CFLAGS -O2 -I$INSTALL/include -I$INSTALL/include/freetype2 -I$INSTALL/include/SDL"
+export LDFLAGS="-O2 -L$INSTALL/lib $LDFLAGS"
 
 PLATFORM=linux
 
 if [ "x$MSYSTEM" != "x" ]; then
     export CFLAGS="$CFLAGS -fno-strict-aliasing "
-    export CXXFLAGS="$CXXFLAGS -fno-strict-aliasing "
     PLATFORM="windows"
 else
     if [ `uname` = 'Darwin' ]; then
@@ -61,7 +58,6 @@ else
 
     if [ `arch` = "x86_64" ]; then
         export CFLAGS="-fPIC $CFLAGS"
-        export CXXFLAGS="-fPIC $CXXFLAGS"
         export LDFLAGS="-fPIC $LDFLAGS"
     fi
 fi
@@ -236,8 +232,8 @@ if [ \! -e built.sdl_ttf ]; then
 fi
 
 if [ \! -e built.jpegturbo ]; then
-    try tar xzf "$SOURCE/libjpeg-turbo-1.3.1.tar.gz"
-    try cd "$BUILD/libjpeg-turbo-1.3.1"
+    try tar xzf "$SOURCE/libjpeg-turbo-1.4.0.tar.gz"
+    try cd "$BUILD/libjpeg-turbo-1.4.0"
     try ./configure --prefix="$INSTALL" $JPEG_ASM
     try make
     try make install

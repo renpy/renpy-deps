@@ -7,6 +7,8 @@ try () {
 export PATH=/c/Python27:/c/Python27/Scripts:$PATH
 export MINGW_ROOT_DIRECTORY=/c/mingw
 
+. /opt/windows_32/bin/win-builds-switch 32
+
 try cd /
 # rm -Rf newbuild
 mkdir -p /newbuild/install/bin
