@@ -405,6 +405,7 @@ if [ \! -e built.av ]; then
        --disable-protocols \
        --disable-devices \
        --disable-vdpau \
+       --disable-vda \
        --disable-filters \
        --disable-bsfs
 
