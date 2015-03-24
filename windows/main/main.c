@@ -2,6 +2,7 @@
 #include <stdarg.h>
 #include <libgen.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <windows.h>
 
@@ -82,7 +83,8 @@ int main(int argc, char **argv) {
 
     	// If called with the -EO <script> patter, skip it. (For compatibility
     	// with upgrades from pre-6.99 Ren'Py.)
-    	if (argv[i][0] == '-') {
+
+    	if (!strcmp(argv[i], "-EOO") || !strcmp(argv[i], "-OO")) {
     		i += 1;
     		continue;
     	}
