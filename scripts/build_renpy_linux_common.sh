@@ -7,7 +7,7 @@ clean=${2:-clean}
 RENPY="${3:-/home/tom/ab/renpy}"
 PYGAME_SDL2="${4:-/home/tom/ab/pygame_sdl2}"
 
-export RENPY_STEAM_SDK=/home/tom/ab/steam/sdk
+export RENPY_STEAM_SDK="${RENPY_STEAM_SDK:-/home/tom/ab/steam/sdk}"
 case `arch` in
     x86_64)
         export RENPY_STEAM_PLATFORM=linux64
@@ -23,6 +23,9 @@ esac
 DEPS="/home/tom/ab/renpy-deps"
 
 . "/home/tom/ab/$PLATFORM-deps/env.sh"
+
+cp "$RENPY_STEAM_SDK/redistributable_bin/$RENPY_STEAM_PLATFORM/libsteam_api.so" "$RENPY_DEPS_INSTALL/lib"
+
 
 INCLUDE="/home/tom/ab/$PLATFORM-deps/install/include/pygame_sdl2"
 

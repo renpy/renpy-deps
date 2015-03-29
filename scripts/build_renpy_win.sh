@@ -26,6 +26,7 @@ export CFLAGS="-I$INCLUDE"
 export RENPY_STEAM_SDK="${RENPY_STEAM_SDK:-/t/ab/steam/sdk}"
 export RENPY_STEAM_PLATFORM=
 
+
 cd "$PYGAME_SDL2"
 [ $clean = noclean ] || python setup.py clean --all
 python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH install_headers -d $INCLUDE/pygame_sdl2
@@ -36,5 +37,7 @@ cd "$RENPY/module"
 [ $clean = noclean ] || python setup.py clean --all
 python setup.py build --compiler=mingw32 install_lib -d $PYTHONPATH
 python -O "$DEPS/renpython/build.py" windows-i686 "$RENPY" renpy.py
+
+cp "$RENPY_STEAM_SDK/redistributable_bin/steam_api.dll" "$RENPY/build/windows-i686/lib/windows-i686/"
 
 cp "$DEPS/windows/main/main.exe" "$RENPY/build/windows-i686/lib/windows-i686/renpy.exe"

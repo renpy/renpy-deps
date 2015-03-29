@@ -17,6 +17,8 @@ fi
 
 . "$BASE/newbuild/env.sh"
 
+
+
 INCLUDE="$BASE/newbuild/install/include/pygame_sdl2"
 
 export RENPY_CC="ccache gcc"
@@ -29,6 +31,7 @@ export PYGAME_SDL2_INSTALL_HEADERS=1
 export RENPY_STEAM_SDK=$AB/steam/sdk
 export RENPY_STEAM_PLATFORM=osx32
 
+
 cd "$PYGAME_SDL2"
 [ $clean = noclean ] || python setup.py clean --all
 python setup.py install_lib -d $PYTHONPATH install_headers -d $INCLUDE
@@ -39,6 +42,11 @@ python setup.py install_lib -d $PYTHONPATH
 
 cd "$AB/renpy-deps/renpython"
 python -O build.py darwin-x86_64 "$RENPY" renpy.py
+
+cd "$RENPY"
+cp "$RENPY_STEAM_SDK/redistributable_bin/$RENPY_STEAM_PLATFORM/libsteam_api.dylib" "build/darwin-x86_64/lib/darwin-x86_64/"
+chmod a+x "build/darwin-x86_64/lib/darwin-x86_64/libsteam_api.dylib"
+install_name_tool -change "@loader_path/libsteam_api.dylib" "@executable_path/libsteam_api.dylib" "build/darwin-x86_64/lib/darwin-x86_64/lib/python2.7/_renpysteam.so"
 
 unset RENPY_CC
 unset RENPY_LD
