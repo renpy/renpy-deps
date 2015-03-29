@@ -81,10 +81,10 @@ int main(int argc, char **argv) {
 
     for (int i = 1; i < argc; i++) {
 
-    	// If called with the -EO <script> patter, skip it. (For compatibility
+    	// If called with the -EO <script> pattern, skip it. (For compatibility
     	// with upgrades from pre-6.99 Ren'Py.)
 
-    	if (!strcmp(argv[i], "-EOO") || !strcmp(argv[i], "-OO")) {
+    	if (!strcmp(argv[i], "-EO") || !strcmp(argv[i], "-EOO") || !strcmp(argv[i], "-O") || !strcmp(argv[i], "-OO")) {
     		i += 1;
     		continue;
     	}
