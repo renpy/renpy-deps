@@ -100,7 +100,7 @@ link /home/tom/ab/nightly-android android
 link /home/tom/ab/nightly-android/dist/renpy rapt
 link /home/tom/ab/renpy/editra editra
 link /home/tom/ab/renpy/jedit jedit
-link /home/ton/ab/renpy/renios renios
+link /home/tom/ab/renpy/renios renios
 
 # Figure out a reasonable version name, and check that it doesn't already
 # exist.
