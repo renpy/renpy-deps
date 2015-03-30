@@ -7,7 +7,6 @@
 #include <windows.h>
 
 #include <SDL.h>
-#include <SDL_main.h>
 
 #include <Python.h>
 
@@ -62,7 +61,16 @@ static char *find_py() {
 	return rv;
 }
 
-int main(int argc, char **argv) {
+int WINAPI WinMain(
+	    HINSTANCE hInstance,      /* handle to current instance */
+	    HINSTANCE hPrevInstance,  /* handle to previous instance */
+	    LPSTR lpCmdLine,          /* pointer to command line */
+	    int nCmdShow              /* show state of window */
+	) {
+
+	int argc = __argc;
+	char **argv = __argv;
+
 	/* Store argv0 so the other functions can use it. */
 	argv0 = argv[0];
 
@@ -70,7 +78,7 @@ int main(int argc, char **argv) {
 
 	FILE *py_f = fopen(py_filename, "rb");
 	if (! py_f) {
-		error("Could not open %s.", py_filename);
+		error("%s: Could not open %s.", argv0, py_filename);
 	}
 
 	char *py_argv[argc + 1];

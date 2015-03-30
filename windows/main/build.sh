@@ -1,7 +1,7 @@
 set -ex
 
-CFLAGS="$(sdl2-config --cflags) -Ic:/python27/include"
-LDFLAGS="$(sdl2-config --libs) -Lc:/python27/libs -lpython27"
+CFLAGS="-Ic:/python27/include $(sdl2-config --cflags)"
+LDFLAGS="-Lc:/python27/libs -lpython27 $(sdl2-config --libs)"
 
 # . /opt/windows_32/bin/win-builds-switch 32
 
