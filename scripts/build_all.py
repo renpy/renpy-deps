@@ -147,9 +147,6 @@ else:
             ap.error("Unknown platform {}.".format(p))
             sys.exit(1)
 
-print(args)
-sys.exit(0)
-
 verbose = args.verbose
 
 if args.linux:
@@ -182,14 +179,25 @@ if args.mac:
             "/Volumes/ab/" + args.pygame_sdl2,
             ])
 
+if args.android:
+    android = Command("android", [
+        "/home/tom/ab/" + args.project + "/android/build_renpy.sh",
+        "renpy",
+        "/home/tom/ab/" + args.project,
+        "/home/tom/ab/" + args.pygame_sdl2,
+        ])
+
 if args.windows:
     windows.join()
 if args.linux:
     linux.join()
 if args.mac:
     mac.join()
+if args.android:
+    android.join()
 
-subprocess.check_call([ "./build_finish.sh", "/home/tom/ab/" + args.project ])
+if args.windows or args.linux or args.mac:
+    subprocess.check_call([ "./build_finish.sh", "/home/tom/ab/" + args.project ])
 
 print
 print failed, "failed."
