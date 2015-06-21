@@ -123,14 +123,32 @@ ap = argparse.ArgumentParser()
 ap.add_argument("--mac-user", default=config.mac_user)
 ap.add_argument("--mac-host", default=config.mac_host)
 ap.add_argument("--windows-host", default=config.windows_host)
-ap.add_argument("--no-windows", dest="windows", action="store_false", default=True)
-ap.add_argument("--no-mac", dest="mac", action="store_false", default=True)
-ap.add_argument("--no-linux", dest="linux", action="store_false", default=True)
 ap.add_argument("--project", "-p", dest="project", action="store", default="renpy")
 ap.add_argument("--pygame_sdl2", "-s", dest="pygame_sdl2", action="store", default="pygame_sdl2")
 ap.add_argument("--verbose", "-v", dest="verbose", action="store_true", default=False)
 ap.add_argument("--noclean", "-n", dest="clean", action="store_const", const="noclean", default="clean")
+ap.add_argument("platforms", nargs='*')
 args = ap.parse_args()
+
+known_platforms = [ 'linux', 'mac', 'windows', 'android' ]
+
+if not args.platforms:
+    for p in known_platforms:
+        setattr(args, p, True)
+
+else:
+    for p in known_platforms:
+        setattr(args, p, False)
+
+    for p in args.platforms:
+        if p in known_platforms:
+            setattr(args, p, True)
+        else:
+            ap.error("Unknown platform {}.".format(p))
+            sys.exit(1)
+
+print(args)
+sys.exit(0)
 
 verbose = args.verbose
 
