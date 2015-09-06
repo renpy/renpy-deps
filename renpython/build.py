@@ -126,10 +126,17 @@ file_filter = renpy_filter
 class Build(object):
 
 
-    def __init__(self, platform, renpy):
+    def __init__(self, platform, renpy, tmpdir):
 
         self.platform = platform
-        self.workdir = os.path.join(renpy, "build", platform)
+
+        self.targetdir = os.path.join(renpy, "build", platform)
+
+        if tmpdir is None:
+            self.workdir = self.targetdir
+        else:
+            self.workdir = os.path.join(tmpdir, os.path.basename(renpy) + "-build", platform)
+
         self.platlib = os.path.join(self.workdir, "lib", platform)
 
         if windows:
@@ -139,8 +146,15 @@ class Build(object):
 
         self.purepy = os.path.join(self.workdir, "lib", "pythonlib" + PYVERSION)
 
-        if os.path.exists(self.workdir):
+        try:
             shutil.rmtree(self.workdir)
+        except:
+            pass
+
+        try:
+            shutil.rmtree(self.targetdir)
+        except:
+            pass
 
         os.makedirs(self.platlib)
         os.makedirs(self.purepy)
@@ -191,7 +205,24 @@ class Build(object):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
 
-        shutil.copy2(src, dst)
+        shutil.copyfile(src, dst)
+        shutil.copystat(src, dst)
+
+
+    def copy_tree(self, src, dst):
+        if os.path.isdir(src):
+            os.mkdir(dst)
+
+            for fn in os.listdir(src):
+                self.copy_tree(
+                    os.path.join(src, fn),
+                    os.path.join(dst, fn),
+                    )
+
+            return
+
+        shutil.copyfile(src, dst)
+        shutil.copystat(src, dst)
 
     def copy_module(self, name, path):
         """
@@ -434,7 +465,9 @@ if it doesn't. This file exists because some archive formats and version control
 systems dislike empty directories.
 """)
 
-
+    def finish(self):
+        if self.workdir != self.targetdir:
+            self.copy_tree(self.workdir, self.targetdir)
 
 if __name__ == "__main__":
 
@@ -445,6 +478,7 @@ if __name__ == "__main__":
 
     ap.add_argument("--encodings", action="store_true")
     ap.add_argument("--command", action="store", default="renpy")
+    ap.add_argument("--tmpdir", action="store")
 
     args = ap.parse_args()
 
@@ -462,7 +496,7 @@ if __name__ == "__main__":
         editra_exclude = args.base
         file_filter = editra_filter
 
-    b = Build(args.platform, args.base)
+    b = Build(args.platform, args.base, args.tmpdir)
     b.analyze(args.base, args.script)
     b.files()
     b.move_pure()
@@ -476,3 +510,5 @@ if __name__ == "__main__":
         b.patchcoff()
 
     b.make_dynload()
+    b.finish()
+
