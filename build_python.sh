@@ -93,15 +93,10 @@ fi
 
 if [ \! -e built.python ]; then
 
-    try tar xzf "$SOURCE/Python-2.7.9.tgz"
-    try cd "$BUILD/Python-2.7.9"
+    try tar xzf "$SOURCE/Python-2.7.10.tgz"
+    try cd "$BUILD/Python-2.7.10"
 
-    if [ $MAC = "yes" ]; then
-        # try ./configure --prefix="$INSTALL" --enable-framework="$DYLD_FRAMEWORK_PATH"
-        try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4  #-with-universal-archs=x86_64 --enable-universalsdk=$SDKROOT
-    else
-        try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4
-    fi
+    try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4  #-with-universal-archs=x86_64 --enable-universalsdk=$SDKROOT
 
     try make
     try make install
