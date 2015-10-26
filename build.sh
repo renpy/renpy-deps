@@ -151,8 +151,7 @@ if [ \! -e built.sdl ]; then
    try tar xzf "$SOURCE/$SDL_VERSION.tar.gz"
    try cd "$BUILD/$SDL_VERSION"
 
-   # Fix header issue in 2.0.3.
-   try cp "$SOURCE/SDL_platform.h" include
+   # try patch -p1 < "$SOURCE/sdl-platform-mingw.diff"
 
    if [ $PLATFORM = "mac" ]; then
        SDL_EXTRA="--disable-video-x11"
@@ -262,15 +261,15 @@ if [ \! -e built.sdl_image ]; then
    touch built.sdl_image
 fi
 
-if [ \! -e built.sdl_gfx ]; then
-   try tar xvzf "$SOURCE/SDL2_gfx-1.0.1.tar.gz"
-   try cd "$BUILD/SDL2_gfx-1.0.1"
-   try ./configure --prefix="$INSTALL"
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.sdl_gfx
-fi
+# if [ \! -e built.sdl_gfx ]; then
+#    try tar xvzf "$SOURCE/SDL2_gfx-1.0.1.tar.gz"
+#   try cd "$BUILD/SDL2_gfx-1.0.1"
+#   try ./configure --prefix="$INSTALL"
+#   try make
+#   try make install
+#   cd "$BUILD"
+#   touch built.sdl_gfx
+# fi
 
 if [ \! -e built.sdl_mixer ]; then
    tar xzf "$SOURCE/SDL2_mixer-2.0.0.tar.gz"
