@@ -141,17 +141,14 @@ else
 
 fi
 
-SDL_VERSION="SDL-2.0.4-9799"
 
 if [ \! -e built.sdl ]; then
 
    # try mkdir -p "$INSTALL/include/asm"
    # try touch "$INSTALL/include/asm/page.h"
 
-   try tar xzf "$SOURCE/$SDL_VERSION.tar.gz"
-   try cd "$BUILD/$SDL_VERSION"
-
-   # try patch -p1 < "$SOURCE/sdl-platform-mingw.diff"
+   try tar xzf "$SOURCE/SDL2-2.0.3.tar.gz"
+   try cd "$BUILD/SDL2-2.0.3"
 
    # try patch -p1 < "$SOURCE/sdl-platform-mingw.diff"
 
