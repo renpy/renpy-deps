@@ -309,36 +309,37 @@ fi
 #   touch built.pygame
 #fi
 
-LIBAV_FLAGS=
 
 if [ $PLATFORM = "windows" ]; then
-      LIBAV_FLAGS="--disable-pthreads --enable-w32threads"
-   LIBAV_CFLAGS="-D__MINGW32__"
+    FFMPEG_FLAGS="--disable-pthreads --enable-w32threads"
+    FFMPEG_CFLAGS="-D__MINGW32__"
+else
+    FFMPEG_FLAGS=--arch=`arch`
+    FFMPEG_CFLAGS="-D__MINGW32__"
 fi
 
-if [ \! -e built.av ]; then
-   try tar xzf "$SOURCE/libav-9.6.tar.gz"
-   try cd "$BUILD/libav-9.6"
+if [ \! -e built.ffmpeg ]; then
+   try tar xjf "$SOURCE/ffmpeg-2.8.5.tar.bz2"
+   try cd "$BUILD/ffmpeg-2.8.5"
 
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
-   if [ $PLATFORM = "windows" ]; then
-        try patch -p1 < "$SOURCE/libav-fstat.diff"
-   fi
+#    if [ $PLATFORM = "windows" ]; then
+#         try patch -p1 < "$SOURCE/libav-fstat.diff"
+#    fi
 
-   export CFLAGS="$CFLAGS -fno-common $LIBAV_CFLAGS"
-   export CXXFLAGS="$CXXFLAGS -fno-common $LIBAV_CFLAGS"
+   export CFLAGS="$CFLAGS -fno-common $FFMPEG_CFLAGS"
+   export CXXFLAGS="$CXXFLAGS -fno-common $FFMPEG_CFLAGS"
+
    MEM_ALIGN_HACK="--enable-memalign-hack"
-
 
    try ./configure --prefix="$INSTALL" \
        --cc="${CC:-gcc}" \
-       $FFMPEGFLAGS \
-       $LIBAV_FLAGS \
+       $FFMPEG_FLAGS \
        $MEM_ALIGN_HACK \
-       --arch=`arch` \
        --enable-runtime-cpudetect \
        --enable-shared \
+       --enable-avresample \
        --disable-encoders \
        --disable-muxers \
        --disable-bzlib \
@@ -390,7 +391,6 @@ if [ \! -e built.av ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-vda \
-       --disable-filters \
        --disable-bsfs
 
    try make
@@ -400,80 +400,80 @@ if [ \! -e built.av ]; then
    try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
 
    cd "$BUILD"
-   touch built.av
+   touch built.ffmpeg
 fi
 
 CFLAGS="$OLD_CFLAGS"
 CXXFLAGS="$OLD_CXXFLAGS"
 
-if [ -n "$RENPY_BUILD_ALT" ]; then
-
-    mkdir -p "$BUILD/alt"
-
-    if [ \! -e built.avalt ]; then
-        try tar xzf "$SOURCE/libav-9.6.tar.gz" -C "$BUILD/alt"
-        try cd "$BUILD/alt/libav-9.6"
-
-        # My windows libraries don't seem to export fstat. So use _fstat32
-        # instead.
-        #try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
-
-# av_cold is also a problem on windows.
-        export CFLAGS="$CFLAGS -fno-common -Dav_cold= $LIBAV_CFLAGS"
-        export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold= $LIBAV_CFLAGS"
-        MEM_ALIGN_HACK="--enable-memalign-hack"
-
-        try ./configure --prefix="$INSTALL/alt" \
-            --cc="${CC:-gcc}" \
-            $FFMPEGFLAGS \
-            $MEM_ALIGN_HACK \
-            --enable-runtime-cpudetect \
-            --enable-shared \
-            --disable-encoders \
-            --disable-muxers \
-            --disable-bzlib \
-            --disable-demuxers \
-            --enable-demuxer=au \
-            --enable-demuxer=avi \
-            --enable-demuxer=flac \
-            --enable-demuxer=matroska \
-            --enable-demuxer=mov \
-            --enable-demuxer=ogg \
-            --enable-demuxer=wav \
-            --enable-demuxer=webm \
-            --disable-decoders \
-            --enable-decoder=flac \
-            --enable-decoder=pcm_dvd \
-            --enable-decoder=pcm_s16be \
-            --enable-decoder=pcm_s16le \
-            --enable-decoder=pcm_s8 \
-            --enable-decoder=pcm_u16be \
-            --enable-decoder=pcm_u16le \
-            --enable-decoder=pcm_u8 \
-            --enable-decoder=theora \
-            --enable-decoder=vorbis \
-            --enable-decoder=vp3 \
-            --enable-decoder=vp8 \
-            --disable-parsers \
-            --enable-parser=vp3 \
-            --enable-parser=vp8 \
-            --disable-protocols \
-            --disable-devices \
-            --disable-vdpau \
-            --disable-filters \
-            --disable-bsfs
-
-        try make
-        try make install
-
-   # try mkdir -p "$INSTALL/include/libswscale"
-   # try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
-
-        cd "$BUILD"
-        touch built.avalt
-    fi
-
-fi
+# if [ -n "$RENPY_BUILD_ALT" ]; then
+#
+#     mkdir -p "$BUILD/alt"
+#
+#     if [ \! -e built.avalt ]; then
+#         try tar xzf "$SOURCE/libav-9.6.tar.gz" -C "$BUILD/alt"
+#         try cd "$BUILD/alt/libav-9.6"
+#
+#         # My windows libraries don't seem to export fstat. So use _fstat32
+#         # instead.
+#         #try patch -p1 < "$SOURCE/ffmpeg-fstat.diff"
+#
+# # av_cold is also a problem on windows.
+#         export CFLAGS="$CFLAGS -fno-common -Dav_cold= $LIBAV_CFLAGS"
+#         export CXXFLAGS="$CXXFLAGS -fno-common -Dav_cold= $LIBAV_CFLAGS"
+#         MEM_ALIGN_HACK="--enable-memalign-hack"
+#
+#         try ./configure --prefix="$INSTALL/alt" \
+#             --cc="${CC:-gcc}" \
+#             $FFMPEGFLAGS \
+#             $MEM_ALIGN_HACK \
+#             --enable-runtime-cpudetect \
+#             --enable-shared \
+#             --disable-encoders \
+#             --disable-muxers \
+#             --disable-bzlib \
+#             --disable-demuxers \
+#             --enable-demuxer=au \
+#             --enable-demuxer=avi \
+#             --enable-demuxer=flac \
+#             --enable-demuxer=matroska \
+#             --enable-demuxer=mov \
+#             --enable-demuxer=ogg \
+#             --enable-demuxer=wav \
+#             --enable-demuxer=webm \
+#             --disable-decoders \
+#             --enable-decoder=flac \
+#             --enable-decoder=pcm_dvd \
+#             --enable-decoder=pcm_s16be \
+#             --enable-decoder=pcm_s16le \
+#             --enable-decoder=pcm_s8 \
+#             --enable-decoder=pcm_u16be \
+#             --enable-decoder=pcm_u16le \
+#             --enable-decoder=pcm_u8 \
+#             --enable-decoder=theora \
+#             --enable-decoder=vorbis \
+#             --enable-decoder=vp3 \
+#             --enable-decoder=vp8 \
+#             --disable-parsers \
+#             --enable-parser=vp3 \
+#             --enable-parser=vp8 \
+#             --disable-protocols \
+#             --disable-devices \
+#             --disable-vdpau \
+#             --disable-filters \
+#             --disable-bsfs
+#
+#         try make
+#         try make install
+#
+#    # try mkdir -p "$INSTALL/include/libswscale"
+#    # try cp libswscale/swscale.h  "$INSTALL/include/libswscale"
+#
+#         cd "$BUILD"
+#         touch built.avalt
+#     fi
+#
+# fi
 
 CFLAGS="$OLD_CFLAGS"
 CXXFLAGS="$OLD_CXXFLAGS"

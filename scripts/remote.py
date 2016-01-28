@@ -33,51 +33,55 @@ def process_socket(s):
 
     print cmd
 
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
 
-    lock = threading.Lock()
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    def stdout_thread():
-        while True:
-            l = proc.stdout.readline()
-            if not l:
-                break
+        lock = threading.Lock()
 
-            with lock:
-                f.write("O " + l)
-                f.flush()
-                sys.stdout.write(l)
+        def stdout_thread():
+            while True:
+                l = proc.stdout.readline()
+                if not l:
+                    break
+
+                with lock:
+                    f.write("O " + l)
+                    f.flush()
+                    sys.stdout.write(l)
 
 
-    def stderr_thread():
-        while True:
-            l = proc.stderr.readline()
-            if not l:
-                break
+        def stderr_thread():
+            while True:
+                l = proc.stderr.readline()
+                if not l:
+                    break
 
-            with lock:
-                f.write("E " + l)
-                f.flush()
-                sys.stdout.write(l)
+                with lock:
+                    f.write("E " + l)
+                    f.flush()
+                    sys.stdout.write(l)
 
-    t1 = threading.Thread(target=stdout_thread)
-    t2 = threading.Thread(target=stderr_thread)
+        t1 = threading.Thread(target=stdout_thread)
+        t2 = threading.Thread(target=stderr_thread)
 
-    t1.daemon = True
-    t2.daemon = True
+        t1.daemon = True
+        t2.daemon = True
 
-    t1.start()
-    t2.start()
+        t1.start()
+        t2.start()
 
-    t1.join()
-    t2.join()
+        t1.join()
+        t2.join()
 
-    proc.wait()
+        proc.wait()
 
-    f.write("R %d\n" % proc.returncode)
+        f.write("R %d\n" % proc.returncode)
 
-    f.close()
-    s.close()
+    finally:
+
+        f.close()
+        s.close()
 
     print
     print "Done."
