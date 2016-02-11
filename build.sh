@@ -147,8 +147,8 @@ if [ \! -e built.sdl ]; then
    # try mkdir -p "$INSTALL/include/asm"
    # try touch "$INSTALL/include/asm/page.h"
 
-   try tar xzf "$SOURCE/SDL2-2.0.3.tar.gz"
-   try cd "$BUILD/SDL2-2.0.3"
+   try tar xzf "$SOURCE/SDL2-2.0.4.tar.gz"
+   try cd "$BUILD/SDL2-2.0.4"
 
    try patch -p1 < "$SOURCE/sdl-windows-highdpi.diff"
 
