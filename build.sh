@@ -357,7 +357,6 @@ if [ \! -e built.ffmpeg ]; then
        --enable-demuxer=mpegvideo \
        --enable-demuxer=ogg \
        --enable-demuxer=wav \
-       --enable-demuxer=webm \
        --disable-decoders \
        --enable-decoder=flac \
        --enable-decoder=mp2 \
@@ -379,8 +378,10 @@ if [ \! -e built.ffmpeg ]; then
        --enable-decoder=pcm_u8 \
        --enable-decoder=theora \
        --enable-decoder=vorbis \
+       --enable-decoder=opus \
        --enable-decoder=vp3 \
        --enable-decoder=vp8 \
+       --enable-decoder=vp9 \
        --disable-parsers \
        --enable-parser=mpegaudio \
        --enable-parser=mpegvideo \
@@ -391,6 +392,7 @@ if [ \! -e built.ffmpeg ]; then
        --disable-devices \
        --disable-vdpau \
        --disable-vda \
+       --disable-filters \
        --disable-bsfs
 
    try make
