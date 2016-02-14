@@ -1,0 +1,115 @@
+diff --git a/src/video/SDL_pixels.c b/src/video/SDL_pixels.c
+index d905656..302dea6 100644
+--- a/src/video/SDL_pixels.c
++++ b/src/video/SDL_pixels.c
+@@ -28,6 +28,7 @@
+ #include "SDL_blit.h"
+ #include "SDL_pixels_c.h"
+ #include "SDL_RLEaccel_c.h"
++#include "SDL_atomic.h"
+ 
+ 
+ /* Lookup tables to expand partial bytes to the full 0..255 range */
+@@ -483,17 +484,21 @@ SDL_MasksToPixelFormatEnum(int bpp, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask,
+ }
+ 
+ static SDL_PixelFormat *formats;
++static SDL_SpinLock format_lock = 0;
++
+ 
+ SDL_PixelFormat *
+ SDL_AllocFormat(Uint32 pixel_format)
+ {
+-    SDL_PixelFormat *format;
++    SDL_PixelFormat *format = NULL;
++
++    SDL_AtomicLock(&format_lock);
+ 
+     /* Look it up in our list of previously allocated formats */
+     for (format = formats; format; format = format->next) {
+         if (pixel_format == format->format) {
+             ++format->refcount;
+-            return format;
++            goto done;
+         }
+     }
+ 
+@@ -501,12 +506,12 @@ SDL_AllocFormat(Uint32 pixel_format)
+     format = SDL_malloc(sizeof(*format));
+     if (format == NULL) {
+         SDL_OutOfMemory();
+-        return NULL;
++        goto done;
+     }
+     if (SDL_InitFormat(format, pixel_format) < 0) {
+         SDL_free(format);
+         SDL_InvalidParamError("format");
+-        return NULL;
++        goto done;
+     }
+ 
+     if (!SDL_ISPIXELFORMAT_INDEXED(pixel_format)) {
+@@ -514,6 +519,10 @@ SDL_AllocFormat(Uint32 pixel_format)
+         format->next = formats;
+         formats = format;
+     }
++
++done:
++	SDL_AtomicUnlock(&format_lock);
++
+     return format;
+ }
+ 
+@@ -587,12 +596,14 @@ SDL_FreeFormat(SDL_PixelFormat *format)
+ {
+     SDL_PixelFormat *prev;
+ 
++    SDL_AtomicLock(&format_lock);
++
+     if (!format) {
+         SDL_InvalidParamError("format");
+-        return;
++        goto done;
+     }
+     if (--format->refcount > 0) {
+-        return;
++    	goto done;
+     }
+ 
+     /* Remove this format from our list */
+@@ -610,7 +621,12 @@ SDL_FreeFormat(SDL_PixelFormat *format)
+     if (format->palette) {
+         SDL_FreePalette(format->palette);
+     }
++
+     SDL_free(format);
++
++done:
++	SDL_AtomicUnlock(&format_lock);
++
+ }
+ 
+ SDL_Palette *
+diff --git a/src/video/windows/SDL_windowsmodes.c b/src/video/windows/SDL_windowsmodes.c
+index 8c5cb2a..d785b6d 100644
+--- a/src/video/windows/SDL_windowsmodes.c
++++ b/src/video/windows/SDL_windowsmodes.c
+@@ -110,6 +110,8 @@ WIN_GetDisplayMode(_THIS, LPCTSTR deviceName, DWORD index, SDL_DisplayMode * mod
+         char bmi_data[sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD)];
+         LPBITMAPINFO bmi;
+         HBITMAP hbm;
++
++#if 0
+         int logical_width = GetDeviceCaps( hdc, HORZRES );
+         int logical_height = GetDeviceCaps( hdc, VERTRES );
+ 
+@@ -117,7 +119,8 @@ WIN_GetDisplayMode(_THIS, LPCTSTR deviceName, DWORD index, SDL_DisplayMode * mod
+         data->ScaleY = (float)logical_height / devmode.dmPelsHeight;
+         mode->w = logical_width;
+         mode->h = logical_height;
+-
++#endif
++        
+         // WIN_GetMonitorDPI needs mode->w and mode->h
+         // so only call after those are set.
+         if (vid_data->GetDpiForMonitor) {

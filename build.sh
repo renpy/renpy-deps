@@ -150,7 +150,7 @@ if [ \! -e built.sdl ]; then
    try tar xzf "$SOURCE/SDL2-2.0.4.tar.gz"
    try cd "$BUILD/SDL2-2.0.4"
 
-   try patch -p1 < "$SOURCE/sdl-windows-highdpi.diff"
+   try patch -p1 < "$SOURCE/sdl-renpy.diff"
 
    if [ $PLATFORM = "mac" ]; then
        SDL_EXTRA="--disable-video-x11"
