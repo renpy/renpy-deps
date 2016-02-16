@@ -319,8 +319,8 @@ else
 fi
 
 if [ \! -e built.ffmpeg ]; then
-   try tar xjf "$SOURCE/ffmpeg-2.8.5.tar.bz2"
-   try cd "$BUILD/ffmpeg-2.8.5"
+   try tar xjf "$SOURCE/ffmpeg-3.0.tar.bz2"
+   try cd "$BUILD/ffmpeg-3.0"
 
    # My windows libraries don't seem to export fstat. So use _fstat32
    # instead.
