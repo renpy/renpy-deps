@@ -390,7 +390,14 @@ if [ \! -e built.ffmpeg ]; then
        --disable-vdpau \
        --disable-vda \
        --disable-filters \
-       --disable-bsfs
+       --disable-bsfs \
+       --disable-d3d11va \
+       --disable-dxva2 \
+       --disable-vaapi \
+       --disable-vda \
+       --disable-vdpau \
+       --disable-videotoolbox
+
 
    try make
    try make install
