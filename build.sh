@@ -331,12 +331,9 @@ if [ \! -e built.ffmpeg ]; then
    export CFLAGS="$CFLAGS -fno-common $FFMPEG_CFLAGS"
    export CXXFLAGS="$CXXFLAGS -fno-common $FFMPEG_CFLAGS"
 
-   MEM_ALIGN_HACK="--enable-memalign-hack"
-
    try ./configure --prefix="$INSTALL" \
        --cc="${CC:-gcc}" \
        $FFMPEG_FLAGS \
-       $MEM_ALIGN_HACK \
        --enable-runtime-cpudetect \
        --enable-shared \
        --enable-avresample \
