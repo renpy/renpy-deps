@@ -61,7 +61,8 @@ def build_pygame_nightly():
     s.sendmail("nightly@renpy.org", [ 'pytom@bishoujo.us' ], msg.as_string())
     s.quit()
 
+# USES UTC TIME ZONE!
 sched = BlockingScheduler()
-sched.add_job(build_nightly, 'cron', hour="5", minute="5")
-sched.add_job(build_pygame_nightly, 'cron', hour="5", minute="5")
+sched.add_job(build_nightly, 'cron', hour="8", minute="5")
+sched.add_job(build_pygame_nightly, 'cron', hour="8", minute="35")
 sched.start()
