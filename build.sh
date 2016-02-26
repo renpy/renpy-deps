@@ -396,7 +396,8 @@ if [ \! -e built.ffmpeg ]; then
        --disable-vaapi \
        --disable-vda \
        --disable-vdpau \
-       --disable-videotoolbox
+       --disable-videotoolbox \
+       --disable-iconv
 
 
    try make
