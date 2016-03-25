@@ -43,8 +43,8 @@ else
 fi
 
 try git submodule update --init
-link /home/tom/ab/android/android-ndk-r10c android-ndk-r10c
-link /home/tom/ab/android/android-sdk-r23 android-sdk-r23
+link /home/tom/ab/android/android-ndk-r11b android-ndk-r11b
+link /home/tom/ab/android/android-sdk-linux android-sdk-linux
 link /home/tom/ab/android/android-sdk android-sdk
 
 # Copy downloaded files, so we don't have to download them again.
