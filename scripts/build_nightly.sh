@@ -43,7 +43,7 @@ else
 fi
 
 try git submodule update --init
-link /home/tom/ab/android/android-ndk-r11b android-ndk-r11b
+link /home/tom/ab/android/native/android-ndk native
 link /home/tom/ab/android/android-sdk-linux android-sdk-linux
 link /home/tom/ab/android/android-sdk android-sdk
 
@@ -97,7 +97,7 @@ try ./after_checkout.sh
 
 link /home/tom/ab/WWW.nightly dl
 link /home/tom/ab/nightly-android android
-link /home/tom/ab/nightly-android/dist/renpy rapt
+link /home/tom/ab/nightly-android/dist rapt
 link /home/tom/ab/nightly-pygame_sdl2 pygame_sdl2
 link /home/tom/ab/renpy/editra editra
 link /home/tom/ab/renpy/jedit jedit
