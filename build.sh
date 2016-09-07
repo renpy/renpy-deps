@@ -249,15 +249,23 @@ if [ $PLATFORM = "windows" ]; then
    try cp "$INSTALL/lib/libpng.dll.a" "$INSTALL/lib/libpng12.dll.a"
 fi
 
-if [ \! -e built.sdl_image ]; then
-   export LIBS="-lz"
-   try tar xvzf "$SOURCE/SDL2_image-2.0.0.tar.gz"
-   try cd "$BUILD/SDL2_image-2.0.0"
-   try ./configure --prefix="$INSTALL" --disable-tif --disable-imageio --enable-shared --disable-static --disable-jpg-shared --disable-png-shared --disable-webp --disable-xcf
-   try make
-   try make install
-   cd "$BUILD"
-   touch built.sdl_image
+if [ \! -e built.sdl2_image ]; then
+    export LIBS="-lz"
+    tar xzf "$SOURCE/SDL2_image-2.0.1.tar.gz" || true
+    try cd "$BUILD/SDL2_image-2.0.1"
+
+    try cd external/libwebp-0.3.0/
+    try ./configure --prefix="$INSTALL" --enable-static --disable-shared
+    try make
+    try make install
+    try cd ../..
+
+    try ./configure --prefix="$INSTALL" --disable-tif --disable-imageio --enable-shared --disable-static --disable-jpg-shared --disable-png-shared --enable-webp --disable-webp-shared --disable-xcf
+
+    try make
+    try make install
+    cd "$BUILD"
+    touch built.sdl2_image
 fi
 
 # if [ \! -e built.sdl_gfx ]; then
