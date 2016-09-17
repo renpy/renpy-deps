@@ -28,40 +28,45 @@
 import sys
 
 def init():
-    
-    path = sys.executable
-    
-    i = len(path) - 1
-    
-    while i:
-        if path[i] in "/\\":
-            break
-        i -= 1
 
-    path = path[:i] + "/../pythonlib2.7"
-        
-    sys.path.append(path)
     import os.path
-    sys.path.pop()
-    
+
     exe_path = os.path.abspath(sys.executable)
     exe_dir = os.path.dirname(exe_path)
-    lib_dir = os.path.dirname(exe_dir)
+
+    lib_search = [
+
+        # Case 1: (Normal Ren'Py.)
+        # - dist-1.0/lib/platform/python
+        # - dist-1.0/lib/pythonlib2.7
+        exe_dir + "/../pythonlib2.7",
+
+        # Case 2: (Mac App in the Ren'Py SDK DMG.)
+        # - dist-1.0/renpy.app/Contents/MacOS/lib/platform/python
+        # - dist-1.0/lib/pythonlib2.7
+        exe_dir + "/../../../../../lib/pythonlib2.7",
+    ]
+
+    for lib_path in lib_search:
+        if os.path.exists(lib_path):
+            break
+    else:
+        raise Exception("Could not find Python libraries in %r." % lib_search)
 
     import site
 
     # Simplify the path.
     sys.path = [
-        os.path.dirname(site.__file__),
-        os.path.join(lib_dir, "pythonlib2.7"),
+        os.path.abspath(os.path.dirname(site.__file__)),
+        os.path.abspath(lib_path),
         ]
-    
+
     # On windows, add the DLL directory to the path.
     import platform
     if platform.win32_ver()[0]:
         from ctypes import windll, c_char_p
         windll.kernel32.SetDllDirectoryA(exe_dir)
-    
+
 init()
 
 
@@ -71,7 +76,7 @@ init()
 ################################################################################
 
 # Taken from py2app.
-    
+
 import os
 import time
 
@@ -103,12 +108,12 @@ def _ctypes_setup():
     timer_func = ctypes.CFUNCTYPE(
             None, ctypes.c_void_p, ctypes.c_long)
 
-    ae_callback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p, 
+    ae_callback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p,
         ctypes.c_void_p, ctypes.c_void_p)
-    carbon.AEInstallEventHandler.argtypes = [ 
+    carbon.AEInstallEventHandler.argtypes = [
             ctypes.c_int, ctypes.c_int, ae_callback,
             ctypes.c_void_p, ctypes.c_char ]
-    carbon.AERemoveEventHandler.argtypes = [ 
+    carbon.AERemoveEventHandler.argtypes = [
             ctypes.c_int, ctypes.c_int, ae_callback,
             ctypes.c_char ]
 
@@ -117,13 +122,13 @@ def _ctypes_setup():
 
 
     carbon.ReceiveNextEvent.restype = ctypes.c_int
-    carbon.ReceiveNextEvent.argtypes = [ 
+    carbon.ReceiveNextEvent.argtypes = [
         ctypes.c_long,  ctypes.POINTER(EventTypeSpec),
         ctypes.c_double, ctypes.c_char,
         ctypes.POINTER(ctypes.c_void_p)
     ]
 
-    
+
     carbon.AEGetParamDesc.restype = ctypes.c_int
     carbon.AEGetParamDesc.argtypes = [
             ctypes.c_void_p, ctypes.c_int, ctypes.c_int,
@@ -134,7 +139,7 @@ def _ctypes_setup():
             ctypes.POINTER(ctypes.c_long) ]
 
     carbon.AEGetNthDesc.restype = ctypes.c_int
-    carbon.AEGetNthDesc.argtypes = [ 
+    carbon.AEGetNthDesc.argtypes = [
             ctypes.c_void_p, ctypes.c_long, ctypes.c_int,
             ctypes.c_void_p, ctypes.c_void_p ]
 
@@ -142,7 +147,7 @@ def _ctypes_setup():
     carbon.AEGetDescDataSize.argtypes = [ ctypes.POINTER(AEDesc) ]
 
     carbon.AEGetDescData.restype = ctypes.c_int
-    carbon.AEGetDescData.argtypes = [ 
+    carbon.AEGetDescData.argtypes = [
             ctypes.POINTER(AEDesc),
             ctypes.c_void_p,
             ctypes.c_int,
@@ -281,7 +286,7 @@ def _run_argvemulator(timeout = 60):
 
         running[0] = False
         return 0
-    
+
     carbon.AEInstallEventHandler(kAEInternetSuite, kAEISGetURL,
             open_url_handler, 0, FALSE)
 
@@ -294,7 +299,7 @@ def _run_argvemulator(timeout = 60):
     while running[0] and now - start < timeout:
         event = ctypes.c_void_p()
 
-        sts = carbon.ReceiveNextEvent(1, ctypes.byref(eventType), 
+        sts = carbon.ReceiveNextEvent(1, ctypes.byref(eventType),
                 start + timeout - now, TRUE, ctypes.byref(event))
         if sts != 0:
             print >>sys.stderr, "argvemulator warning: fetching events failed"
@@ -304,9 +309,9 @@ def _run_argvemulator(timeout = 60):
         if sts != 0:
             print >>sys.stderr, "argvemulator warning: processing events failed"
             break
-        
 
-    carbon.AERemoveEventHandler(kCoreEventClass, kAEOpenApplication, 
+
+    carbon.AERemoveEventHandler(kCoreEventClass, kAEOpenApplication,
             open_app_handler, FALSE)
     carbon.AERemoveEventHandler(kCoreEventClass, kAEOpenDocuments,
             open_file_handler, FALSE)
