@@ -446,7 +446,7 @@ class Build(object):
 
             prefix, _ext = os.path.splitext(fn)
 
-            if prefix in [ "os", "site" ]:
+            if prefix in [ "os", "site", "ntpath", "posixpath", "genericpath", "warnings", "linecache", "stat", "types", "UserDict", "_abcoll", "abc", "_weakrefset", "copy_reg" ]:
                 continue
 
             if ispure(source):
