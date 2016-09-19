@@ -12,7 +12,9 @@ try () {
 DEPS="/home/tom/ab/renpy-deps"
 RENPY="${1:-/home/tom/ab/renpy}"
 
-try python -O "$DEPS/renpython/merge.py" \
+set -e
+
+python -O "$DEPS/renpython/merge.py" \
     "$RENPY" \
     linux-x86_64 \
     linux-i686 \
@@ -21,7 +23,15 @@ try python -O "$DEPS/renpython/merge.py" \
 
 WINLIB="$RENPY/lib/windows-i686"
 
-try cp "$DEPS/windows/zsync.exe" "$WINLIB"
-try cp "$DEPS/windows/zsyncmake.exe" "$WINLIB"
-try cp "$DEPS/windows/dxwebsetup.exe" "$WINLIB"
-try cp "$DEPS/windows/say.vbs" "$WINLIB"
+cp "$DEPS/windows/zsync.exe" "$WINLIB"
+cp "$DEPS/windows/zsyncmake.exe" "$WINLIB"
+cp "$DEPS/windows/dxwebsetup.exe" "$WINLIB"
+cp "$DEPS/windows/say.vbs" "$WINLIB"
+
+MACOS="$RENPY/renpy.app/Contents/MacOS"
+
+rm "$MACOS/renpy" || true
+cp -a "$RENPY/renpy.sh" "$MACOS/renpy"
+
+rm -Rf "$MACOS/lib/darwin-x86_64" || true
+cp -a "$RENPY/lib/darwin-x86_64" "$MACOS/lib"
