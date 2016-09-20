@@ -35,3 +35,8 @@ cp -a "$RENPY/renpy.sh" "$MACOS/renpy"
 
 rm -Rf "$MACOS/lib/darwin-x86_64" || true
 cp -a "$RENPY/lib/darwin-x86_64" "$MACOS/lib"
+
+mv "$MACOS/lib/darwin-x86_64/lib/python2.7" "$MACOS/lib/darwin-x86_64/Lib"
+rmdir "$MACOS/lib/darwin-x86_64/lib"
+mkdir "$MACOS/lib/darwin-x86_64/Modules"
+echo "This file forces python to search Lib." > "$MACOS/lib/darwin-x86_64/Modules/Setup"
