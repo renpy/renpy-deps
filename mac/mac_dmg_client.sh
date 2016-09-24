@@ -13,6 +13,8 @@ TARBALL=$DMGDIRBASE.tar
 
 pushd $(dirname $DMGDIR)
 tar cf /tmp/$TARBALL $DMGDIRBASE
+popd
+
 rsync -a /tmp/$TARBALL tom@mary12:/tmp
 
 ssh -t tom@mary12 "'/Users/tom/ab/renpy-deps/mac/mac_dmg_server.sh' '$IDENTITY' '$VOLNAME' '$DMGDIRBASE' '$DMGBASE'"
