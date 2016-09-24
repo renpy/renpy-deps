@@ -14,7 +14,7 @@ pushd $APPDIR
 tar cf /tmp/$TARBALL $APPBASE
 rsync -a /tmp/$TARBALL tom@mary12:/tmp
 
-ssh tom@mary12 "'/Users/tom/ab/renpy/scripts/mac_sign_server.sh' '$IDENTITY' '$TARBALL' '$APPBASE'"
+ssh -t tom@mary12 "'/Users/tom/ab/renpy-deps/mac/mac_sign_server.sh' '$IDENTITY' '$TARBALL' '$APPBASE'"
 
 rsync -a tom@mary12:/tmp/signed-$TARBALL /tmp
 tar xf /tmp/signed-$TARBALL
