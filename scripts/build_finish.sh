@@ -12,7 +12,7 @@ try () {
 DEPS="/home/tom/ab/renpy-deps"
 RENPY="${1:-/home/tom/ab/renpy}"
 
-set -e
+set -ex
 
 python -O "$DEPS/renpython/merge.py" \
     "$RENPY" \
@@ -28,15 +28,22 @@ cp "$DEPS/windows/zsyncmake.exe" "$WINLIB"
 cp "$DEPS/windows/dxwebsetup.exe" "$WINLIB"
 cp "$DEPS/windows/say.vbs" "$WINLIB"
 
-MACOS="$RENPY/renpy.app/Contents/MacOS"
+CONTENTS="$RENPY/renpy.app/Contents"
+MACOS="$CONTENTS/MacOS"
+RESOURCES="$CONTENTS/Resources"
 
-rm "$MACOS/renpy" || true
+rm "$RENPY/renpy.app" || true
+
+mkdir -p "$MACOS/lib"
+mkdir -p "$RESOURCES"
+
 cp -a "$RENPY/renpy.sh" "$MACOS/renpy"
 
-rm -Rf "$MACOS/lib/darwin-x86_64" || true
 cp -a "$RENPY/lib/darwin-x86_64" "$MACOS/lib"
-
 mv "$MACOS/lib/darwin-x86_64/lib/python2.7" "$MACOS/lib/darwin-x86_64/Lib"
 rmdir "$MACOS/lib/darwin-x86_64/lib"
 mkdir "$MACOS/lib/darwin-x86_64/Modules"
 echo "This file forces python to search Lib." > "$MACOS/lib/darwin-x86_64/Modules/Setup"
+
+cp -a "$DEPS/mac/icon.icns" "$RESOURCES"
+cp -a "$DEPS/mac/Info.plist" "$CONTENTS"
