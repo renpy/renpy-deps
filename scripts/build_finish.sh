@@ -32,7 +32,9 @@ CONTENTS="$RENPY/renpy.app/Contents"
 MACOS="$CONTENTS/MacOS"
 RESOURCES="$CONTENTS/Resources"
 
-rm "$RENPY/renpy.app" || true
+if [ -e "$RENPY/renpy.app" ]; then
+    rm -Rf "$RENPY/renpy.app"
+fi
 
 mkdir -p "$MACOS/lib"
 mkdir -p "$RESOURCES"
@@ -42,7 +44,7 @@ cp -a "$RENPY/renpy.sh" "$MACOS/renpy"
 cp -a "$RENPY/lib/darwin-x86_64" "$MACOS/lib"
 mv "$MACOS/lib/darwin-x86_64/lib/python2.7" "$MACOS/lib/darwin-x86_64/Lib"
 rmdir "$MACOS/lib/darwin-x86_64/lib"
-mkdir "$MACOS/lib/darwin-x86_64/Modules"
+mkdir -p "$MACOS/lib/darwin-x86_64/Modules"
 echo "This file forces python to search Lib." > "$MACOS/lib/darwin-x86_64/Modules/Setup"
 
 cp -a "$DEPS/mac/icon.icns" "$RESOURCES"
