@@ -6,4 +6,4 @@ try () {
 
 try mkdir -p ~/newbuild
 try cd ~/newbuild
-try sh /Volumes/ab/renpy-deps/build_mac.sh
+try sh /Users/tom/ab/renpy-deps/build_mac.sh

@@ -16,6 +16,7 @@ SECRET="I didn't really want to write this code, but ssh on windows sucked so ba
 failed = [ ]
 succeded = [ ]
 
+
 class Remote(threading.Thread):
     """
     Used to connect to windows.
@@ -63,6 +64,7 @@ class Remote(threading.Thread):
             print self.plat, "test succeded."
             succeded.append(self.plat)
 
+
 class Command(threading.Thread):
 
     def __init__(self, plat, cmd):
@@ -73,7 +75,6 @@ class Command(threading.Thread):
         self.tail_done = False
 
         self.start()
-
 
     def tail(self):
 
@@ -130,29 +131,29 @@ verbose = args.verbose
 
 if args.windows:
     windows = Remote("windows", args.windows_host, [
-            "t:/ab/" + args.project + "/lib/windows-i686/python.exe",
-            "-EO",
-            "t:/ab/" + args.project + "/renpy.py",
-            "t:/ab/" + args.project + "/testcases",
-            "auto"
-            ])
+        "t:/ab/" + args.project + "/lib/windows-i686/python.exe",
+        "-EO",
+        "t:/ab/" + args.project + "/renpy.py",
+        "t:/ab/" + args.project + "/testcases",
+        "auto"
+        ])
 
 
 if args.linux:
     linux = Command("linux", [
-            "/home/tom/ab/" + args.project + "/renpy.sh",
-            "/home/tom/ab/" + args.project + "/testcases",
-            "auto"
-            ])
+        "/home/tom/ab/" + args.project + "/renpy.sh",
+        "/home/tom/ab/" + args.project + "/testcases",
+        "auto"
+        ])
 
 if args.mac:
     mac = Command("mac", [
-            "ssh",
-            "{}@{}".format(args.mac_user, args.mac_host),
-            "/Volumes/ab/" + args.project + "/renpy.sh",
-            "/Volumes/ab/" + args.project + "/testcases",
-            "auto"
-            ])
+        "ssh",
+        "{}@{}".format(args.mac_user, args.mac_host),
+        "/Users/tom/ab/" + args.project + "/renpy.sh",
+        "/Users/tom/ab/" + args.project + "/testcases",
+        "auto"
+        ])
 
 if args.windows:
     windows.join()

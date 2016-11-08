@@ -1,10 +1,10 @@
 #!/bin/sh
 
 BASE=/Users/tom
-AB=/Volumes/ab
+AB=/Users/tom/ab
 clean=${1:-clean}
-RENPY="${2:-/Volumes/ab/renpy}"
-PYGAME_SDL2="${3:-/Volumes/ab/pygame_sdl2}"
+RENPY="${2:-/Users/tom/ab/renpy}"
+PYGAME_SDL2="${3:-/Users/tom/ab/pygame_sdl2}"
 RENIOS="${4:-/Users/tom/ripe/renios}"
 
 try () {

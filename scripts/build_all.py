@@ -17,6 +17,7 @@ SECRET="I didn't really want to write this code, but ssh on windows sucked so ba
 failed = [ ]
 succeded = [ ]
 
+
 class Remote(threading.Thread):
     """
     Used to connect to windows.
@@ -65,8 +66,6 @@ class Remote(threading.Thread):
             succeded.append(self.plat)
 
 
-
-
 class Command(threading.Thread):
 
     def __init__(self, plat, cmd):
@@ -77,7 +76,6 @@ class Command(threading.Thread):
         self.tail_done = False
 
         self.start()
-
 
     def tail(self):
 
@@ -151,33 +149,33 @@ verbose = args.verbose
 
 if args.linux:
     linux = Command("linux", [
-            "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
-            args.clean,
-            "/home/tom/ab/" + args.project,
-            "/home/tom/ab/" + args.pygame_sdl2,
-            ])
+        "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
+        args.clean,
+        "/home/tom/ab/" + args.project,
+        "/home/tom/ab/" + args.pygame_sdl2,
+        ])
 
     time.sleep(2)
 
 if args.windows:
     windows = Remote("windows", args.windows_host, [
-            "c:/mingw/msys/1.0/bin/sh.exe",
-            "/t/ab/renpy-deps/scripts/build_renpy_win.sh",
-            args.clean,
-            "/t/ab/" + args.project,
-            "/t/ab/" + args.pygame_sdl2,
-            ])
+        "c:/mingw/msys/1.0/bin/sh.exe",
+        "/t/ab/renpy-deps/scripts/build_renpy_win.sh",
+        args.clean,
+        "/t/ab/" + args.project,
+        "/t/ab/" + args.pygame_sdl2,
+        ])
 
 
 if args.mac:
     mac = Command("mac", [
-            "ssh",
-            "{}@{}".format(args.mac_user, args.mac_host),
-            "/Volumes/ab/renpy-deps/scripts/build_renpy_mac.sh",
-            args.clean,
-            "/Volumes/ab/" + args.project,
-            "/Volumes/ab/" + args.pygame_sdl2,
-            ])
+        "ssh",
+        "{}@{}".format(args.mac_user, args.mac_host),
+        "/Users/tom/ab/renpy-deps/scripts/build_renpy_mac.sh",
+        args.clean,
+        "/Users/tom/ab/" + args.project,
+        "/Users/tom/ab/" + args.pygame_sdl2,
+        ])
 
 if args.android:
     android = Command("android", [
