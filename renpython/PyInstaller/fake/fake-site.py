@@ -27,6 +27,7 @@
 
 import sys
 
+
 def init():
 
     import os.path
@@ -41,7 +42,12 @@ def init():
         # - dist-1.0/lib/pythonlib2.7
         exe_dir + "/../pythonlib2.7",
 
-        # Case 2: (Mac App in the Ren'Py SDK DMG.)
+        # Case 2: (Mac app.)
+        # - renpy.app/Contents/MacoOS/lib/platform/python
+        # - renpy.app/Contents/MacoOS/lib/platform/Lib
+        exe_dir + "/Lib",
+
+        # Case 3: (Mac App in the Ren'Py SDK DMG.)
         # - dist-1.0/renpy.app/Contents/MacOS/lib/platform/python
         # - dist-1.0/lib/pythonlib2.7
         exe_dir + "/../../../../../lib/pythonlib2.7",
@@ -70,7 +76,6 @@ def init():
 init()
 
 
-
 ################################################################################
 # Argv Emulation
 ################################################################################
@@ -90,76 +95,77 @@ else:
 import ctypes
 import struct
 
+
 class AEDesc (ctypes.Structure):
     _fields_ = [
         ('descKey', ctypes.c_int),
         ('descContent', ctypes.c_void_p),
     ]
 
+
 class EventTypeSpec (ctypes.Structure):
     _fields_ = [
-        ('eventClass',      ctypes.c_int),
-        ('eventKind',       ctypes.c_uint),
+        ('eventClass', ctypes.c_int),
+        ('eventKind', ctypes.c_uint),
     ]
+
 
 def _ctypes_setup():
     carbon = ctypes.CDLL('/System/Library/Carbon.framework/Carbon')
 
     timer_func = ctypes.CFUNCTYPE(
-            None, ctypes.c_void_p, ctypes.c_long)
+        None, ctypes.c_void_p, ctypes.c_long)
 
     ae_callback = ctypes.CFUNCTYPE(ctypes.c_int, ctypes.c_void_p,
-        ctypes.c_void_p, ctypes.c_void_p)
+                                   ctypes.c_void_p, ctypes.c_void_p)
     carbon.AEInstallEventHandler.argtypes = [
-            ctypes.c_int, ctypes.c_int, ae_callback,
-            ctypes.c_void_p, ctypes.c_char ]
+        ctypes.c_int, ctypes.c_int, ae_callback,
+        ctypes.c_void_p, ctypes.c_char ]
     carbon.AERemoveEventHandler.argtypes = [
-            ctypes.c_int, ctypes.c_int, ae_callback,
-            ctypes.c_char ]
+        ctypes.c_int, ctypes.c_int, ae_callback,
+        ctypes.c_char ]
 
     carbon.AEProcessEvent.restype = ctypes.c_int
     carbon.AEProcessEvent.argtypes = [ctypes.c_void_p]
 
-
     carbon.ReceiveNextEvent.restype = ctypes.c_int
     carbon.ReceiveNextEvent.argtypes = [
-        ctypes.c_long,  ctypes.POINTER(EventTypeSpec),
+        ctypes.c_long, ctypes.POINTER(EventTypeSpec),
         ctypes.c_double, ctypes.c_char,
         ctypes.POINTER(ctypes.c_void_p)
     ]
 
-
     carbon.AEGetParamDesc.restype = ctypes.c_int
     carbon.AEGetParamDesc.argtypes = [
-            ctypes.c_void_p, ctypes.c_int, ctypes.c_int,
-            ctypes.POINTER(AEDesc)]
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int,
+        ctypes.POINTER(AEDesc)]
 
     carbon.AECountItems.restype = ctypes.c_int
     carbon.AECountItems.argtypes = [ ctypes.POINTER(AEDesc),
-            ctypes.POINTER(ctypes.c_long) ]
+                                     ctypes.POINTER(ctypes.c_long) ]
 
     carbon.AEGetNthDesc.restype = ctypes.c_int
     carbon.AEGetNthDesc.argtypes = [
-            ctypes.c_void_p, ctypes.c_long, ctypes.c_int,
-            ctypes.c_void_p, ctypes.c_void_p ]
+        ctypes.c_void_p, ctypes.c_long, ctypes.c_int,
+        ctypes.c_void_p, ctypes.c_void_p ]
 
     carbon.AEGetDescDataSize.restype = ctypes.c_int
     carbon.AEGetDescDataSize.argtypes = [ ctypes.POINTER(AEDesc) ]
 
     carbon.AEGetDescData.restype = ctypes.c_int
     carbon.AEGetDescData.argtypes = [
-            ctypes.POINTER(AEDesc),
-            ctypes.c_void_p,
-            ctypes.c_int,
-            ]
-
+        ctypes.POINTER(AEDesc),
+        ctypes.c_void_p,
+        ctypes.c_int,
+        ]
 
     carbon.FSRefMakePath.restype = ctypes.c_int
     carbon.FSRefMakePath.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_uint]
 
     return carbon
 
-def _run_argvemulator(timeout = 60):
+
+def _run_argvemulator(timeout=60):
 
     # Configure ctypes
     carbon = _ctypes_setup()
@@ -170,21 +176,20 @@ def _run_argvemulator(timeout = 60):
     # Configure AppleEvent handlers
     ae_callback = carbon.AEInstallEventHandler.argtypes[2]
 
-    kAEInternetSuite,   = struct.unpack('>i', B('GURL'))
-    kAEISGetURL,        = struct.unpack('>i', B('GURL'))
-    kCoreEventClass,    = struct.unpack('>i', B('aevt'))
+    kAEInternetSuite, = struct.unpack('>i', B('GURL'))
+    kAEISGetURL, = struct.unpack('>i', B('GURL'))
+    kCoreEventClass, = struct.unpack('>i', B('aevt'))
     kAEOpenApplication, = struct.unpack('>i', B('oapp'))
-    kAEOpenDocuments,   = struct.unpack('>i', B('odoc'))
-    keyDirectObject,    = struct.unpack('>i', B('----'))
-    typeAEList,         = struct.unpack('>i', B('list'))
-    typeChar,           = struct.unpack('>i', B('TEXT'))
-    typeFSRef,          = struct.unpack('>i', B('fsrf'))
+    kAEOpenDocuments, = struct.unpack('>i', B('odoc'))
+    keyDirectObject, = struct.unpack('>i', B('----'))
+    typeAEList, = struct.unpack('>i', B('list'))
+    typeChar, = struct.unpack('>i', B('TEXT'))
+    typeFSRef, = struct.unpack('>i', B('fsrf'))
     FALSE               = B('\0')
     TRUE               = B('\1')
 
     kEventClassAppleEvent, = struct.unpack('>i', B('eppc'))
     kEventAppleEvent = 1
-
 
     @ae_callback
     def open_app_handler(message, reply, refcon):
@@ -192,13 +197,13 @@ def _run_argvemulator(timeout = 60):
         return 0
 
     carbon.AEInstallEventHandler(kCoreEventClass, kAEOpenApplication,
-            open_app_handler, 0, FALSE)
+                                 open_app_handler, 0, FALSE)
 
     @ae_callback
     def open_file_handler(message, reply, refcon):
         listdesc = AEDesc()
         sts = carbon.AEGetParamDesc(message, keyDirectObject, typeAEList,
-                ctypes.byref(listdesc))
+                                    ctypes.byref(listdesc))
         if sts != 0:
             print >>sys.stderr, "argvemulator warning: cannot unpack open document event"
             running[0] = False
@@ -245,13 +250,13 @@ def _run_argvemulator(timeout = 60):
         return 0
 
     carbon.AEInstallEventHandler(kCoreEventClass, kAEOpenDocuments,
-            open_file_handler, 0, FALSE)
+                                 open_file_handler, 0, FALSE)
 
     @ae_callback
     def open_url_handler(message, reply, refcon):
         listdesc = AEDesc()
         ok = carbon.AEGetParamDesc(message, keyDirectObject, typeAEList,
-                ctypes.byref(listdesc))
+                                   ctypes.byref(listdesc))
         if ok != 0:
             print >>sys.stderr, "argvemulator warning: cannot unpack open document event"
             running[0] = False
@@ -288,7 +293,7 @@ def _run_argvemulator(timeout = 60):
         return 0
 
     carbon.AEInstallEventHandler(kAEInternetSuite, kAEISGetURL,
-            open_url_handler, 0, FALSE)
+                                 open_url_handler, 0, FALSE)
 
     start = time.time()
     now = time.time()
@@ -300,7 +305,7 @@ def _run_argvemulator(timeout = 60):
         event = ctypes.c_void_p()
 
         sts = carbon.ReceiveNextEvent(1, ctypes.byref(eventType),
-                start + timeout - now, TRUE, ctypes.byref(event))
+                                      start + timeout - now, TRUE, ctypes.byref(event))
         if sts != 0:
             print >>sys.stderr, "argvemulator warning: fetching events failed"
             break
@@ -310,13 +315,12 @@ def _run_argvemulator(timeout = 60):
             print >>sys.stderr, "argvemulator warning: processing events failed"
             break
 
-
     carbon.AERemoveEventHandler(kCoreEventClass, kAEOpenApplication,
-            open_app_handler, FALSE)
+                                open_app_handler, FALSE)
     carbon.AERemoveEventHandler(kCoreEventClass, kAEOpenDocuments,
-            open_file_handler, FALSE)
+                                open_file_handler, FALSE)
     carbon.AERemoveEventHandler(kAEInternetSuite, kAEISGetURL,
-            open_url_handler, FALSE)
+                                open_url_handler, FALSE)
 
 
 def _renpy_argv_emulation():
