@@ -42,15 +42,16 @@ def init():
         # - dist-1.0/lib/pythonlib2.7
         exe_dir + "/../pythonlib2.7",
 
-        # Case 2: (Mac app.)
+        # Case 2: (Mac App in the Ren'Py SDK DMG.)
+        # - dist-1.0/renpy.app/Contents/MacOS/lib/platform/python
+        # - dist-1.0/lib/pythonlib2.7
+        exe_dir + "/../../../../../lib/pythonlib2.7",
+
+        # Case 3: (Mac app.)
         # - renpy.app/Contents/MacoOS/lib/platform/python
         # - renpy.app/Contents/MacoOS/lib/platform/Lib
         exe_dir + "/Lib",
 
-        # Case 3: (Mac App in the Ren'Py SDK DMG.)
-        # - dist-1.0/renpy.app/Contents/MacOS/lib/platform/python
-        # - dist-1.0/lib/pythonlib2.7
-        exe_dir + "/../../../../../lib/pythonlib2.7",
     ]
 
     for lib_path in lib_search:
