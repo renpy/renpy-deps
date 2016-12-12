@@ -25,6 +25,10 @@ export RENPY_CC="ccache gcc"
 export RENPY_LD="ccache gcc"
 export RENPY_CXX="ccache g++"
 
+export PYGAME_SDL2_CC="ccache gcc"
+export PYGAME_SDL2_LD="ccache gcc"
+export PYGAME_SDL2_CXX="ccache g++"
+
 set -e
 
 export PYGAME_SDL2_INSTALL_HEADERS=1
