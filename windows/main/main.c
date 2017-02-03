@@ -32,6 +32,42 @@ static void error(const char *message, ...) {
 }
 
 /**
+ * If there are at least two / or \ characters in s, replaces the last one
+ * with an null.
+ */
+static char *fsdirname(char *s) {
+
+    int first = 1;
+    char *c = s;
+    char *sep = NULL;
+
+
+    while (1) {
+       if (*c == 0) {
+           break;
+       }
+
+       if (*c == '\\' || *c == '/') {
+           if (first) {
+               first = 0;
+           } else {
+               sep = c;
+           }
+
+       }
+
+       c++;
+    }
+
+    if (sep) {
+        *sep = 0;
+    }
+
+    return s;
+}
+
+
+/**
  * Finds the .py file. If this is main.exe, the .py file this finds is
  * ..\..\main.py.
  */
@@ -43,9 +79,9 @@ static char *find_py() {
 
 	GetFullPathName(argv0, full_path_size + 1, full_path, &basename);
 
-	dir = dirname(full_path);
-	dir = dirname(dir);
-	dir = dirname(dir);
+	dir = fsdirname(full_path);
+	dir = fsdirname(dir);
+	dir = fsdirname(dir);
 
 	int i = strlen(basename) - 3;
 
