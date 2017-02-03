@@ -59,6 +59,8 @@ unset RENPY_CXX
 unset RENPY_STEAM_SDK
 unset RENPY_STEAM_PLATFORM
 
+export XCODEAPP=~/Xcode.app
+
 cd "$RENIOS"
 [ $clean = noclean ] || ./build_all.sh
 
