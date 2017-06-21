@@ -2,9 +2,11 @@
 
 set -ex
 
+ROOT="$(readlink -f $(dirname $0)/..)"
+
 export RASPBERRY_PI=1
 
-cd ~/newbuild
+cd "$ROOT"
 mkdir -p build
 
 if [ ! -e build/built.pi_apt ]; then
@@ -33,3 +35,19 @@ if [ ! -e build/built.pi_deps ]; then
 
     touch build/built.pi_deps
 fi
+
+. env.sh
+
+export PYGAME_SDL2_INSTALL_HEADERS=1
+
+INCLUDE="$ROOT/install/include/pygame_sdl2"
+
+pushd pygame_sdl2
+python setup.py install_lib -d "$PYTHONPATH"
+python setup.py install_headers -d "$INCLUDE"
+popd
+
+
+pushd renpy/module
+python setup.py install_lib -d "$PYTHONPATH"
+popd
