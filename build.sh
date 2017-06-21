@@ -524,7 +524,7 @@ export CXX=${CXX:=g++}
 export LD=${LD:=gcc}
 export CXXLD=${CXXLD:=g++}
 
-if [ \! -e built.glew ]; then
+if [ \! -e built.glew -a -z "$RASPBERRY_PI" ]; then
 
    try tar xzf "$SOURCE/glew-1.7.0.tgz"
    try cd "$BUILD/glew-1.7.0"
