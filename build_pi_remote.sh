@@ -17,7 +17,7 @@ rsync -aP "$ROOT" "$PIUSER:~/newbuild"
 
 rsync -aP "/home/tom/ab/pygame_sdl2" "$PIUSER:~/newbuild"
 
-for i in module renpy run.sh renpy.py launcher tutorial tutorial_7 the_question; do
+for i in module renpy renpy.sh run.sh renpy.py launcher tutorial tutorial_7 the_question; do
     rsync -aP "/home/tom/ab/renpy/$i" "$PIUSER:~/newbuild/renpy"
 done
 

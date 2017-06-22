@@ -90,3 +90,23 @@ export RENPY_CXX="ccache g++"
 pushd renpy/module
 python setup.py install_lib -d "$PYTHONPATH"
 popd
+
+# Launch script.
+
+cat > pi_renpy.sh <<EOT
+#!/bin/sh
+. "$ROOT/env.sh"
+exec python -O "$ROOT/renpy/renpy.py" "\$@"
+EOT
+
+chmod +x pi_renpy.sh
+
+
+# Build distro.
+
+# pushd "$ROOT/renpy-deps/renpython"
+# python -O build.py linux-`arch` "$ROOT/renpy" renpy.py
+# popd
+#
+# rm -Rf renpy/lib
+# cp -a renpy/build/linux-armv7l/lib renpy
