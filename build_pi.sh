@@ -5,6 +5,7 @@ set -ex
 ROOT="$(readlink -f $(dirname $0)/..)"
 
 export RASPBERRY_PI=1
+export RENPY_RASPBERRY_PI=1
 
 cd "$ROOT"
 mkdir -p build
