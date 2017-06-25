@@ -57,7 +57,6 @@ if [ ! -e build/built.pi_deps ]; then
     touch build/built.pi_deps
 fi
 
-
 # Source in the built environment.
 
 . env.sh
@@ -104,9 +103,9 @@ chmod +x pi_renpy.sh
 
 # Build distro.
 
-# pushd "$ROOT/renpy-deps/renpython"
-# python -O build.py linux-`arch` "$ROOT/renpy" renpy.py
-# popd
-#
-# rm -Rf renpy/lib
-# cp -a renpy/build/linux-armv7l/lib renpy
+pushd "$ROOT/renpy-deps/renpython"
+python -O build.py linux-`arch` "$ROOT/renpy" renpy.py
+popd
+
+rm -Rf renpy/lib
+cp -a renpy/build/linux-armv7l/lib renpy

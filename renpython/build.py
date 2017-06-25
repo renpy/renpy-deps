@@ -66,6 +66,7 @@ EXCLUDES = [
     "win32com",
     ]
 
+
 def print_analysis(a):
 
     for i in [ 'scripts', 'pure', 'binaries', 'zipfiles', 'datas', 'dependencies' ]:
@@ -75,12 +76,14 @@ def print_analysis(a):
             for j in sorted(getattr(a, i)):
                 print " ", j
 
+
 FILE_EXCLUDES = [
     "D3DCOMPILER*.dll",
     "d3dx9_*.dll",
     "gdiplus.dll",
     "pywintypes*.dll",
     ]
+
 
 def renpy_filter(name, path, kind):
 
@@ -99,6 +102,7 @@ def renpy_filter(name, path, kind):
         return False
 
     return True
+
 
 def editra_filter(name, path, kind):
 
@@ -121,10 +125,11 @@ def editra_filter(name, path, kind):
 
     return True
 
+
 file_filter = renpy_filter
 
-class Build(object):
 
+class Build(object):
 
     def __init__(self, platform, renpy, tmpdir):
 
@@ -172,11 +177,10 @@ class Build(object):
 
         print sys.path
 
-
         self.analysis = Analysis([ script ],
-            hookspath=[ os.path.join(ROOT, "hooks") ],
-            hiddenimports=[ 'site' ],
-            excludes=EXCLUDES)
+                                 hookspath=[ os.path.join(ROOT, "hooks") ],
+                                 hiddenimports=[ 'site' ],
+                                 excludes=EXCLUDES)
 
     def files(self):
 
@@ -207,7 +211,6 @@ class Build(object):
 
         shutil.copyfile(src, dst)
         shutil.copystat(src, dst)
-
 
     def copy_tree(self, src, dst):
         if os.path.isdir(src):
@@ -256,7 +259,6 @@ class Build(object):
             self.copy_module(name, path)
         else:
             self.copy_binary(name, path)
-
 
     def patchelf(self):
 
@@ -392,7 +394,6 @@ class Build(object):
         for fn in os.listdir(self.platlib):
             patchfn(os.path.join(self.platlib, fn))
 
-
     def python(self, command):
 
         def copy_python(src, dest):
@@ -412,7 +413,6 @@ class Build(object):
             copy_python(os.path.join(exedir, "zsync"), "zsync")
             copy_python(os.path.join(exedir, "zsyncmake"), "zsyncmake")
 
-
     def move_pure(self):
         """
         Moves pure-python code from platpy to purepy.
@@ -431,7 +431,6 @@ class Build(object):
                 if fn.endswith(".pyc"):
                     return True
                 return False
-
 
             for _directory, _directories, files in os.walk(fn):
                 for i in files:
@@ -468,6 +467,7 @@ systems dislike empty directories.
     def finish(self):
         if self.workdir != self.targetdir:
             self.copy_tree(self.workdir, self.targetdir)
+
 
 if __name__ == "__main__":
 
@@ -511,4 +511,3 @@ if __name__ == "__main__":
 
     b.make_dynload()
     b.finish()
-

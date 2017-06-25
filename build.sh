@@ -553,8 +553,8 @@ if [ $PLATFORM != "windows" ] ; then
 fi
 
 if [ $PLATFORM = "linux" -a \! -e built.patchelf ]; then
-    try tar xzf "$SOURCE/patchelf-0.6.tar.gz"
-    try cd "$BUILD/patchelf-0.6"
+    try tar xzf "$SOURCE/patchelf-0.9.tar.gz"
+    try cd "$BUILD/patchelf-0.9"
 
     try "./configure" --prefix="$INSTALL"
     try make
