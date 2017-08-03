@@ -7,11 +7,6 @@ clean=${2:-clean}
 RENPY="${3:-/home/tom/ab/renpy}"
 PYGAME_SDL2="${4:-/home/tom/ab/pygame_sdl2}"
 
-
-
-
-
-
 case `arch` in
     x86_64)
         NEWBUILD="/home/tom/ab/$PLATFORM-deps"
