@@ -113,14 +113,21 @@ class Command(threading.Thread):
         self.tail_done = True
         tail_thread.join()
 
+
 start = time.time()
 
 os.chdir("/home/tom/ab/renpy-deps/scripts")
 
 ap = argparse.ArgumentParser()
+
 ap.add_argument("--mac-user", default=config.mac_user)
 ap.add_argument("--mac-host", default=config.mac_host)
+
 ap.add_argument("--windows-host", default=config.windows_host)
+
+ap.add_argument("--pi-user", default=config.pi_user)
+ap.add_argument("--pi-host", default=config.pi_host)
+
 ap.add_argument("--project", "-p", dest="project", action="store", default="renpy")
 ap.add_argument("--pygame_sdl2", "-s", dest="pygame_sdl2", action="store", default="pygame_sdl2")
 ap.add_argument("--verbose", "-v", dest="verbose", action="store_true", default=False)
@@ -128,7 +135,7 @@ ap.add_argument("--noclean", "-n", dest="clean", action="store_const", const="no
 ap.add_argument("platforms", nargs='*')
 args = ap.parse_args()
 
-known_platforms = [ 'linux', 'mac', 'windows', 'android' ]
+known_platforms = [ 'linux', 'mac', 'windows', 'android', 'pi' ]
 
 if not args.platforms:
     for p in known_platforms:
@@ -156,6 +163,17 @@ if args.linux:
         ])
 
     time.sleep(2)
+
+if args.pi:
+    pi = Command("pi", [
+        "ssh",
+        "{}@{}".format(args.pi_user, args.pi_host),
+        "/home/{}/ab/renpy-deps/scripts/build_renpy_linux_common.sh".format(args.pi_user),
+        "armv7l",
+        args.clean,
+        "/home/{}/ab/".format(args.pi_user) + args.project,
+        "/home/{}/ab/".format(args.pi_user) + args.pygame_sdl2,
+        ])
 
 if args.windows:
     windows = Remote("windows", args.windows_host, [
@@ -189,6 +207,8 @@ if args.windows:
     windows.join()
 if args.linux:
     linux.join()
+if args.pi:
+    pi.join()
 if args.mac:
     mac.join()
 if args.android:
