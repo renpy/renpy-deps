@@ -14,10 +14,12 @@ RENPY="${1:-/home/tom/ab/renpy}"
 
 set -ex
 
+
 python -O "$DEPS/renpython/merge.py" \
     "$RENPY" \
     linux-x86_64 \
     linux-i686 \
+    linux-armv7l \
     darwin-x86_64 \
     windows-i686
 
