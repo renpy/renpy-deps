@@ -2,13 +2,13 @@ import json
 import os.path
 
 # The computer used for windows builds.
-windows_host = "lucy12"
+windows_host = "lucy12.local"
 
 # The username used for mac builds.
 mac_user = "tom"
 
 # The hostname used for mac builds.
-mac_host = "mary12"
+mac_host = "mary12.local"
 
 # Ditto, for pi builds.
 pi_user = "pi"

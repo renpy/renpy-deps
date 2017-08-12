@@ -15,10 +15,10 @@ pushd $(dirname $DMGDIR)
 tar cf /tmp/$TARBALL $DMGDIRBASE
 popd
 
-rsync -a /tmp/$TARBALL tom@mary12:/tmp
+rsync -a /tmp/$TARBALL tom@mary12.local:/tmp
 
-ssh -t tom@mary12 "'/Users/tom/ab/renpy-deps/mac/mac_dmg_server.sh' '$IDENTITY' '$VOLNAME' '$DMGDIRBASE' '$DMGBASE'"
+ssh -t tom@mary12.local "'/Users/tom/ab/renpy-deps/mac/mac_dmg_server.sh' '$IDENTITY' '$VOLNAME' '$DMGDIRBASE' '$DMGBASE'"
 
-rsync -a tom@mary12:/tmp/$DMGBASE $DMG
+rsync -a tom@mary12.local:/tmp/$DMGBASE $DMG
 
 
