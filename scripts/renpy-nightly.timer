@@ -1,0 +1,9 @@
+[Unit]
+Description=Ren'Py Nightly Build Timer
+
+[Timer]
+OnCalendar=*-*-* 8:30:0
+
+[Install]
+WantedBy=default.target
+

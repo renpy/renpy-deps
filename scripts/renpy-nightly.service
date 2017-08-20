@@ -1,0 +1,6 @@
+[Unit]
+Description=Ren'Py Nightly Build Kickoff
+
+[Service]
+Type=oneshot
+ExecStart=/home/tom/ab/renpy-deps/scripts/build_nightly_email.py
