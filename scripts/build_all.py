@@ -33,7 +33,7 @@ class Remote(threading.Thread):
         self.start()
 
     def run(self):
-        log = file("log_" + self.plat + ".txt", "w")
+        log = file("log/log_" + self.plat + ".txt", "w")
 
         s = socket.socket()
         s.connect((self.host, 22222))
@@ -79,7 +79,7 @@ class Command(threading.Thread):
 
     def tail(self):
 
-        tf = file("log_" + self.plat + ".txt", "r")
+        tf = file("log/log_" + self.plat + ".txt", "r")
 
         pos = 0
 
@@ -95,7 +95,7 @@ class Command(threading.Thread):
         tf.close()
 
     def run(self):
-        log = file("log_" + self.plat + ".txt", "w")
+        log = file("log/log_" + self.plat + ".txt", "w")
 
         tail_thread = threading.Thread(target=self.tail)
         tail_thread.start()
