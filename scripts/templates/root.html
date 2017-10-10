@@ -14,6 +14,9 @@
 
       <h2>Ren'Py Nightly Builds</h2>
 
+      <p>
+      <a href="current/index.html">This link will always bring you to the current nightly build.</a>
+      </p>
 
       <p>
       These are nightly builds of Ren'Py, primarily created to let you help
@@ -39,22 +42,16 @@
 
       <h3>Builds</h3>
 
-      <ul>
-      <li> <a href="current/">This link will always bring you to the current nightly build.</a>
-      </ul>
+        <table class="table">
+        {% for d, name in dirs %}
 
+        <tr>
+          <td><a href="{{ d }}/index.html">{{ name }}</a></td>
+          <td>{{ d }}</td>
+        </tr>
 
-
-        <ul>
-        {% for d in dirs %}
-        <li><a href="d">{{ d }}</a>
         {% endfor %}
-        </ul>
-
-
-      <h3>Information</h3>
-
-
+        </table>
 
 
     </div>

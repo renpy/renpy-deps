@@ -152,6 +152,9 @@ try cd /home/tom/magnetic/ab/WWW.nightly/
 rm current
 ln -s "$RENPY_NIGHTLY" current
 
+# Index the nightly.
+try /home/tom/ab/renpy-deps/scripts/index_nightly.py /home/tom/magnetic/ab/WWW.nightly/
+
 # Upload everything to the server.
 try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@erika.onegeek.org:/home/tom/WWW.nightly --delete
 

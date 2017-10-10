@@ -53,6 +53,9 @@ def directory(name, full):
         else:
             other.append(record)
 
+    if not dirtime:
+        return None
+
     dt = datetime.datetime.fromtimestamp(dirtime)
     date = dt.strftime("%A, %B %d, %Y")
 
@@ -78,7 +81,13 @@ def main():
 
     for i in os.listdir(args.nightly):
         if i.startswith("nightly-"):
-            dirs.append(i)
+            full = os.path.join(args.nightly, i)
+            name = directory(i, full)
+
+            if name is None:
+                continue
+
+            dirs.append((i, name))
 
     dirs.sort()
     dirs.reverse()
@@ -88,10 +97,6 @@ def main():
 
     with open(os.path.join(args.nightly, "index.html"), "w") as f:
         f.write(html)
-
-    for i in dirs:
-        full = os.path.join(args.nightly, i)
-        directory(i, full)
 
 
 if __name__ == "__main__":
