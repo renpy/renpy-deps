@@ -260,7 +260,7 @@ if [ \! -e built.sdl2_image ]; then
     try cd "$BUILD/SDL2_image-2.0.1"
 
     try cd external/libwebp-0.3.0/
-    try ./configure --prefix="$INSTALL" --enable-static --disable-shared
+    try ./configure --prefix="$INSTALL" --enable-static --disable-shared --disable-threading
     try make
     try make install
     try cd ../..
