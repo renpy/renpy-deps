@@ -91,10 +91,32 @@ if [ \! -e built.bz2 ]; then
     try touch built.bz2
 fi
 
+if [ \! -e built.openssl ]; then
+
+    try tar xvzf "$SOURCE/openssl-1.0.2m.tar.gz"
+    try cd "$BUILD/openssl-1.0.2m"
+
+    if [ `arch` = "x86_64" ]; then
+        pic=-fPIC
+    fi
+
+    try ./config $pic no-shared no-asm --prefix="$INSTALL"
+    try make
+    try make install
+    try cd "$BUILD"
+    try touch built.openssl
+
+    if [ -e build.python ]; then
+        try rm build.python
+    fi
+fi
+
+
 if [ \! -e built.python ]; then
 
     try tar xzf "$SOURCE/Python-2.7.10.tgz"
     try cd "$BUILD/Python-2.7.10"
+    try patch -p0 < "$SOURCE/python-minimize-openssl.diff"
 
     try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4  #-with-universal-archs=x86_64 --enable-universalsdk=$SDKROOT
 
