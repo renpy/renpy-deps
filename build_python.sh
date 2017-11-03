@@ -100,15 +100,21 @@ if [ \! -e built.openssl ]; then
         pic=-fPIC
     fi
 
-    try ./config $pic no-shared no-asm --prefix="$INSTALL"
+    if [ $MAC = yes ]; then
+        try ./Configure darwin64-x86_64-cc no-shared no-asm --prefix="$INSTALL"
+    else
+        try ./config $pic $plat no-shared no-asm --prefix="$INSTALL"
+    fi
+
     try make
     try make install
     try cd "$BUILD"
-    try touch built.openssl
 
-    if [ -e build.python ]; then
-        try rm build.python
+    if [ -e built.python ]; then
+        try rm built.python
     fi
+
+    try touch built.openssl
 fi
 
 
