@@ -58,8 +58,6 @@ EXCLUDES = [
     'pythoncom',
     'readline',
     "sndhdr",
-    '_ssl',
-    "ssl",
     'unittest',
     "win32pipe",
     "win32api",
