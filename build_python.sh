@@ -100,6 +100,10 @@ if [ \! -e built.openssl ]; then
         pic=-fPIC
     fi
 
+    if [ `arch` = "armv7l" ]; then
+        pic=-fPIC
+    fi
+
     if [ $MAC = yes ]; then
         try ./Configure darwin64-x86_64-cc no-shared no-asm --prefix="$INSTALL"
     else
