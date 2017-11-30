@@ -1,4 +1,4 @@
-#!/bin/sh
+ #!/bin/sh
 
 BASE=/Users/tom
 AB=/Users/tom/ab
@@ -20,6 +20,8 @@ fi
 
 
 INCLUDE="$BASE/newbuild/install/include/pygame_sdl2"
+
+export MACOSX_DEPLOYMENT_TARGET=10.6
 
 export RENPY_CC="ccache gcc"
 export RENPY_LD="ccache gcc"
