@@ -6,7 +6,7 @@ DEST="/home/tom/ab/renpy/jedit"
 
 # Unpack jedit.
 rm -Rf "$DEST"
-try java -jar "$SOURCE/jedit5.1.0install.jar" auto "$DEST"
+java -jar "$SOURCE/jedit5.1.0install.jar" auto "$DEST"
 
 # Doc directory.
 try rm  -Rf "$DEST/doc/api"
@@ -27,3 +27,5 @@ try cp "$SOURCE/"*.jar "$DEST/jars"
 # Misc.
 try cp "$SOURCE/jEdit.edit.py" "$DEST"
 try cp "$SOURCE/jedit.exe" "$DEST"
+
+echo "Done. You can ignore 'The installer could not create the destination directory.'"
