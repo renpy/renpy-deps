@@ -130,6 +130,10 @@ if [ \! -e built.python ]; then
 
     try ./configure --prefix="$INSTALL" --enable-shared --enable-unicode=ucs4  #-with-universal-archs=x86_64 --enable-universalsdk=$SDKROOT
 
+    if [ $MAC = yes ]; then
+        try patch -p0 < "$SOURCE/python-no-getentropy.diff"
+    fi
+
     try make
     try make install
     try cd "$BUILD"

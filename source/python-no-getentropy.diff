@@ -1,0 +1,11 @@
+--- pyconfig.h.old	2017-12-31 12:04:02.000000000 -0500
++++ pyconfig.h	2017-12-31 12:06:22.000000000 -0500
+@@ -282,7 +282,7 @@
+ #define HAVE_GETC_UNLOCKED 1
+ 
+ /* Define to 1 if you have the `getentropy' function. */
+-#define HAVE_GETENTROPY 1
++/* #undef HAVE_GETENTROPY 1 */
+ 
+ /* Define to 1 if you have the `getgroups' function. */
+ #define HAVE_GETGROUPS 1
