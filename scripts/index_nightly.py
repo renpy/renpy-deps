@@ -68,6 +68,8 @@ def directory(name, full):
     with open(os.path.join(full, "index.html"), "w") as f:
         f.write(html)
 
+    os.utime(os.path.join(full, "index.html"), (dirtime, dirtime))
+
     return date
 
 
