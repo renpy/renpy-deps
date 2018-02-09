@@ -1,0 +1,15 @@
+{
+  "name": "renpy-dark-syntax",
+  "theme": "syntax",
+  "version": "1.0.0",
+  "description": "The dark version of the Ren'Py syntax theme.",
+  "keywords": [
+    "syntax",
+    "theme"
+  ],
+  "repository": "https://github.com/atom/renpy-dark-syntax",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  }
+}
