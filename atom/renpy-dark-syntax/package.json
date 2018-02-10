@@ -1,7 +1,7 @@
 {
   "name": "renpy-dark-syntax",
   "theme": "syntax",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "The dark version of the Ren'Py syntax theme.",
   "keywords": [
     "syntax",
