@@ -58,9 +58,9 @@ class Editor(renpy.editor.Editor):
         DIR = os.path.abspath(os.path.dirname(__file__))
 
         if renpy.windows:
-            atom = os.path.join(DIR, "atom-windows")
+            atom = os.path.join(DIR, "atom-windows", "atom.exe")
         elif renpy.macintosh:
-            atom = os.path.join(DIR, "atom-mac")
+            atom = os.path.join(DIR, "Atom.app", "Contents", "Resources", "app", "atom.sh")
         else:
             atom = os.path.join(DIR, "atom-linux-" + platform.machine(), "atom")
 
