@@ -3,6 +3,8 @@
 import os
 import jinja2
 
+import keywords
+
 
 D = os.path.dirname(__file__)
 
@@ -22,7 +24,10 @@ def main():
     with open(src) as f:
         template = env.from_string(f.read())
 
-    data = template.render()
+    data = template.render(
+        keyword_regex=keywords.keyword_regex.replace("\\", "\\\\"),
+        property_regexes=keywords.property_regexes,
+        )
 
     with open(dst, "w") as f:
         f.write(data)
