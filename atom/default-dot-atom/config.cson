@@ -1,0 +1,31 @@
+"*":
+  "bracket-matcher":
+    autocompleteBrackets: false
+    wrapSelectionsInBrackets: false
+  core:
+    ignoredNames: [
+      ".git"
+      ".hg"
+      ".svn"
+      ".DS_Store"
+      "._*"
+      "Thumbs.db"
+      "desktop.ini"
+      "*.bak"
+      "*.rpyc"
+      "*.rpymc"
+      "*.rpyb"
+      "saves"
+      "cache"
+    ]
+    themes: [
+      "one-dark-ui"
+      "renpy-dark-syntax"
+    ]
+  editor:
+    showIndentGuide: true
+    tabLength: 4
+  "tree-view":
+    hideIgnoredNames: true
+  welcome:
+    showOnStartup: false

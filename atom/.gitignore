@@ -5,3 +5,4 @@ dl
 executable.txt
 .atom
 __pycache__
+default-dot-atom/packages
