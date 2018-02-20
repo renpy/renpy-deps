@@ -3,3 +3,5 @@ atom-windows
 Atom.app
 dl
 executable.txt
+.atom
+__pycache__
