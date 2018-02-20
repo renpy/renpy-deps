@@ -99,6 +99,7 @@ link /home/tom/ab/WWW.nightly dl
 link /home/tom/ab/nightly-android android
 link /home/tom/ab/nightly-android/dist rapt
 link /home/tom/ab/nightly-pygame_sdl2 pygame_sdl2
+link /home/tom/ab/renpy/atom atom
 link /home/tom/ab/renpy/editra editra
 link /home/tom/ab/renpy/jedit jedit
 link /home/tom/ab/renpy/renios renios
