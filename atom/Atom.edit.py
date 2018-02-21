@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 
+# The path to a copy of Atom that's been installed globally, if one exists.
+# This is overidden by RENPY_ATOM, if set. If either is given, that is used
+# and no special handing of the .atom directory is performed.
+ATOM = None
+
 import sys
 import os
 import subprocess
 import platform
+import shutil
 
 import renpy
 
@@ -11,6 +17,34 @@ import renpy
 class Editor(renpy.editor.Editor):
 
     has_projects = True
+
+    def get_atom(self):
+        """
+        Returns the path to the atom executable, if None. Also takes care
+        of setting up the .atom directory if it's not available.
+        """
+
+        atom = os.environ.get("RENPY_ATOM", ATOM)
+
+        if atom is not None:
+            return atom
+
+        DIR = os.path.abspath(os.path.dirname(__file__))
+
+        if renpy.windows:
+            atom = os.path.join(DIR, "atom-windows", "atom.exe")
+        elif renpy.macintosh:
+            atom = os.path.join(DIR, "Atom.app", "Contents", "Resources", "app", "atom.sh")
+        else:
+            atom = os.path.join(DIR, "atom-linux-" + platform.machine(), "atom")
+
+        default_dot_atom = os.path.join(DIR, "default-dot-atom")
+        dot_atom = os.path.join(DIR, ".atom")
+
+        if not os.path.exists(dot_atom) and os.path.exists(default_dot_atom):
+            shutil.copytree(default_dot_atom, dot_atom)
+
+        return atom
 
     def begin(self, new_window=False, **kwargs):
         self.args = [ ]
@@ -25,44 +59,9 @@ class Editor(renpy.editor.Editor):
     def open_project(self, project):
         self.args.append(project)
 
-    def launch_editra(self):
-        """
-        Tries to launch Editra.
-        """
-
-        plugin_cfg = os.path.join(config_dir, "plugin.cfg")
-
-        if not os.path.exists(plugin_cfg):
-            with open(plugin_cfg, "w") as f:
-                f.write("renpy_editra=True")
-
-        if renpy.windows:
-
-            env = os.environ.copy()
-            env[b'PYENCHANT_LIBRARY_PATH'] = fsencode(os.path.join(DIR, "lib", "windows-i686", "libenchant-1.dll"))
-
-            subprocess.Popen([
-                os.path.join(DIR, "lib", "windows-i686", "pythonw.exe"),
-                "-EOO",
-                os.path.join(DIR, "Editra/editra"),
-                ], cwd=DIR, env=env)
-
-        elif renpy.macintosh:
-            subprocess.Popen([ "open", "-a", fsencode(os.path.join(DIR, "Editra-mac.app")) ])
-
-        else:
-            subprocess.Popen([ fsencode(os.path.join(DIR, "Editra/editra")) ])
-
     def end(self, **kwargs):
 
-        DIR = os.path.abspath(os.path.dirname(__file__))
-
-        if renpy.windows:
-            atom = os.path.join(DIR, "atom-windows", "atom.exe")
-        elif renpy.macintosh:
-            atom = os.path.join(DIR, "Atom.app", "Contents", "Resources", "app", "atom.sh")
-        else:
-            atom = os.path.join(DIR, "atom-linux-" + platform.machine(), "atom")
+        atom = self.get_atom()
 
         self.args.reverse()
 
