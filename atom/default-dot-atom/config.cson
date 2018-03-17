@@ -1,4 +1,7 @@
 "*":
+  "autocomplete-plus":
+    confirmCompletion: "tab always, enter when suggestion explicitly selected"
+    enableAutoActivation: false
   "bracket-matcher":
     autocompleteBrackets: false
     wrapSelectionsInBrackets: false
