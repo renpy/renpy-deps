@@ -541,7 +541,8 @@ if [ $PLATFORM != "windows" ] ; then
     try tar xjf "$SOURCE/zsync-0.6.2.tar.bz2"
     try cd "$BUILD/zsync-0.6.2"
 
-    try patch -p1 < "$SOURCE/zsync-no-isatty.diff"
+    try patch -p1 < "$SOURCE/zsync-no-isastty.diff"
+    try patch -p0 < "$SOURCE/zsync-compress-5.diff"
 
     try "./configure" --prefix="$INSTALL"
     try make
