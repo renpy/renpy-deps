@@ -25,11 +25,6 @@ if [ -n "$1" -a -e nightly-android/.git ]; then
     try cd nightly-android
     try git pull
 
-    try cd python-for-android
-    try git checkout master
-    try git pull
-    try cd ..
-
 else
     rm -Rf nightly-android
 
@@ -37,19 +32,9 @@ else
         --reference /home/tom/ab/android nightly-android
 
     try cd nightly-android
-
-    try git clone "git@github.com:renpy/python-for-android.git" \
-        --reference /home/tom/ab/android/python-for-android python-for-android
 fi
 
-try git submodule update --init
-link /home/tom/ab/android/native/android-ndk native
-link /home/tom/ab/android/android-sdk-linux android-sdk-linux
-link /home/tom/ab/android/android-sdk android-sdk
-
-# Copy downloaded files, so we don't have to download them again.
-rm -Rf /home/tom/ab/nightly-android/python-for-android/.packages
-cp -a /home/tom/ab/android/python-for-android/.packages /home/tom/ab/nightly-android/python-for-android/.packages
+link /home/tom/ab/android/Sdk Sdk
 
 try cd ..
 
