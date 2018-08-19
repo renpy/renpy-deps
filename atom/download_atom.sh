@@ -34,6 +34,5 @@ unzip "dl/$VERSION/atom-mac.zip"
 tar xaf "dl/$VERSION/atom-amd64.tar.gz"
 mv "atom-$1-amd64" "atom-linux-x86_64"
 
-pushd ..
-find atom -executable -type f > atom/executable.txt
-popd
+find -executable -type f | sed 's/^./atom/' > executable.txt
+
