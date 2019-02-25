@@ -6,6 +6,9 @@
     autocompleteBrackets: false
     wrapSelectionsInBrackets: false
   core:
+    disabledPackages: [
+      "github"
+    ]
     ignoredNames: [
       ".git"
       ".hg"
