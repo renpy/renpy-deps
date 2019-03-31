@@ -21,6 +21,7 @@ fi
 
 INCLUDE="$BASE/newbuild/install/include/pygame_sdl2"
 
+export XCODEAPP=/Applications/Xcode.app
 export MACOSX_DEPLOYMENT_TARGET=10.6
 
 export RENPY_CC="ccache gcc"
@@ -60,8 +61,6 @@ unset RENPY_CXX
 
 unset RENPY_STEAM_SDK
 unset RENPY_STEAM_PLATFORM
-
-export XCODEAPP=/Applications/Xcode.app
 
 cd "$RENIOS"
 [ $clean = noclean ] || ./build_all.sh
