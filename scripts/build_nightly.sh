@@ -142,7 +142,7 @@ ln -s "$RENPY_NIGHTLY" current
 try /home/tom/ab/renpy-deps/scripts/index_nightly.py /home/tom/magnetic/ab/WWW.nightly/
 
 # Upload everything to the server.
-try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@erika.onegeek.org:/home/tom/WWW.nightly --delete
+try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@abagail.onegeek.org:/home/tom/WWW.nightly --delete
 
 # Delete old nightlies.
 find /home/tom/magnetic/ab/WWW.nightly/ -ctime +30.5 -delete || true
