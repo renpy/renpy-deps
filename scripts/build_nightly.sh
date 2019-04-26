@@ -138,6 +138,11 @@ try cd /home/tom/magnetic/ab/WWW.nightly/
 rm current
 ln -s "$RENPY_NIGHTLY" current
 
+rm renpy-nightly-sdk.zip
+rm renpy-nightly-sdk.tar.bz2
+ln -s current/renpy-*-sdk.zip renpy-nightly-sdk.zip
+ln -s current/renpy-*-sdk.tar.bz2 renpy-nightly-sdk.tar.bz2
+
 # Index the nightly.
 try /home/tom/ab/renpy-deps/scripts/index_nightly.py /home/tom/magnetic/ab/WWW.nightly/
 
