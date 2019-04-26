@@ -14,7 +14,7 @@ pushd /tmp
 rm -Rf "$DMGDIRBASE" || true
 tar xf "$DMGDIRBASE.tar"
 
-hdiutil create -format UDBZ -ov -volname "$VOLNAME" -srcfolder "$DMGDIRBASE" "$DMGBASE"
+hdiutil create -fs 'HFS+' -format UDBZ -ov -volname "$VOLNAME" -srcfolder "$DMGDIRBASE" "$DMGBASE"
 codesign --verbose -s "$1" "$DMGBASE"
 
 popd
