@@ -126,6 +126,8 @@ try cd /home/tom/ab/nightly-renpy
 try /home/tom/ab/renpy-deps/scripts/test_all.py --no-mac --no-linux -p nightly-renpy
 try ./renpy.sh tutorial lint
 
+try /home/tom/ab/renpy/build_nightly_renpyweb.sh
+
 if [ -n "$1" ]; then
     exit
 fi
