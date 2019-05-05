@@ -112,8 +112,11 @@ try ./run.sh tutorial quit
 # Copy launcher over.
 cp /home/tom/ab/renpy-deps/windows/launch/renpy.exe .
 
+# Get renpyweb ready for a rebuild.
+try /home/tom/ab/renpy-deps/scripts/prepare_nightly_renpyweb.sh
+
 # Build Ren'Py for real.
-try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy -s nightly-pygame_sdl2
+try /home/tom/ab/renpy-deps/scripts/build_all.py -p nightly-renpy -s nightly-pygame_sdl2 -w nightly-renpyweb
 unset RENPY_BUILD_ALL
 
 # Build the documentation.
@@ -125,8 +128,6 @@ try cd /home/tom/ab/nightly-renpy
 
 try /home/tom/ab/renpy-deps/scripts/test_all.py --no-mac --no-linux -p nightly-renpy
 try ./renpy.sh tutorial lint
-
-try /home/tom/ab/renpy/build_nightly_renpyweb.sh
 
 if [ -n "$1" ]; then
     exit

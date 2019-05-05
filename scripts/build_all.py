@@ -130,12 +130,13 @@ ap.add_argument("--pi-host", default=config.pi_host)
 
 ap.add_argument("--project", "-p", dest="project", action="store", default="renpy")
 ap.add_argument("--pygame_sdl2", "-s", dest="pygame_sdl2", action="store", default="pygame_sdl2")
+ap.add_argument("--renpyweb", "-w", dest="renpyweb", action="store", default="renpyweb")
 ap.add_argument("--verbose", "-v", dest="verbose", action="store_true", default=False)
 ap.add_argument("--noclean", "-n", dest="clean", action="store_const", const="noclean", default="clean")
 ap.add_argument("platforms", nargs='*')
 args = ap.parse_args()
 
-known_platforms = [ 'linux', 'mac', 'windows', 'android', 'pi' ]
+known_platforms = [ 'linux', 'mac', 'windows', 'android', 'pi', 'web' ]
 
 if not args.platforms:
     for p in known_platforms:
@@ -154,6 +155,8 @@ else:
 
 verbose = args.verbose
 
+wait = [ ]
+
 if args.linux:
     linux = Command("linux", [
         "/home/tom/ab/renpy-deps/scripts/build_renpy_linux.sh",
@@ -163,6 +166,8 @@ if args.linux:
         ])
 
     time.sleep(2)
+
+    wait.append(linux)
 
 if args.pi:
     pi = Command("pi", [
@@ -175,6 +180,8 @@ if args.pi:
         "/home/{}/ab/".format(args.pi_user) + args.pygame_sdl2,
         ])
 
+    wait.append(pi)
+
 if args.windows:
     windows = Remote("windows", args.windows_host, [
         "c:/mingw/msys/1.0/bin/sh.exe",
@@ -184,6 +191,7 @@ if args.windows:
         "/t/ab/" + args.pygame_sdl2,
         ])
 
+    wait.append(windows)
 
 if args.mac:
     mac = Command("mac", [
@@ -195,6 +203,8 @@ if args.mac:
         "/Users/tom/ab/" + args.pygame_sdl2,
         ])
 
+    wait.append(mac)
+
 if args.android:
     android = Command("android", [
         "/home/tom/ab/" + args.project + "/android/build_renpy.sh",
@@ -203,16 +213,26 @@ if args.android:
         "/home/tom/ab/" + args.pygame_sdl2,
         ])
 
-if args.windows:
-    windows.join()
-if args.linux:
-    linux.join()
-if args.pi:
-    pi.join()
-if args.mac:
-    mac.join()
-if args.android:
-    android.join()
+    wait.append(android)
+
+if args.web:
+    print("/home/tom/ab/{}/scripts/rebuild_for_renpy.sh".format(args.renpyweb))
+
+    web = Command("web", [
+        "/home/tom/ab/{}/scripts/rebuild_for_renpy.sh".format(args.renpyweb)
+        ])
+
+    wait.append(web)
+
+start = time.time()
+
+while any(i.is_alive() for i in wait):
+    dur = int(time.time() - start)
+    sys.stdout.write("{:.0f}\r".format(dur))
+    sys.stdout.flush()
+
+for i in wait:
+    i.join()
 
 if args.windows or args.linux or args.mac:
     subprocess.check_call([ "./build_finish.sh", "/home/tom/ab/" + args.project ])
