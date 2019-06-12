@@ -165,8 +165,7 @@ if args.linux:
         "/home/tom/ab/" + args.pygame_sdl2,
         ])
 
-    time.sleep(2)
-
+    time.sleep(5)
     wait.append(linux)
 
 if args.pi:
@@ -216,8 +215,6 @@ if args.android:
     wait.append(android)
 
 if args.web:
-    print("/home/tom/ab/{}/scripts/rebuild_for_renpy.sh".format(args.renpyweb))
-
     web = Command("web", [
         "/home/tom/ab/{}/scripts/rebuild_for_renpy.sh".format(args.renpyweb)
         ])
