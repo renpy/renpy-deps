@@ -134,7 +134,7 @@ if [ -n "$1" ]; then
 fi
 
 # Build the distribution.
-try python -O distribute.py "$RENPY_NIGHTLY" --pygame /home/tom/ab/nightly-pygame_sdl2 --sign
+try python -O distribute.py "$RENPY_NIGHTLY" --pygame /home/tom/ab/nightly-pygame_sdl2
 
 # Create a symlink to the current nightly.
 try cd /home/tom/magnetic/ab/WWW.nightly/
@@ -154,6 +154,3 @@ try rsync -av /home/tom/magnetic/ab/WWW.nightly/ tom@abagail.onegeek.org:/home/t
 
 # Delete old nightlies.
 find /home/tom/magnetic/ab/WWW.nightly/ -ctime +30.5 -delete || true
-
-
-
