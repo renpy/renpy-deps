@@ -12,7 +12,7 @@ pushd /tmp
 rm -Rf "$APP" || true
 tar xf "$TARBALL"
 
-codesign --verbose -s "$1" -f --deep --no-strict "$APP"
+codesign --entitlements="$(dirname $0)/entitlements.plist" --options=runtime --timestamp --verbose -s "$1" -f --deep --no-strict "$APP"
 
 tar cf "signed-$TARBALL" "$APP"
 popd
