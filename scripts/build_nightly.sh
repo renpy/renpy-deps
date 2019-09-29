@@ -134,7 +134,7 @@ if [ -n "$1" ]; then
 fi
 
 # Build the distribution.
-try python -O distribute.py "$RENPY_NIGHTLY" --pygame /home/tom/ab/nightly-pygame_sdl2 --nosign
+try python -O distribute.py "$RENPY_NIGHTLY" --pygame /home/tom/ab/nightly-pygame_sdl2
 
 # Create a symlink to the current nightly.
 try cd /home/tom/magnetic/ab/WWW.nightly/
