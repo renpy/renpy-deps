@@ -107,7 +107,7 @@ if [ \! -e built.openssl ]; then
     if [ $MAC = yes ]; then
         try ./Configure darwin64-x86_64-cc no-shared no-asm --prefix="$INSTALL"
     else
-        try ./config $pic $plat no-shared no-asm --prefix="$INSTALL"
+        try ./config $pic $plat   --prefix="$INSTALL"
     fi
 
     try make
@@ -166,5 +166,6 @@ pysetup pyasn1 0.1.7
 pysetup rsa 3.1.4
 pysetup altgraph 0.12
 pysetup macholib 1.7
+pysetup future 0.18.2
 
 exit 0
